@@ -1,0 +1,117 @@
+package se.vgr.usdservice;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import junit.framework.TestCase;
+
+import org.apache.axis.AxisFault;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.ca.www.UnicenterServicePlus.ServiceDesk.USD_WebServiceSoapSoapBindingStub;
+
+public class USDServiceTest extends TestCase {
+
+    boolean integrationTest = false;
+    private USDService usdService;
+
+    @Override
+    @Before
+    public void setUp() throws Exception {
+
+        Properties p = new Properties();
+        p.load(ClassLoader.getSystemResourceAsStream("usd.properties"));
+        Properties mappings = new Properties();
+        mappings.load(ClassLoader.getSystemResourceAsStream("usdAppToGroup.properties"));
+        if (integrationTest) {
+            usdService = new USDServiceImpl(p);
+        }
+        else {
+            usdService = new USDServiceImpl(p) {
+
+                @Override
+                protected USD_WebServiceSoapSoapBindingStub getWebService() {
+                    try {
+                        return new Mock_USD_WebServiceSoapSoapBindingStub();
+                    }
+                    catch (AxisFault e) {
+                        throw new RuntimeException("TODO: Handle this exception better", e);
+                    }
+                }
+
+                @Override
+                protected String getHandleFromResponse(InputStream xml) throws Exception {
+                    return "";
+                }
+
+            };
+
+        }
+        ((USDServiceImpl) usdService).setUsdAppToGroupMappings(mappings);
+    }
+
+    public Properties getTestParameters() {
+        Properties p = new Properties();
+        p.setProperty("affected_resource", "nr:BF5880E3AF1C8542B2546B93922C25A7");
+        p.setProperty("category", "pcat:400023");
+        p.setProperty("description", "Testing test test description");
+        String appName = "Tyck till test".trim().replaceAll(" ", "_");
+        System.out.println("getting group for appName=" + appName);
+        String groupHandle = "abc";
+        if (integrationTest) {
+            groupHandle = usdService.getUSDGroupHandleForApplicationName(appName);
+        }
+        p.setProperty("group", groupHandle);
+        p.setProperty("impact", "imp:1603");
+        p.setProperty("priority", "pri:500");
+        p.setProperty("type", "crt:182");
+        p.setProperty("urgency", "urg:1100");
+        p.setProperty("z_location", "loc:67F817D782E87B45A8298FC5512B6A9C");
+        p.setProperty("z_organization", "org:5527E3F8D19F49409036F162493C7DD0");
+        p.setProperty("z_telefon_nr", "031-123456");
+        return p;
+    }
+
+    @Override
+    @After
+    public void tearDown() throws Exception {
+    }
+
+    @Test
+    public void testCreateRequest() {
+
+        String result = usdService.createRequest(getTestParameters(), "andcu1", null);
+        assertNotNull(result);
+
+    }
+
+    @Test
+    public void testCreateRequestWithAttachments() {
+        if (integrationTest) {
+
+            List<File> files = new ArrayList<File>();
+            File file;
+            try {
+                file = File.createTempFile("attachtest", ".txt");
+            }
+            catch (IOException e) {
+                throw new RuntimeException("TODO: Handle this exception better", e);
+            }
+
+            files.add(file);
+
+            String result = usdService.createRequest(getTestParameters(), "andcu1", files);
+            assertNotNull(result);
+            file.delete();
+
+        }
+
+    }
+
+}

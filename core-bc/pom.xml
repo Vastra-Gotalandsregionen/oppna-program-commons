@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!--
+This is the Business Component Maven POM.
+
+
+Template version: 1.2-SNAPSHOT
+Generation time : 2009-10-29 15:22:41 CET
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>se.vgr.commons-util</groupId>
+    <artifactId>commons-util-system</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <groupId>se.vgr.commons-util</groupId>
+  <artifactId>commons-util-core-bc</artifactId>
+  <packaging>pom</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <name>${project.artifactId}</name>
+
+  <modules>
+    <!-- <module>composites/types</module> -->
+    <module>composites/svc-ldap</module>
+	<module>composites/svc-usd</module>
+    <!-- <module>composites/webcomp</module>
+    <module>composites/schema</module>
+    <module>modules/web</module>
+    <module>modules/portlet</module>
+    <module>modules/intsvc</module>
+    <module>applications/core-bc</module> -->
+  </modules>
+</project>
