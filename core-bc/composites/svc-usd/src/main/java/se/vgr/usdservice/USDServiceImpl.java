@@ -16,6 +16,10 @@ import javax.activation.FileDataSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.rpc.holders.StringHolder;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
@@ -24,6 +28,8 @@ import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import se.vgr.usdservice.domain.Issue;
 
 import com.ca.www.UnicenterServicePlus.ServiceDesk.USD_WebServiceSoap;
 import com.ca.www.UnicenterServicePlus.ServiceDesk.USD_WebServiceSoapSoapBindingStub;
@@ -43,6 +49,10 @@ public class USDServiceImpl implements USDService {
     private static final Log log = LogFactory.getLog(USDServiceImpl.class);
 
     private Properties usdAppToGroupMappings;
+
+    // Define which attributes to fetch when retrieving contact's issue list
+    private static final String[] attributeNamesContactIssueList = new String[] { "description", "summary",
+            "status", "ref_num", "web_url" };
 
     public USDServiceImpl(Properties p) {
         String sEndPoint = p.getProperty("endpoint");
@@ -129,12 +139,12 @@ public class USDServiceImpl implements USDService {
             String contactHandle;
             sessionID = getWebService().login(wsUser, wsPassword);
             try {
-                contactHandle = new StringBuffer(getWebService().getHandleForUserid(sessionID, userId)).toString();
+                contactHandle = getHandleForUserid(sessionID, userId);
             }
             catch (Throwable e) {
                 log.debug("Trying default contactHandle:" + e.getMessage());
                 // Use the wsUser if the user is unknown
-                contactHandle = new StringBuffer(getWebService().getHandleForUserid(sessionID, wsUser)).toString();
+                contactHandle = getHandleForUserid(sessionID, wsUser);
 
                 // contactHandle = wsUser;
 
@@ -237,5 +247,170 @@ public class USDServiceImpl implements USDService {
             throw new RuntimeException("No group handle found for application name=" + appName);
         }
         return result;
+    }
+
+    public List<Issue> getIssuesForContact(String userId, Integer maxRows) {
+        List<Issue> taskList = new ArrayList<Issue>();
+
+        StringBuilder whereClause = new StringBuilder();
+        int sessionID = 0;
+        int endIndex = -1; // To fetch max number of rows, which according to spec is 250 per call
+
+        // Handle end index input
+        if (maxRows != null && maxRows >= -1) {
+            endIndex = maxRows.intValue();
+        }
+
+        try {
+            // Login and get session
+            sessionID = getWebService().login(wsUser, wsPassword);
+
+            // Get handle for user
+            String contactHandle;
+            try {
+                contactHandle = getHandleForUserid(sessionID, userId);
+            }
+            catch (Throwable e) {
+                log.error("Could not get handle for user with userId " + userId);
+                // TODO: User not registered in USD? Should we inform the user?
+                return taskList;
+            }
+
+            // Rid object type from handle
+            if (contactHandle != null) {
+                contactHandle = contactHandle.replace("cnt:", "");
+            }
+
+            // Build where clause
+            whereClause.append("requestor.id = U'");
+            whereClause.append(contactHandle);
+            whereClause.append("' AND active = 1");
+
+            // Get list xml
+            String listXml = getWebService().doSelect(sessionID, "iss", whereClause.toString(), endIndex,
+                    attributeNamesContactIssueList);
+
+            // Get input stream for xml data
+            ByteArrayInputStream bais = new ByteArrayInputStream(listXml.getBytes());
+
+            // Parse xml to list
+            taskList = getIssuesFromList(bais);
+
+            return taskList;
+        }
+        catch (RemoteException e) {
+            log.error("Failed to get issue list from USD Service for user=" + userId, e);
+            try {
+                getWebService().logout(sessionID);
+            }
+            catch (RemoteException e1) {
+                // No action
+            }
+            throw new RuntimeException(e);
+        }
+        finally {
+            try {
+                getWebService().logout(sessionID);
+            }
+            catch (RemoteException e) {
+                log.warn(e);
+            }
+        }
+    }
+
+    protected List<Issue> getIssuesFromList(InputStream xml) throws RuntimeException {
+        List<Issue> issueList = new ArrayList<Issue>();
+
+        try {
+            // Parse the XML to get a DOM to query
+            DocumentBuilderFactory dbfactory = DocumentBuilderFactory.newInstance();
+            dbfactory.setNamespaceAware(true);
+            dbfactory.setXIncludeAware(true);
+
+            DocumentBuilder parser = dbfactory.newDocumentBuilder();
+            Document doc = parser.parse(xml);
+
+            // Get an XPath processor
+            XPathFactory xpfactory = XPathFactory.newInstance();
+            XPath xpathprocessor = xpfactory.newXPath();
+
+            // Create XPath expressions
+            String xpathUDSObject = "/UDSObjectList/UDSObject";
+            XPathExpression udsObjectXPath = xpathprocessor.compile(xpathUDSObject);
+
+            // Execute the XPath expressions
+            NodeList udsObjects = (NodeList) udsObjectXPath.evaluate(doc, XPathConstants.NODESET);
+            for (int i = 1; i < udsObjects.getLength() + 1; i++) {
+                Issue issue = new Issue();
+
+                // Get summary
+                StringBuilder xPath = new StringBuilder();
+                xPath.append("/UDSObjectList/UDSObject[");
+                xPath.append(i);
+                xPath.append("]/Attributes/Attribute[AttrName='summary']/AttrValue");
+
+                XPathExpression attributeValueXPath = xpathprocessor.compile(xPath.toString());
+                String value = (String) attributeValueXPath.evaluate(doc, XPathConstants.STRING);
+                issue.setSummary(value);
+
+                // Get description
+                xPath = new StringBuilder();
+                xPath.append("/UDSObjectList/UDSObject[");
+                xPath.append(i);
+                xPath.append("]/Attributes/Attribute[AttrName='description']/AttrValue");
+
+                attributeValueXPath = xpathprocessor.compile(xPath.toString());
+                value = (String) attributeValueXPath.evaluate(doc, XPathConstants.STRING);
+                issue.setDescription(value);
+
+                // Get status
+                xPath = new StringBuilder();
+                xPath.append("/UDSObjectList/UDSObject[");
+                xPath.append(i);
+                xPath.append("]/Attributes/Attribute[AttrName='status']/AttrValue");
+
+                attributeValueXPath = xpathprocessor.compile(xPath.toString());
+                value = (String) attributeValueXPath.evaluate(doc, XPathConstants.STRING);
+                issue.setStatusId(value);
+
+                // Get ref_num
+                xPath = new StringBuilder();
+                xPath.append("/UDSObjectList/UDSObject[");
+                xPath.append(i);
+                xPath.append("]/Attributes/Attribute[AttrName='ref_num']/AttrValue");
+
+                attributeValueXPath = xpathprocessor.compile(xPath.toString());
+                value = (String) attributeValueXPath.evaluate(doc, XPathConstants.STRING);
+                // No "dead" issues...
+                if (value == null) {
+                    continue;
+                }
+                issue.setRefNum(Integer.valueOf(value));
+
+                // Get web_url
+                xPath = new StringBuilder();
+                xPath.append("/UDSObjectList/UDSObject[");
+                xPath.append(i);
+                xPath.append("]/Attributes/Attribute[AttrName='web_url']/AttrValue");
+
+                attributeValueXPath = xpathprocessor.compile(xPath.toString());
+                value = (String) attributeValueXPath.evaluate(doc, XPathConstants.STRING);
+                issue.setURL(value);
+
+                // Add Issue object to list
+                issueList.add(issue);
+            }
+
+            return issueList;
+        }
+        catch (Exception e) {
+            log.error("Error when trying to parse issue list from XML", e);
+            throw new RuntimeException("Error when trying to parse issue list from XML", e);
+        }
+
+    }
+
+    private String getHandleForUserid(int sessionID, String userId) throws RemoteException {
+        return new StringBuffer(getWebService().getHandleForUserid(sessionID, userId)).toString();
     }
 }
