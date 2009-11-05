@@ -6,8 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -15,6 +15,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -23,6 +25,7 @@ import se.vgr.incidentreport.pivotaltracker.PTStory;
 import se.vgr.incidentreport.pivotaltracker.PivotalTrackerService;
 import se.vgr.incidentreport.pivotaltracker.TyckTillProjectData;
 import se.vgr.util.HTTPUtils;
+import se.vgr.util.HttpUtilsException;
 
 /**
  * This class implements the api method calls to send and retrieve the data objects.
@@ -31,10 +34,26 @@ import se.vgr.util.HTTPUtils;
  */
 public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 
-    private static final String TYCKTILL_PT_PWD = "tycktill3333";
-    private static final String TYCK_TILL_PT_USER = "TyckTill";
+    final Logger logger = LoggerFactory.getLogger(PivotalTrackerServiceImpl.class);
+
+    public final static String TYCKTILL_PT_PWD_KEY = "PT_PWD";
+
+    public final static String TYCK_TILL_PT_USER_KEY = "PT_USER";
+
+    private String ptPwd;
+
+    private String ptUser;
+
     private static final String GET_USER_TOKEN = "https://www.pivotaltracker.com/services/tokens/active";
     private static final String GET_PROJECT = "http://www.pivotaltracker.com/services/v2/projects";
+
+    public PivotalTrackerServiceImpl(Properties p) {
+        ptUser = p.getProperty(TYCK_TILL_PT_USER_KEY);
+        if (ptUser == null || ptUser.trim().length() == 0) {
+            throw new RuntimeException("Missing username in pivotalTracker.properties");
+        }
+        ptPwd = p.getProperty(TYCKTILL_PT_PWD_KEY);
+    }
 
     /** */
     // private String token = null;
@@ -70,8 +89,15 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 
             tokenFound = guid;
         }
-        catch (Exception e) {
-            throw new RuntimeException("TODO: Handle this exception better", e);
+        catch (HttpUtilsException e) {
+            throw new RuntimeException("Failed to get token", e);
+
+        }
+        catch (IllegalStateException e) {
+            throw new RuntimeException("Failed to get token", e);
+        }
+        catch (IOException e) {
+            throw new RuntimeException("Failed to get token", e);
         }
         finally {
             client.getConnectionManager().shutdown();
@@ -124,7 +150,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
                     client);
             HttpEntity entity = response.getEntity();
             String xml = convertStreamToString(entity.getContent());
-            System.out.println(xml);
+            // System.out.println(xml);
 
             // Convert the xml response into an object
             // result = getProjectData((entity.getContent()));
@@ -140,10 +166,8 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
     }
 
     public String addStoryForProject(String projectId, PTStory story) {
-        String token = getUserToken(TYCK_TILL_PT_USER, TYCKTILL_PT_PWD);
-        if (token == null) {
-            throw new RuntimeException("Token cannot be null. Please set it first.");
-        }
+        String token = getUserToken(ptUser, ptPwd);
+
         DefaultHttpClient client = new DefaultHttpClient();
         String result = null;
         String xml = "<story><story_type>" + story.getType() + "</story_type><name>" + story.getName() + "</name>"
@@ -164,7 +188,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 
         }
         catch (Exception e) {
-            throw new RuntimeException("TODO: Handle this exception better", e);
+            throw new RuntimeException("Failed to add story to PivotalTracker", e);
         }
         finally {
             client.getConnectionManager().shutdown();
@@ -295,31 +319,10 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
     }
 
     /** */
-    public static void main(String[] argv) {
-        PivotalTrackerServiceImpl pt = new PivotalTrackerServiceImpl();
-        try {
-            System.out.println(pt.getUserToken("andrew.culbert@vgregion.se", "gr0Sv3nor"));
-
-            PTStory story = new PTStory();
-            story.setName("Meddelande från Tyck till : " + new Date());
-            story.setType("bug");
-            story.setRequestedBy("TyckTill");
-            story.setDescription("Testar att skicka meddelanden via Tyck Till.");
-            System.out.println(pt.addStoryForProject("35420", story));
-
-            String token = pt.getUserToken(TYCK_TILL_PT_USER, TYCKTILL_PT_PWD);
-            List<TyckTillProjectData> l = pt.getAllProjects(token);
-            for (TyckTillProjectData d : l) {
-                System.out.println(d);
-            }
-            System.out.println(pt.getStoriesForProject("35420", token));
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     public String createuserStory(PTStory ptstory) {
-        throw new UnsupportedOperationException("TODO: Implement this method");
+        ptstory.setRequestedBy(ptUser);
+        return addStoryForProject(ptstory.getProjectId(), ptstory);
     }
+
 }

@@ -24,6 +24,7 @@ Generation time : 2009-10-29 15:22:41 CET
     <!-- <module>composites/types</module> -->
     <module>composites/svc-ldap</module>
 	<module>composites/svc-usd</module>
+	<module>composites/svc-pivotaltracker</module>
     <!-- <module>composites/webcomp</module>
     <module>composites/schema</module>
     <module>modules/web</module>

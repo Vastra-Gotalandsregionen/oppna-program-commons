@@ -15,6 +15,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.AuthState;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -63,9 +64,12 @@ public class HTTPUtils {
         }
     }
 
-    /** */
+    /**
+     * @throws IOException
+     * @throws ClientProtocolException
+     */
     public static HttpResponse basicAuthRequest(String url, String username, String password,
-            DefaultHttpClient client) throws Exception {
+            DefaultHttpClient client) throws HttpUtilsException {
         HttpGet get = new HttpGet(url);
 
         client.getCredentialsProvider().setCredentials(new AuthScope(null, 443),
@@ -80,8 +84,17 @@ public class HTTPUtils {
 
         // Add as the first request interceptor
         client.addRequestInterceptor(new PreemptiveAuth(), 0);
-
-        return client.execute(get, localcontext);
+        HttpResponse response;
+        try {
+            response = client.execute(get, localcontext);
+        }
+        catch (ClientProtocolException e) {
+            throw new HttpUtilsException("Invalid http protocol", e);
+        }
+        catch (IOException e) {
+            throw new HttpUtilsException(e.getMessage(), e);
+        }
+        return response;
     }
 
     /** */
