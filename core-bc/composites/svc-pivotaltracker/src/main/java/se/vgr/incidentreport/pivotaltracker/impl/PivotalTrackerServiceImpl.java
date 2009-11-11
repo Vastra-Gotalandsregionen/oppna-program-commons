@@ -30,7 +30,7 @@ import se.vgr.util.HttpUtilsException;
 /**
  * This class implements the api method calls to send and retrieve the data objects.
  * 
- * @author Jon Stevens
+ * 
  */
 public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 
