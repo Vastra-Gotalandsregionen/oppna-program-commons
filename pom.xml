@@ -10,8 +10,7 @@ Usage:  Define all truly common things for the system here.
 Template version: 1.2-SNAPSHOT
 Generation time : 2009-10-29 15:22:41 CET
  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 <!-- TODO: define common props in JAVG-parent-POM  
   <parent>
@@ -23,8 +22,15 @@ Generation time : 2009-10-29 15:22:41 CET
   <groupId>se.vgr.commons-util</groupId>
   <artifactId>commons-util-system</artifactId>
   <packaging>pom</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <name>${project.artifactId}</name>
+  
+  <scm>
+    <!-- <connection>scm:svn:http://somerepository.com/svn_repo/trunk</connection> -->
+    <developerConnection>scm:svn:https://oppna-program-commons.googlecode.com/svn/tags/commons-util-system-1.0</developerConnection>
+    <url>http://oppna-program-commons.googlecode.com/tags/commons-util-system-1.0</url>
+  </scm>
+
 
   <!-- common library versions -->
   <properties>
@@ -40,7 +46,27 @@ Generation time : 2009-10-29 15:22:41 CET
   </modules>
   
   <build>
+  <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.0-beta-9</version>
+        </plugin>
+       
+      </plugins>
+    </pluginManagement>
+
     <plugins>
+		<plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-plugin</artifactId>
+        <version>1.0</version>
+        <configuration>
+          <connectionType>developerConnection</connectionType>
+        </configuration>
+      </plugin>
+
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
@@ -78,6 +104,12 @@ Generation time : 2009-10-29 15:22:41 CET
           </additionalProjectnatures>
         </configuration>
       </plugin>
+	   <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.0-beta-9</version>
+        </plugin>
+
       
     </plugins>
     
