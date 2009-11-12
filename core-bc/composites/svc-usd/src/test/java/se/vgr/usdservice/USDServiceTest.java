@@ -26,10 +26,12 @@ public class USDServiceTest extends TestCase {
     public void setUp() throws Exception {
 
         Properties p = new Properties();
-        p.load(ClassLoader.getSystemResourceAsStream("usd.properties"));
+        p.setProperty("endpoint", "http://apache.org");
         Properties mappings = new Properties();
-        mappings.load(ClassLoader.getSystemResourceAsStream("usdAppToGroup.properties"));
+
         if (integrationTest) {
+            p.load(ClassLoader.getSystemResourceAsStream("usd.properties"));
+            mappings.load(ClassLoader.getSystemResourceAsStream("usdAppToGroup.properties"));
             usdService = new USDServiceImpl(p);
         }
         else {
