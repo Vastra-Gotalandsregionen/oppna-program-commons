@@ -18,7 +18,7 @@ import com.ca.www.UnicenterServicePlus.ServiceDesk.USD_WebServiceSoapSoapBinding
 
 public class USDServiceTest extends TestCase {
 
-    boolean integrationTest = true;
+    boolean integrationTest = false;
     private USDService usdService;
 
     @Override
