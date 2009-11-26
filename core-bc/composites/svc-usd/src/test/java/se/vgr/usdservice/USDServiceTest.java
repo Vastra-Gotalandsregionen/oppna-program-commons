@@ -18,7 +18,7 @@ import com.ca.www.UnicenterServicePlus.ServiceDesk.USD_WebServiceSoapSoapBinding
 
 public class USDServiceTest extends TestCase {
 
-    boolean integrationTest = false;
+    boolean integrationTest = true;
     private USDService usdService;
 
     @Override
@@ -63,7 +63,7 @@ public class USDServiceTest extends TestCase {
         p.setProperty("affected_resource", "nr:BF5880E3AF1C8542B2546B93922C25A7");
         p.setProperty("category", "pcat:400023");
         p.setProperty("description", "Testing test test description");
-        String appName = "Tyck till test".trim().replaceAll(" ", "_");
+        String appName = "Tyck till test portlet".trim().replaceAll(" ", "_");
         System.out.println("getting group for appName=" + appName);
         String groupHandle = "abc";
         if (integrationTest) {
@@ -100,7 +100,7 @@ public class USDServiceTest extends TestCase {
             List<File> files = new ArrayList<File>();
             File file;
             try {
-                file = File.createTempFile("attachtest", ".txt");
+                file = File.createTempFile("attachtestäöå", ".doc", new File("c:/program files/temp"));
             }
             catch (IOException e) {
                 throw new RuntimeException("TODO: Handle this exception better", e);
@@ -109,6 +109,7 @@ public class USDServiceTest extends TestCase {
             files.add(file);
 
             String result = usdService.createRequest(getTestParameters(), "andcu1", files);
+            System.out.println("result=" + result);
             assertNotNull(result);
             file.delete();
 

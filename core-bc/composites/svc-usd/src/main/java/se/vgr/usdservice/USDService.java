@@ -16,6 +16,8 @@ public interface USDService {
 
     String createRequest(Properties testParameters, String string, List<File> files);
 
+    String createRequest(Properties testParameters, String string, List<File> files, List<String> filenames);
+
     String getUSDGroupHandleForApplicationName(String appName);
 
     List<Issue> getIssuesForContact(String userId, Integer maxRows);

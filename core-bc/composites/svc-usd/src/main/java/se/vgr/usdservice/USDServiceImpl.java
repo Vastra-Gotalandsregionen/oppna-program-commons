@@ -3,6 +3,7 @@ package se.vgr.usdservice;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -74,7 +75,7 @@ public class USDServiceImpl implements USDService {
     public void setUsdAppToGroupMappings(Properties appToGroupMappings) {
         this.usdAppToGroupMappings = appToGroupMappings;
 
-        System.out.println("USDMappings:" + usdAppToGroupMappings);
+        // System.out.println("USDMappings:" + usdAppToGroupMappings);
 
     }
 
@@ -130,7 +131,8 @@ public class USDServiceImpl implements USDService {
 
     }
 
-    public String createRequest(Properties requestParameters, String userId, List<File> files) {
+    public String createRequest(Properties requestParameters, String userId, List<File> files,
+            List<String> filenames) {
 
         String result = null;
         int sessionID = 0;
@@ -171,9 +173,9 @@ public class USDServiceImpl implements USDService {
 
             result = getWebService().createRequest(sessionID, contactHandle, attrVals, propertyValues, template,
                     attributes, newRequestHandle, newRequestNumber);
-
-            ByteArrayInputStream s = new ByteArrayInputStream(result.getBytes());
-
+            byte[] bytes = result.getBytes("utf-8");
+            ByteArrayInputStream s = new ByteArrayInputStream(bytes);
+            // System.out.println("USDResponse=" + new String(bytes));
             String handle;
             try {
                 handle = getHandleFromResponse(s);
@@ -188,13 +190,21 @@ public class USDServiceImpl implements USDService {
                     int i = 0;
                     for (File f : files) {
                         try {
-                            System.out.println("Attaching: " + f.getAbsolutePath());
+                            if (filenames != null && filenames.size() > 0) {
+                                File newFile = new File(f.getParentFile(), filenames.get(i));
+                                boolean renameSuccess = f.renameTo(newFile);
+                                if (renameSuccess) {
+                                    f = new File(f.getParentFile(), filenames.get(i));
+                                }
+                            }
+                            // System.out.println("Attaching: " + f.getAbsolutePath());
                             this.createAttachment(getWebService(), sessionID, wsAttachmentRepHandle, handle,
                                     "Attachment " + i, f.getAbsolutePath());
                         }
                         catch (Exception e) {
                             throw new RuntimeException("Error creating attchment in USD", e);
                         }
+                        i++;
                     }
                 }
             }
@@ -209,6 +219,9 @@ public class USDServiceImpl implements USDService {
                 // No action
             }
             throw new RuntimeException(e);
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("TODO: Handle this exception better", e);
         }
         finally {
 
@@ -240,7 +253,7 @@ public class USDServiceImpl implements USDService {
 
     public String getUSDGroupHandleForApplicationName(String appName) {
         String usdGroupName = usdAppToGroupMappings.getProperty(appName);
-        System.out.println("usdAppToGroupMappings=" + usdAppToGroupMappings);
+        // System.out.println("usdAppToGroupMappings=" + usdAppToGroupMappings);
         String result = getGroupHandle(usdGroupName);
         if (result == null || result.length() == 0) {
 
@@ -412,5 +425,9 @@ public class USDServiceImpl implements USDService {
 
     private String getHandleForUserid(int sessionID, String userId) throws RemoteException {
         return new StringBuffer(getWebService().getHandleForUserid(sessionID, userId)).toString();
+    }
+
+    public String createRequest(Properties testParameters, String string, List<File> files) {
+        return createRequest(testParameters, string, files, null);
     }
 }

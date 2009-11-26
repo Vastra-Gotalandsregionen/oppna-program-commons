@@ -83,9 +83,9 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 
             // Convert the xml response into an object
             String xml = convertStreamToString(entity.getContent());
-            System.out.println(xml);
+            // System.out.println(xml);
             String guid = getTagValue(xml, 0, "guid");
-            System.out.println("guid=" + guid);
+            // System.out.println("guid=" + guid);
 
             tokenFound = guid;
         }
@@ -179,7 +179,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
                     client, xml);
             HttpEntity entity = response.getEntity();
             String xmlout = convertStreamToString(entity.getContent());
-            System.out.println(xmlout);
+            // System.out.println(xmlout);
             String url = getTagValue(xmlout, 0, "url");
             result = url;
 
@@ -233,7 +233,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
         xml.close();
 
         NodeList projectNodes = doc.getElementsByTagName("project");
-        System.out.println("antal projekt=" + projectNodes.getLength());
+        // System.out.println("antal projekt=" + projectNodes.getLength());
         for (int s = 0; s < projectNodes.getLength(); s++) {
             Node projectNode = projectNodes.item(s);
             NodeList projectChildNodes = projectNode.getChildNodes();
