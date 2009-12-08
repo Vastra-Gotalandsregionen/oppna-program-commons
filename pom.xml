@@ -22,13 +22,13 @@ Generation time : 2009-10-29 15:22:41 CET
   <groupId>se.vgr.commons-util</groupId>
   <artifactId>commons-util-system</artifactId>
   <packaging>pom</packaging>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1</version>
   <name>${project.artifactId}</name>
   
   <scm>
     <!-- <connection>scm:svn:http://somerepository.com/svn_repo/trunk</connection> -->
-    <developerConnection>scm:svn:https://oppna-program-commons.googlecode.com/svn/trunk</developerConnection>
-    <url>http://oppna-program-commons.googlecode.com/</url>
+    <developerConnection>scm:svn:https://oppna-program-commons.googlecode.com/svn/tags/commons-util-system-1.1</developerConnection>
+    <url>http://oppna-program-commons.googlecode.com/tags/commons-util-system-1.1</url>
   </scm>
 
 
@@ -168,7 +168,7 @@ Generation time : 2009-10-29 15:22:41 CET
       <url>https://maven.atlassian.com/maven1</url>
       <layout>legacy</layout>
     </repository>
-    
+     
     <repository>
       <id>oppnaprogram</id>
       <name>oppna program repo</name>
@@ -178,6 +178,11 @@ Generation time : 2009-10-29 15:22:41 CET
         <checksumPolicy>warn</checksumPolicy>
         <enabled>true</enabled>
       </releases>
+    </repository>
+	<repository>
+      <id>springmilestone</id>
+      <name>spring milestone repo</name>
+      <url>http://maven.springframework.org/milestone</url>
     </repository>
   </repositories>
 
