@@ -11,12 +11,12 @@ Generation time : 2009-10-29 15:22:41 CET
   <parent>
     <groupId>se.vgr.commons-util</groupId>
     <artifactId>commons-util-system</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.1</version>
   </parent>
   <groupId>se.vgr.commons-util</groupId>
   <artifactId>commons-util-core-bc</artifactId>
   <packaging>pom</packaging>
-  <version>1.2-SNAPSHOT</version>
+  <version>1.1</version>
   <name>${project.artifactId}</name>
 
   <modules>
