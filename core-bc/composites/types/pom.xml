@@ -11,7 +11,7 @@ Generation time : 2009-10-29 15:22:41 CET
   <parent>
     <groupId>se.vgr.commons-util</groupId>
     <artifactId>commons-util-core-bc</artifactId>
-    <version>1.1</version>
+    <version>1.2-SNAPSHOT</version>
   </parent>
   <groupId>se.vgr.commons-util</groupId>
   <artifactId>commons-util-core-bc-composite-types</artifactId>
