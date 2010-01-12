@@ -22,13 +22,13 @@ Generation time : 2009-10-29 15:22:41 CET
   <groupId>se.vgr.commons-util</groupId>
   <artifactId>commons-util-system</artifactId>
   <packaging>pom</packaging>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1</version>
   <name>${project.artifactId}</name>
   
   <scm>
     <!-- <connection>scm:svn:http://somerepository.com/svn_repo/trunk</connection> -->
-    <developerConnection>scm:svn:https://oppna-program-commons.googlecode.com/svn/trunk</developerConnection>
-    <url>http://oppna-program-commons.googlecode.com/</url>
+    <developerConnection>scm:svn:https://oppna-program-commons.googlecode.com/svn/tags/commons-util-system-1.1</developerConnection>
+    <url>http://oppna-program-commons.googlecode.com/tags/commons-util-system-1.1</url>
   </scm>
 
 
@@ -147,7 +147,7 @@ Generation time : 2009-10-29 15:22:41 CET
      <repository>
       <uniqueVersion>false</uniqueVersion>
       <id>svn-repo</id>
-      <url>svn:https://oppna-program.code.google.com/svn/maven</url> <!--E.g. svn:http://server/svn/maven/repo/ -->
+      <url>svn:https://oppna-program.googlecode.com/svn/maven</url> <!--E.g. svn:http://server/svn/maven/repo/ -->
     </repository>
   </distributionManagement>
   
