@@ -22,7 +22,7 @@ Generation time : 2009-10-29 15:22:41 CET
   <groupId>se.vgr.commons-util</groupId>
   <artifactId>commons-util-system</artifactId>
   <packaging>pom</packaging>
-  <version>1.2-SNAPSHOT</version>
+  <version>1.1-SNAPSHOT</version>
   <name>${project.artifactId}</name>
   
   <scm>
@@ -147,7 +147,7 @@ Generation time : 2009-10-29 15:22:41 CET
      <repository>
       <uniqueVersion>false</uniqueVersion>
       <id>svn-repo</id>
-      <url>svn:https://oppna-program.googlecode.com/svn/maven</url> <!--E.g. svn:http://server/svn/maven/repo/ -->
+      <url>svn:https://oppna-program.code.google.com/svn/maven</url> <!--E.g. svn:http://server/svn/maven/repo/ -->
     </repository>
   </distributionManagement>
   
