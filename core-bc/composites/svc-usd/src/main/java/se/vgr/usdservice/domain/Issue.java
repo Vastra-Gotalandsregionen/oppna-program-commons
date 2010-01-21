@@ -10,26 +10,9 @@ package se.vgr.usdservice.domain;
 public class Issue {
     private String description;
     private String summary;
-    private Integer refNum;
+    private String refNum;
     private String url;
-    private String statusId;
-    private Status status;
-
-    private enum Status {
-        OP("Open"), IMPL("Implementation in progress"), CL("Closed"), CNCL("Cancelled"), APP(
-                "Approval in progress"), CLREQ("Close Requested"), HOLD("Hold"), RE("Resolved"), SUSPEND(
-                "Suspended"), VRFY("Verification in progress"), UNKNOWNSTAT("Unknown status");
-
-        private String statusDesc;
-
-        Status(String internalStatus) {
-            statusDesc = internalStatus;
-        }
-
-        public String getDescription() {
-            return statusDesc;
-        }
-    }
+    private String status;
 
     public String getDescription() {
         return description;
@@ -47,35 +30,19 @@ public class Issue {
         this.summary = summary;
     }
 
-    public String getStatusId() {
-        return statusId;
+    public String getStatus() {
+        return status;
     }
 
-    public void setStatusId(String statusId) {
-        this.statusId = statusId;
-        // Set status enum as well
-        try {
-            status = Status.valueOf(statusId);
-        }
-        catch (IllegalArgumentException e) {
-            status = Status.UNKNOWNSTAT;
-        }
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public String getStatusDescription() {
-        if (status != null) {
-            return status.getDescription();
-        }
-        else {
-            return Status.UNKNOWNSTAT.getDescription();
-        }
-    }
-
-    public Integer getRefNum() {
+    public String getRefNum() {
         return refNum;
     }
 
-    public void setRefNum(Integer refNum) {
+    public void setRefNum(String refNum) {
         this.refNum = refNum;
     }
 
