@@ -20,6 +20,6 @@ public interface USDService {
 
     String getUSDGroupHandleForApplicationName(String appName);
 
-    List<Issue> getIssuesForContact(String userId, Integer maxRows);
+    List<Issue> getRecordsForContact(String userId, Integer maxRows);
 
 }
