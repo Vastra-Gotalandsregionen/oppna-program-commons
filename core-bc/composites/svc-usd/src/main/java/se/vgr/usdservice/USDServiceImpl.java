@@ -24,6 +24,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
+import org.apache.axis.utils.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -52,10 +53,13 @@ public class USDServiceImpl implements USDService {
     private Properties usdAppToGroupMappings;
 
     // Define which attributes to fetch when retrieving contact's issue list
-    private static final String[] attributeNamesContactCrList = new String[] { "description", "summary",
+    private static final String[] attributeNamesMultiTypeList = new String[] { "description", "summary",
             "status.sym", "ref_num", "web_url", "type" };
-    private static final String[] attributeNamesContactChgList = new String[] { "description", "summary",
+    private static final String[] attributeNamesChangeOrderList = new String[] { "description", "summary",
             "status.sym", "chg_ref_num", "web_url" };
+
+    private static final String TYPE_ISSUE = "IS";
+    private static final String TYPE_CHANGE_ORDER = "C";
 
     public USDServiceImpl(Properties p) {
         String sEndPoint = p.getProperty("endpoint");
@@ -267,19 +271,19 @@ public class USDServiceImpl implements USDService {
         }
 
         // Build where clause
-        whereClause.append("assignee.id = U'"); // requestor.id
+        whereClause.append("affected_contact.id = U'"); // requestor.id
         whereClause.append(contactHandle);
         whereClause.append("' AND active = 1");
 
         // Get list xml
         String listXml = getWebService().doSelect(sessionID, "iss", whereClause.toString(), endIndex,
-                attributeNamesContactCrList);
+                attributeNamesMultiTypeList);
 
         // Get input stream for xml data
         ByteArrayInputStream bais = new ByteArrayInputStream(listXml.getBytes());
 
         // Parse xml to list
-        taskList = getIssuesFromList(bais, false);
+        taskList = getIssuesFromList(bais, TYPE_ISSUE);
 
         return taskList;
     }
@@ -298,19 +302,19 @@ public class USDServiceImpl implements USDService {
         }
 
         // Build where clause
-        whereClause.append("assignee.id = U'"); // customer.id
+        whereClause.append("customer.id = U'");
         whereClause.append(contactHandle);
         whereClause.append("' AND active = 1");
 
         // Get list xml
         String listXml = getWebService().doSelect(sessionID, "cr", whereClause.toString(), endIndex,
-                attributeNamesContactCrList);
+                attributeNamesMultiTypeList);
 
         // Get input stream for xml data
         ByteArrayInputStream bais = new ByteArrayInputStream(listXml.getBytes());
 
         // Parse xml to list
-        taskList = getIssuesFromList(bais, false);
+        taskList = getIssuesFromList(bais, null);
 
         return taskList;
     }
@@ -329,24 +333,24 @@ public class USDServiceImpl implements USDService {
         }
 
         // Build where clause
-        whereClause.append("assignee.id = U'"); // affected_contact.id
+        whereClause.append("affected_contact.id = U'");
         whereClause.append(contactHandle);
         whereClause.append("' AND active = 1");
 
         // Get list xml
         String listXml = getWebService().doSelect(sessionID, "chg", whereClause.toString(), endIndex,
-                attributeNamesContactChgList);
+                attributeNamesChangeOrderList);
 
         // Get input stream for xml data
         ByteArrayInputStream bais = new ByteArrayInputStream(listXml.getBytes());
 
         // Parse xml to list
-        taskList = getIssuesFromList(bais, true);
+        taskList = getIssuesFromList(bais, TYPE_CHANGE_ORDER);
 
         return taskList;
     }
 
-    protected List<Issue> getIssuesFromList(InputStream xml, boolean isFromChangeOrder) throws RuntimeException {
+    protected List<Issue> getIssuesFromList(InputStream xml, String defaultType) throws RuntimeException {
         List<Issue> issueList = new ArrayList<Issue>();
 
         try {
@@ -405,7 +409,7 @@ public class USDServiceImpl implements USDService {
                 xPath = new StringBuilder();
                 xPath.append("/UDSObjectList/UDSObject[");
                 xPath.append(i);
-                if (isFromChangeOrder) {
+                if (TYPE_CHANGE_ORDER.equals(defaultType)) {
                     xPath.append("]/Attributes/Attribute[AttrName='chg_ref_num']/AttrValue");
                 } else {
                     xPath.append("]/Attributes/Attribute[AttrName='ref_num']/AttrValue");
@@ -413,7 +417,7 @@ public class USDServiceImpl implements USDService {
                 attributeValueXPath = xpathprocessor.compile(xPath.toString());
                 value = (String) attributeValueXPath.evaluate(doc, XPathConstants.STRING);
                 // No "dead" issues...
-                if (value == null) {
+                if (StringUtils.isEmpty(value)) {
                     continue;
                 }
                 issue.setRefNum(value);
@@ -426,7 +430,20 @@ public class USDServiceImpl implements USDService {
 
                 attributeValueXPath = xpathprocessor.compile(xPath.toString());
                 value = (String) attributeValueXPath.evaluate(doc, XPathConstants.STRING);
-                issue.setURL(value);
+                issue.setUrl(value);
+
+                // Get type
+                xPath = new StringBuilder();
+                xPath.append("/UDSObjectList/UDSObject[");
+                xPath.append(i);
+                xPath.append("]/Attributes/Attribute[AttrName='type']/AttrValue");
+
+                attributeValueXPath = xpathprocessor.compile(xPath.toString());
+                value = (String) attributeValueXPath.evaluate(doc, XPathConstants.STRING);
+                if (StringUtils.isEmpty(value)) {
+                    value = defaultType;
+                }
+                issue.setType(value);
 
                 // Add Issue object to list
                 issueList.add(issue);
