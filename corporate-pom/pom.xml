@@ -107,6 +107,10 @@
       </plugin>
     </plugins>
 
+    <scm>
+      <developerConnection>scm:svn:https://__REPLACE_SYSTEM_NAME__.googlecode.com>/svn/trunk</developerConnection>
+      <url>http://__REPLACE_SYSTEM_NAME__.googlecode.com/svn/trunk</url>
+    </scm>
     <!-- needed for SVN-deployment -->
     <extensions>
       <extension>
