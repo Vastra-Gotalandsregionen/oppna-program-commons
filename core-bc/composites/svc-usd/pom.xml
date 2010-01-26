@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>se.vgr.commons-util</groupId>
 		<artifactId>commons-util-core-bc</artifactId>
-		<version>1.0</version>
+		<version>1.0-SNAPSHOT</version>
 	</parent>
 	<groupId>se.vgr.commons-util</groupId>
 	<artifactId>commons-util-core-bc-composite-svc-usd</artifactId>
