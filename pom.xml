@@ -10,13 +10,13 @@
   <groupId>se.vgr.commons-util</groupId>
   <artifactId>commons-util-system</artifactId>
   <packaging>pom</packaging>
-  <version>1.0</version>
+  <version>1.0-SNAPSHOT</version>
   <name>${project.artifactId}</name>
   
   <scm>
     <!-- <connection>scm:svn:http://somerepository.com/svn_repo/trunk</connection> -->
-    <developerConnection>scm:svn:https://oppna-program-commons.googlecode.com/svn/tags/commons-util-system-1.0</developerConnection>
-    <url>http://oppna-program-commons.googlecode.com/tags/commons-util-system-1.0</url>
+    <developerConnection>scm:svn:https://oppna-program-commons.googlecode.com/svn/trunk</developerConnection>
+    <url>http://oppna-program-commons.googlecode.com/svn/trunk</url>
   </scm>
 
 
