@@ -1,6 +1,7 @@
 package se.vgr.incidentreport.pivotaltracker.impl;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -21,6 +22,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import se.vgr.incidentreport.Screenshot;
 import se.vgr.incidentreport.pivotaltracker.PTStory;
 import se.vgr.incidentreport.pivotaltracker.PivotalTrackerService;
 import se.vgr.incidentreport.pivotaltracker.TyckTillProjectData;
@@ -28,301 +30,370 @@ import se.vgr.util.HTTPUtils;
 import se.vgr.util.HttpUtilsException;
 
 /**
- * This class implements the api method calls to send and retrieve the data objects.
+ * This class implements the api method calls to send and retrieve the data
+ * objects.
  * 
  * 
  */
 public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 
-    final Logger logger = LoggerFactory.getLogger(PivotalTrackerServiceImpl.class);
+	final Logger logger = LoggerFactory
+			.getLogger(PivotalTrackerServiceImpl.class);
 
-    public final static String TYCKTILL_PT_PWD_KEY = "PT_PWD";
+	public final static String TYCKTILL_PT_PWD_KEY = "PT_PWD";
 
-    public final static String TYCK_TILL_PT_USER_KEY = "PT_USER";
+	public final static String TYCK_TILL_PT_USER_KEY = "PT_USER";
 
-    private String ptPwd;
+	private String ptPwd;
 
-    private String ptUser;
+	private String ptUser;
 
-    private static final String GET_USER_TOKEN = "https://www.pivotaltracker.com/services/tokens/active";
-    private static final String GET_PROJECT = "http://www.pivotaltracker.com/services/v2/projects";
+	private static final String GET_USER_TOKEN = "https://www.pivotaltracker.com/services/tokens/active";
+	private static final String GET_PROJECT = "http://www.pivotaltracker.com/services/v3/projects";
 
-    public PivotalTrackerServiceImpl(Properties p) {
-        ptUser = p.getProperty(TYCK_TILL_PT_USER_KEY);
-        if (ptUser == null || ptUser.trim().length() == 0) {
-            throw new RuntimeException("Missing username in pivotalTracker.properties");
-        }
-        ptPwd = p.getProperty(TYCKTILL_PT_PWD_KEY);
-    }
+	// http://www.pivotaltracker.com/services/v3/projects/PROJECT_ID/stories/STORY_ID/attachments
 
-    /** */
-    // private String token = null;
+	public PivotalTrackerServiceImpl(Properties p) {
+		ptUser = p.getProperty(TYCK_TILL_PT_USER_KEY);
+		if (ptUser == null || ptUser.trim().length() == 0) {
+			throw new RuntimeException(
+					"Missing username in pivotalTracker.properties");
+		}
+		ptPwd = p.getProperty(TYCKTILL_PT_PWD_KEY);
+	}
 
-    /**
-     * Get a user token. Also assigns the token to the inner member (token) of this class.
-     * 
-     * @param username
-     *            the users username
-     * @param password
-     *            the users password
-     * @return a populated TokenData object or null
-     * @throws Exception
-     *             when there is http problems
-     */
-    private String getUserToken(String username, String password) {
-        DefaultHttpClient client = new DefaultHttpClient();
-        String tokenFound = null;
-        try {
-            // Use basicAuth to make the request to the server
-            HttpResponse response = HTTPUtils.basicAuthRequest(GET_USER_TOKEN, username, password, client);
-            HttpEntity entity = response.getEntity();
+	/** */
+	// private String token = null;
 
-            if ((response.getStatusLine().getStatusCode() != 200) || (entity.getContentLength() == 1)) {
-                return null;
-            }
+	/**
+	 * Get a user token. Also assigns the token to the inner member (token) of
+	 * this class.
+	 * 
+	 * @param username
+	 *            the users username
+	 * @param password
+	 *            the users password
+	 * @return a populated TokenData object or null
+	 * @throws Exception
+	 *             when there is http problems
+	 */
+	private String getUserToken(String username, String password) {
+		DefaultHttpClient client = new DefaultHttpClient();
+		String tokenFound = null;
+		try {
+			// Use basicAuth to make the request to the server
+			HttpResponse response = HTTPUtils.basicAuthRequest(GET_USER_TOKEN,
+					username, password, client);
+			HttpEntity entity = response.getEntity();
 
-            // Convert the xml response into an object
-            String xml = convertStreamToString(entity.getContent());
-            // System.out.println(xml);
-            String guid = getTagValue(xml, 0, "guid");
-            // System.out.println("guid=" + guid);
+			if ((response.getStatusLine().getStatusCode() != 200)
+					|| (entity.getContentLength() == 1)) {
+				return null;
+			}
 
-            tokenFound = guid;
-        }
-        catch (HttpUtilsException e) {
-            throw new RuntimeException("Failed to get token", e);
+			// Convert the xml response into an object
+			String xml = convertStreamToString(entity.getContent());
+			// System.out.println(xml);
+			String guid = getTagValue(xml, 0, "guid");
+			// System.out.println("guid=" + guid);
 
-        }
-        catch (IllegalStateException e) {
-            throw new RuntimeException("Failed to get token", e);
-        }
-        catch (IOException e) {
-            throw new RuntimeException("Failed to get token", e);
-        }
-        finally {
-            client.getConnectionManager().shutdown();
-        }
+			tokenFound = guid;
+		} catch (HttpUtilsException e) {
+			throw new RuntimeException("Failed to get token", e);
 
-        return tokenFound;
-    }
+		} catch (IllegalStateException e) {
+			throw new RuntimeException("Failed to get token", e);
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to get token", e);
+		} finally {
+			client.getConnectionManager().shutdown();
+		}
 
-    private String getTagValue(String xml, int index, String tagName) {
+		return tokenFound;
+	}
 
-        int beginIndex = xml.indexOf("<" + tagName + ">") + tagName.length() + 2;
-        int endIndex = xml.indexOf("</" + tagName + ">", beginIndex);
-        String result = xml.substring(beginIndex, endIndex);
+	private String getTagValue(String xml, int index, String tagName) {
 
-        return result;
-    }
+		int beginIndex = xml.indexOf("<" + tagName + ">") + tagName.length()
+				+ 2;
+		int endIndex = xml.indexOf("</" + tagName + ">", beginIndex);
+		String result = xml.substring(beginIndex, endIndex);
 
-    /** */
-    private TyckTillProjectData getSingleProject(String projectId, String token) throws Exception {
-        if (token == null) {
-            throw new RuntimeException("Token cannot be null. Please set it first.");
-        }
+		return result;
+	}
 
-        DefaultHttpClient client = new DefaultHttpClient();
-        TyckTillProjectData result = null;
-        try {
-            HttpResponse response = HTTPUtils.makeRequest(GET_PROJECT + "/" + projectId, token, client);
-            HttpEntity entity = response.getEntity();
+	/** */
+	private TyckTillProjectData getSingleProject(String projectId, String token)
+			throws Exception {
+		if (token == null) {
+			throw new RuntimeException(
+					"Token cannot be null. Please set it first.");
+		}
 
-            // Convert the xml response into an object
-            result = getProjectData(entity.getContent()).get(0);
-        }
-        catch (RuntimeException e) {
-            e.printStackTrace();
-        }
-        finally {
-            client.getConnectionManager().shutdown();
-        }
-        return result;
-    }
+		DefaultHttpClient client = new DefaultHttpClient();
+		TyckTillProjectData result = null;
+		try {
+			HttpResponse response = HTTPUtils.makeRequest(GET_PROJECT + "/"
+					+ projectId, token, client);
+			HttpEntity entity = response.getEntity();
 
-    private String getStoriesForProject(String projectId, String token) {
-        if (token == null) {
-            throw new RuntimeException("Token cannot be null. Please set it first.");
-        }
-        DefaultHttpClient client = new DefaultHttpClient();
-        String result = null;
-        try {
-            HttpResponse response = HTTPUtils.makeRequest(GET_PROJECT + "/" + projectId + "/stories", token,
-                    client);
-            HttpEntity entity = response.getEntity();
-            String xml = convertStreamToString(entity.getContent());
-            // System.out.println(xml);
+			// Convert the xml response into an object
+			result = getProjectData(entity.getContent()).get(0);
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+		} finally {
+			client.getConnectionManager().shutdown();
+		}
+		return result;
+	}
 
-            // Convert the xml response into an object
-            // result = getProjectData((entity.getContent()));
+	private String getStoriesForProject(String projectId, String token) {
+		if (token == null) {
+			throw new RuntimeException(
+					"Token cannot be null. Please set it first.");
+		}
+		DefaultHttpClient client = new DefaultHttpClient();
+		String result = null;
+		try {
+			HttpResponse response = HTTPUtils.makeRequest(GET_PROJECT + "/"
+					+ projectId + "/stories", token, client);
+			HttpEntity entity = response.getEntity();
+			String xml = convertStreamToString(entity.getContent());
+			System.out.println(xml);
 
-        }
-        catch (Exception e) {
-            throw new RuntimeException("TODO: Handle this exception better", e);
-        }
-        finally {
-            client.getConnectionManager().shutdown();
-        }
-        return result;
-    }
+			// Convert the xml response into an object
+			// result = getProjectData((entity.getContent()));
 
-    public String addStoryForProject(String projectId, PTStory story) {
-        String token = getUserToken(ptUser, ptPwd);
+		} catch (Exception e) {
+			throw new RuntimeException("TODO: Handle this exception better", e);
+		} finally {
+			client.getConnectionManager().shutdown();
+		}
+		return result;
+	}
 
-        DefaultHttpClient client = new DefaultHttpClient();
-        String result = null;
-        String xml = "<story><story_type>" + story.getType() + "</story_type><name>" + story.getName() + "</name>"
-                + "<description>" + story.getDescription() + "</description><requested_by>"
-                + story.getRequestedBy() + "</requested_by></story>";
+	public String addStoryForProject(String projectId, PTStory story) {
+		String token = getUserToken(ptUser, ptPwd);
 
-        try {
-            HttpResponse response = HTTPUtils.makePostXML(GET_PROJECT + "/" + projectId + "/stories", token,
-                    client, xml);
-            HttpEntity entity = response.getEntity();
-            String xmlout = convertStreamToString(entity.getContent());
-            // System.out.println(xmlout);
-            String url = getTagValue(xmlout, 0, "url");
-            result = url;
+		DefaultHttpClient client = new DefaultHttpClient();
+		String result = null;
+		String xml = "<story><story_type>" + story.getType()
+				+ "</story_type><name>" + story.getName() + "</name>"
+				+ "<description>" + story.getDescription()
+				+ "</description><requested_by>" + story.getRequestedBy()
+				+ "</requested_by></story>";
 
-            // Convert the xml response into an object
-            // result = getProjectData((entity.getContent()));
+		try {
+			HttpResponse response = HTTPUtils.makePostXML(GET_PROJECT + "/"
+					+ projectId + "/stories", token, client, xml);
+			HttpEntity entity = response.getEntity();
+			String xmlout = convertStreamToString(entity.getContent());
+			System.out.println(xmlout);
+			String url = getTagValue(xmlout, 0, "url");
 
-        }
-        catch (Exception e) {
-            throw new RuntimeException("Failed to add story to PivotalTracker", e);
-        }
-        finally {
-            client.getConnectionManager().shutdown();
-        }
-        return result;
-    }
+			story.setProjectId(projectId);
+			int sidIndex = url.lastIndexOf("/");
+			String storyId = url.substring(sidIndex + 1);
+			story.setStoryId(storyId);
+			result = url;
 
-    /** */
-    @SuppressWarnings("deprecation")
-    private List<TyckTillProjectData> getAllProjects(String token) {
-        if (token == null) {
-            throw new RuntimeException("Token cannot be null. Please set it first.");
-        }
+			// Convert the xml response into an object
+			// result = getProjectData((entity.getContent()));
 
-        DefaultHttpClient client = new DefaultHttpClient();
-        List result = null;
-        try {
-            HttpResponse response = HTTPUtils.makeRequest(GET_PROJECT, token, client);
-            HttpEntity entity = response.getEntity();
-            // entity.writeTo(System.out);
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to add story to PivotalTracker",
+					e);
+		} finally {
+			client.getConnectionManager().shutdown();
+		}
+		return result;
+	}
 
-            // Convert the xml response into an object
-            result = getProjectData((entity.getContent()));
+	/** */
+	@SuppressWarnings("deprecation")
+	private List<TyckTillProjectData> getAllProjects(String token) {
+		if (token == null) {
+			throw new RuntimeException(
+					"Token cannot be null. Please set it first.");
+		}
 
-        }
-        catch (Exception e) {
-            throw new RuntimeException("TODO: Handle this exception better", e);
-        }
-        finally {
-            client.getConnectionManager().shutdown();
-        }
-        return result;
-    }
+		DefaultHttpClient client = new DefaultHttpClient();
+		List result = null;
+		try {
+			HttpResponse response = HTTPUtils.makeRequest(GET_PROJECT, token,
+					client);
+			HttpEntity entity = response.getEntity();
+			entity.writeTo(System.out);
 
-    protected List<TyckTillProjectData> getProjectData(InputStream xml) throws Exception {
-        List<TyckTillProjectData> result = new ArrayList<TyckTillProjectData>();
-        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-        docBuilderFactory.setValidating(false);
-        docBuilderFactory.setNamespaceAware(false);
-        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-        Document doc = docBuilder.parse(xml);
-        xml.close();
+			// Convert the xml response into an object
+			result = getProjectData((entity.getContent()));
 
-        NodeList projectNodes = doc.getElementsByTagName("project");
-        // System.out.println("antal projekt=" + projectNodes.getLength());
-        for (int s = 0; s < projectNodes.getLength(); s++) {
-            Node projectNode = projectNodes.item(s);
-            NodeList projectChildNodes = projectNode.getChildNodes();
-            TyckTillProjectData data = new TyckTillProjectData();
-            for (int i = 0; i < projectChildNodes.getLength(); i++) {
-                Node projectAttributeNode = projectChildNodes.item(i);
-                String nodeName = projectAttributeNode.getNodeName();
-                String nodeValue = projectAttributeNode.getTextContent();
-                short nodeType = projectAttributeNode.getNodeType();
+		} catch (Exception e) {
+			throw new RuntimeException("TODO: Handle this exception better", e);
+		} finally {
+			client.getConnectionManager().shutdown();
+		}
+		return result;
+	}
 
-                if (nodeType == 1) {
-                    // System.out.println("node:" + nodeName + "=" + nodeValue);
-                    if ("id".equals(nodeName)) {
-                        data.setId(nodeValue);
-                    }
-                    else if ("name".equals(nodeName)) {
-                        data.setName(nodeValue);
-                    }
-                    else if ("memberships".equals(nodeName)) {
-                        NodeList mNodes = projectAttributeNode.getChildNodes();
+	protected List<TyckTillProjectData> getProjectData(InputStream xml)
+			throws Exception {
+		List<TyckTillProjectData> result = new ArrayList<TyckTillProjectData>();
+		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory
+				.newInstance();
+		docBuilderFactory.setValidating(false);
+		docBuilderFactory.setNamespaceAware(false);
+		DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+		Document doc = docBuilder.parse(xml);
+		xml.close();
 
-                        for (int k = 0; k < mNodes.getLength(); k++) {
-                            Node mNode = mNodes.item(k);// membership
-                            NodeList mNodes2 = mNode.getChildNodes();
-                            for (int m = 0; m < mNodes2.getLength(); m++) {
-                                Node maNode = mNodes2.item(m);// membership
-                                if (maNode.getNodeType() == 1) {
-                                    if ("person".equals(maNode.getNodeName())) {
-                                        data.addMember(maNode.getTextContent());
-                                    }
-                                    else {
-                                        // System.out.println(" fgfgf=" + maNode.getNodeName());
-                                    }
-                                }
-                            }
+		NodeList projectNodes = doc.getElementsByTagName("project");
+		// System.out.println("antal projekt=" + projectNodes.getLength());
+		for (int s = 0; s < projectNodes.getLength(); s++) {
+			Node projectNode = projectNodes.item(s);
+			NodeList projectChildNodes = projectNode.getChildNodes();
+			TyckTillProjectData data = new TyckTillProjectData();
+			for (int i = 0; i < projectChildNodes.getLength(); i++) {
+				Node projectAttributeNode = projectChildNodes.item(i);
+				String nodeName = projectAttributeNode.getNodeName();
+				String nodeValue = projectAttributeNode.getTextContent();
+				short nodeType = projectAttributeNode.getNodeType();
 
-                        }
+				if (nodeType == 1) {
+					// System.out.println("node:" + nodeName + "=" + nodeValue);
+					if ("id".equals(nodeName)) {
+						data.setId(nodeValue);
+					} else if ("name".equals(nodeName)) {
+						data.setName(nodeValue);
+					} else if ("memberships".equals(nodeName)) {
+						NodeList mNodes = projectAttributeNode.getChildNodes();
 
-                    }
-                }
-            }
-            result.add(data);
+						for (int k = 0; k < mNodes.getLength(); k++) {
+							Node mNode = mNodes.item(k);// membership
+							NodeList mNodes2 = mNode.getChildNodes();
+							for (int m = 0; m < mNodes2.getLength(); m++) {
+								Node maNode = mNodes2.item(m);// membership
+								if (maNode.getNodeType() == 1) {
+									if ("person".equals(maNode.getNodeName())) {
+										data.addMember(maNode.getTextContent());
+									} else {
+										// System.out.println(" fgfgf=" +
+										// maNode.getNodeName());
+									}
+								}
+							}
 
-        }
+						}
 
-        return result;
-    }
+					}
+				}
+			}
+			result.add(data);
 
-    public String convertStreamToString(InputStream is) {
-        /*
-         * To convert the InputStream to String we use the BufferedReader.readLine() method. We iterate until the
-         * BufferedReader return null which means there's no more data to read. Each line will appended to a
-         * StringBuilder and returned as String.
-         */
-        BufferedReader reader;
-        try {
-            reader = new BufferedReader(new InputStreamReader(is, "utf-8"));
-        }
-        catch (UnsupportedEncodingException e1) {
-            throw new RuntimeException("TODO: Handle this exception better", e1);
-        }
-        StringBuilder sb = new StringBuilder();
+		}
 
-        String line = null;
-        try {
-            while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        finally {
-            try {
-                is.close();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+		return result;
+	}
 
-        return sb.toString();
-    }
+	public String convertStreamToString(InputStream is) {
+		/*
+		 * To convert the InputStream to String we use the
+		 * BufferedReader.readLine() method. We iterate until the BufferedReader
+		 * return null which means there's no more data to read. Each line will
+		 * appended to a StringBuilder and returned as String.
+		 */
+		BufferedReader reader;
+		try {
+			reader = new BufferedReader(new InputStreamReader(is, "utf-8"));
+		} catch (UnsupportedEncodingException e1) {
+			throw new RuntimeException("TODO: Handle this exception better", e1);
+		}
+		StringBuilder sb = new StringBuilder();
 
-    /** */
+		String line = null;
+		try {
+			while ((line = reader.readLine()) != null) {
+				sb.append(line + "\n");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 
-    public String createuserStory(PTStory ptstory) {
-        ptstory.setRequestedBy(ptUser);
-        return addStoryForProject(ptstory.getProjectId(), ptstory);
-    }
+		return sb.toString();
+	}
+
+	/** */
+
+	public String createuserStory(PTStory ptstory) {
+		ptstory.setRequestedBy(ptUser);
+		return addStoryForProject(ptstory.getProjectId(), ptstory);
+	}
+
+	
+
+	public void addAttachmentToStory(String projectId, PTStory story) {
+		String token = getUserToken(ptUser, ptPwd);
+
+		DefaultHttpClient client = new DefaultHttpClient();
+		String result = null;
+		System.out.println("URLEN:" + GET_PROJECT + "/" + projectId
+				+ "/stories/" + story.getStoryId() + "/attachments");
+		try {
+			HttpResponse response = HTTPUtils.makePostAttachments(GET_PROJECT
+					+ "/" + projectId + "/stories/" + story.getStoryId()
+					+ "/attachments", token, client, story.getAttachments());
+			HttpEntity entity = response.getEntity();
+
+			entity.writeTo(System.out);
+
+			// Convert the xml response into an object
+			// result = getProjectData((entity.getContent()));
+
+		} catch (Exception e) {
+			throw new RuntimeException(
+					"Failed to add attachment to PivotalTracker", e);
+		} finally {
+			client.getConnectionManager().shutdown();
+		}
+
+	}
+	
+	public static void main(String[] args) {
+		Properties p = new Properties();
+		p.put(TYCK_TILL_PT_USER_KEY, "TyckTill");
+		p.put(TYCKTILL_PT_PWD_KEY, "tycktill3333");
+
+		PivotalTrackerServiceImpl ptc = new PivotalTrackerServiceImpl(p);
+		String token = ptc.getUserToken("TyckTill", "tycktill3333");
+		String projId = "35420";
+		// ptc.getStoriesForProject(projId, token);
+
+		PTStory story = new PTStory();
+		story.setDescription("Testar attachments");
+		story.setName("AttachTest");
+		story.setRequestedBy("TyckTill");
+		story.setType("bug");
+
+		List att = new ArrayList<Screenshot>();
+		att
+				.add(new File(
+						"C:\\Documents and Settings\\carlssonul\\My Documents\\DeploymentDiagramUSD.gif"));
+		story.setAttachments(att);
+
+		//String url = ptc.addStoryForProject(projId, story);
+		//System.out.println("URL:*" + url);
+		//int sidIndex = url.lastIndexOf("/");
+		//String storyId = url.substring(sidIndex + 1);
+		story.setStoryId("2282828");
+		System.out.println("storyID=" + story.getStoryId());
+		ptc.addAttachmentToStory(projId, story);
+
+	}
 
 }

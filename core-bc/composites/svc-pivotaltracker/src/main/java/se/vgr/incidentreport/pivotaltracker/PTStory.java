@@ -1,12 +1,26 @@
 package se.vgr.incidentreport.pivotaltracker;
 
+import java.io.File;
+import java.util.List;
+
 public class PTStory {
 
     private String projectId;
     private String type;
-    private String name;
+    private String id;
+    private List<File> attachments;
+	private String name;
     private String requestedBy;
     private String description;
+
+    
+    public String getStoryId() {
+		return id;
+	}
+
+	public void setStoryId(String id) {
+		this.id = id;
+	}
 
     public String getProjectId() {
         return projectId;
@@ -47,5 +61,13 @@ public class PTStory {
     public void setDescription(String description) {
         this.description = description;
     }
+
+	public void setAttachments(List<File> attachments) {
+		this.attachments = attachments;
+	}
+
+	public List<File> getAttachments() {
+		return attachments;
+	}
 
 }
