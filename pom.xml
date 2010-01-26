@@ -135,7 +135,7 @@
      <repository>
       <uniqueVersion>false</uniqueVersion>
       <id>svn-repo</id>
-      <url>svn:https://oppna-program.code.google.com/svn/maven</url> <!--E.g. svn:http://server/svn/maven/repo/ -->
+      <url>svn:https://oppna-program.googlecode.com/svn/maven</url> <!--E.g. svn:http://server/svn/maven/repo/ -->
     </repository>
   </distributionManagement>
   

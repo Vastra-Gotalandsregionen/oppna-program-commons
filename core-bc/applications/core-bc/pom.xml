@@ -3,7 +3,7 @@
 This POM generates an EAR for the Business Component.
 
 
-Template version: 1.2-SNAPSHOT
+Template version: 1.1
 Generation time : 2009-10-29 15:22:41 CET
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
