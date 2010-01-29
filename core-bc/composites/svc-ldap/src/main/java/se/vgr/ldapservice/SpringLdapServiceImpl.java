@@ -36,214 +36,22 @@ import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
+import org.springframework.ldap.core.LdapTemplate;
+
 public class SpringLdapServiceImpl implements LdapService {
 
-    private String _bindDN;
-    private String _bindPw;
-    private String _bindUrl;
-
     private String[] _defaultReadAttrs;
-    private String[] _defaultAddAttrs;
-
     private Object[] _objectClasses;
-
-    private DirContext _ctx;
     private String base;
     private Properties properties;
+    private LdapTemplate ldapTemplate;
 
     public Properties getProperties() {
         return properties;
     }
 
-    class EntryImpl implements LdapUser {
-        private String _dn;
-
-        Map _attrs;
-
-        public EntryImpl(String base, SearchResult res) {
-            _dn = res.getName();
-            if (base != null && base.length() != 0) {
-                _dn = _dn + "," + base;
-            }
-            _attrs = attrsToHashtable(res.getAttributes());
-        }
-
-        public Attributes getAttributes(String[] modifyAttrs) {
-            return mapToAttrs(modifyAttrs, _attrs);
-        }
-
-        /**
-         * @param rdn
-         */
-        public EntryImpl(String rdn) {
-            _dn = rdn;
-            _attrs = new HashMap();
-        }
-
-        private Map attrsToHashtable(Attributes attrs) {
-            try {
-                Map res = new HashMap();
-                NamingEnumeration attrIter = attrs.getAll();
-                while (attrIter.hasMore()) {
-                    Attribute oneAttr = (Attribute) attrIter.next();
-                    String attrId = oneAttr.getID();
-                    NamingEnumeration attrValuesIter = oneAttr.getAll();
-                    List attrValues = new ArrayList();
-                    while (attrValuesIter.hasMore()) {
-                        Object oneValue = attrValuesIter.next();
-                        attrValues.add(oneValue);
-                    }
-                    if (attrValues.isEmpty()) {
-                        attrValues.add(null);
-                    }
-                    res.put(attrId, attrValues);
-                }
-                return res;
-            }
-            catch (Exception e) {
-                throw new RuntimeException("Parsing attrs failed", e);
-            }
-        }
-
-        public String getDN() {
-            return _dn;
-        }
-
-        public String getAttributeValue(String attrName) {
-            String[] vals = getAttributeValues(attrName);
-            if (vals.length > 0) {
-                return vals[0];
-            }
-            return null;
-        }
-
-        public String[] getAttributeValues(String attrName) {
-            List vals = (List) _attrs.get(attrName);
-            if (vals == null) {
-                vals = new ArrayList();
-            }
-            String[] res = new String[vals.size()];
-            for (int i = 0; i < res.length; i++) {
-                res[i] = (String) vals.get(i);
-            }
-
-            return res;
-        }
-
-        @Override
-        public String toString() {
-            StringBuffer buf = new StringBuffer(200);
-            buf.append("" + _dn + "\n");
-            buf.append(dumpAttrMap(_attrs));
-            buf.append("\n");
-            return buf.toString();
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see simple_jndiclient.Entry#clearAttribute(java.lang.String)
-         */
-        public void clearAttribute(String attr) {
-            _attrs.remove(attr);
-
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see simple_jndiclient.Entry#setAttributeValue(java.lang.String, java.lang.Object)
-         */
-        public void setAttributeValue(String attr, Object value) {
-            List val = new ArrayList();
-            val.add(value);
-            _attrs.put(attr, val);
-
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see simple_jndiclient.Entry#addAttributeValue(java.lang.String, java.lang.Object)
-         */
-        public void addAttributeValue(String attr, Object value) {
-            List currValues = (List) _attrs.get(attr);
-            if (currValues == null) {
-                currValues = new ArrayList();
-                _attrs.put(attr, currValues);
-            }
-            currValues.add(value);
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see simple_jndiclient.Entry#setAttributeValue(java.lang.String, java.lang.Object[])
-         */
-        public void setAttributeValue(String attr, Object[] values) {
-            List vals = new ArrayList();
-
-            for (int i = 0; i < values.length; i++) {
-                vals.add(values[i]);
-            }
-            _attrs.put(attr, vals);
-
-        }
-
-        public Map getAttributes() {
-            return _attrs;
-        }
-
-    }
-
-    public SpringLdapServiceImpl(Properties p) {
-
-        this(p.getProperty("BIND_URL"), p.getProperty("BIND_DN"), p.getProperty("BIND_PW"), new String[] {},
-                new String[] {}, new Object[] {});
-        this.properties = p;
-        this.base = p.getProperty("BASE");
-
-    }
-
-    private SpringLdapServiceImpl(String bindUrl, String bindDN, String bindPassword, String[] readAttrs,
-            String[] updateAttrs, Object[] objClasses) {
-
-        _bindDN = bindDN;
-        _bindUrl = bindUrl;
-        _bindPw = bindPassword;
-        _defaultReadAttrs = readAttrs;
-        _objectClasses = objClasses;
-
-        _defaultAddAttrs = new String[updateAttrs.length + 4];
-        _defaultAddAttrs[0] = "objectclass";
-        _defaultAddAttrs[1] = "cn";
-        _defaultAddAttrs[2] = "sn";
-        _defaultAddAttrs[3] = "mail";
-
-    }
-
-    private void bind() {
-        try {
-            Hashtable env = new Hashtable();
-            env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-            env.put(Context.PROVIDER_URL, _bindUrl);
-            if (_bindDN != null) {
-                env.put(Context.SECURITY_PRINCIPAL, _bindDN);
-                env.put(Context.SECURITY_CREDENTIALS, _bindPw);
-            }
-            _ctx = new InitialDirContext(env);
-
-        }
-        catch (Exception e) {
-            throw new RuntimeException("Bind failed", e);
-        }
-    }
-
-    private DirContext getBaseContext() {
-        if (_ctx == null) {
-            bind();
-        }
-        return _ctx;
+    public SpringLdapServiceImpl(LdapTemplate ldapTemplate) {
+      this.ldapTemplate = ldapTemplate;
     }
 
     public LdapUser[] search(String base, String filter, String[] attributes) {
@@ -261,13 +69,13 @@ public class SpringLdapServiceImpl implements LdapService {
             if (_defaultReadAttrs.length > 0) {
                 sc.setReturningAttributes(_defaultReadAttrs);
             }
-            NamingEnumeration results = getBaseContext().search(base, filter, sc);
+//            NamingEnumeration results = getBaseContext().search(base, filter, sc);
             List entries = new ArrayList();
 
-            while (results.hasMore()) {
-                SearchResult oneRes = (SearchResult) results.next();
-                entries.add(new EntryImpl(base, oneRes));
-            }
+//            while (results.hasMore()) {
+//                SearchResult oneRes = (SearchResult) results.next();
+//                entries.add(new LdapUserEntryImpl(base, oneRes));
+//            }
             LdapUser[] res = new LdapUser[entries.size()];
             for (int i = 0; i < res.length; i++) {
                 res[i] = (LdapUser) entries.get(i);
@@ -295,13 +103,13 @@ public class SpringLdapServiceImpl implements LdapService {
             if (_defaultReadAttrs.length > 0) {
                 sc.setReturningAttributes(_defaultReadAttrs);
             }
-            NamingEnumeration results = getBaseContext().search(base, filter, sc);
+//            NamingEnumeration results = getBaseContext().search(base, filter, sc);
             List entries = new ArrayList();
 
-            while (results.hasMore()) {
-                SearchResult oneRes = (SearchResult) results.next();
-                entries.add(new EntryImpl(base, oneRes));
-            }
+//            while (results.hasMore()) {
+//                SearchResult oneRes = (SearchResult) results.next();
+//                entries.add(new LdapUserEntryImpl(base, oneRes));
+//            }
 
             if (entries.size() > 1) {
                 throw new RuntimeException("Entry is not unique: " + filter);
@@ -343,9 +151,9 @@ public class SpringLdapServiceImpl implements LdapService {
             e.addAttributeValue("objectclass", "vgrUser");
             e.addAttributeValue("objectclass", "inetOrgPerson");
 
-            Attributes attrs = ((EntryImpl) e).getAttributes(addAttrs);
+            Attributes attrs = ((LdapUserEntryImpl) e).getAttributes(addAttrs);
             String dn = e.getDN();
-            getBaseContext().createSubcontext(dn, attrs);
+//            getBaseContext().createSubcontext(dn, attrs);
             return true;
         }
         catch (Exception ex) {
@@ -372,8 +180,8 @@ public class SpringLdapServiceImpl implements LdapService {
                 e.setAttributeValue(attName, modifyAttributes.get(attName));
             }
 
-            Attributes attrs = ((EntryImpl) e).getAttributes(modifyAttrs);
-            getBaseContext().modifyAttributes(e.getDN(), InitialDirContext.REPLACE_ATTRIBUTE, attrs);
+            Attributes attrs = ((LdapUserEntryImpl) e).getAttributes(modifyAttrs);
+//            getBaseContext().modifyAttributes(e.getDN(), InitialDirContext.REPLACE_ATTRIBUTE, attrs);
             return true;
         }
         catch (Exception ex) {
@@ -388,7 +196,7 @@ public class SpringLdapServiceImpl implements LdapService {
      */
     public boolean deleteLdapUser(LdapUser e) {
         try {
-            getBaseContext().destroySubcontext(e.getDN());
+//            getBaseContext().destroySubcontext(e.getDN());
             return true;
         }
         catch (Exception ex) {
@@ -461,8 +269,149 @@ public class SpringLdapServiceImpl implements LdapService {
     }
 
     private LdapUser newUser(String rdn) {
-        LdapUser e = new EntryImpl(rdn);
+        LdapUser e = new LdapUserEntryImpl(rdn);
         e.setAttributeValue("objectclass", _objectClasses);
         return e;
     }
+
+    class LdapUserEntryImpl implements LdapUser {
+      private String _dn;
+
+      Map _attrs;
+
+      public LdapUserEntryImpl(String base, SearchResult res) {
+          _dn = res.getName();
+          if (base != null && base.length() != 0) {
+              _dn = _dn + "," + base;
+          }
+          _attrs = attrsToHashtable(res.getAttributes());
+      }
+
+      public Attributes getAttributes(String[] modifyAttrs) {
+          return mapToAttrs(modifyAttrs, _attrs);
+      }
+
+      /**
+       * @param rdn
+       */
+      public LdapUserEntryImpl(String rdn) {
+          _dn = rdn;
+          _attrs = new HashMap();
+      }
+
+      private Map attrsToHashtable(Attributes attrs) {
+          try {
+              Map res = new HashMap();
+              NamingEnumeration attrIter = attrs.getAll();
+              while (attrIter.hasMore()) {
+                  Attribute oneAttr = (Attribute) attrIter.next();
+                  String attrId = oneAttr.getID();
+                  NamingEnumeration attrValuesIter = oneAttr.getAll();
+                  List attrValues = new ArrayList();
+                  while (attrValuesIter.hasMore()) {
+                      Object oneValue = attrValuesIter.next();
+                      attrValues.add(oneValue);
+                  }
+                  if (attrValues.isEmpty()) {
+                      attrValues.add(null);
+                  }
+                  res.put(attrId, attrValues);
+              }
+              return res;
+          }
+          catch (Exception e) {
+              throw new RuntimeException("Parsing attrs failed", e);
+          }
+      }
+
+      public String getDN() {
+          return _dn;
+      }
+
+      public String getAttributeValue(String attrName) {
+          String[] vals = getAttributeValues(attrName);
+          if (vals.length > 0) {
+              return vals[0];
+          }
+          return null;
+      }
+
+      public String[] getAttributeValues(String attrName) {
+          List vals = (List) _attrs.get(attrName);
+          if (vals == null) {
+              vals = new ArrayList();
+          }
+          String[] res = new String[vals.size()];
+          for (int i = 0; i < res.length; i++) {
+              res[i] = (String) vals.get(i);
+          }
+
+          return res;
+      }
+
+      @Override
+      public String toString() {
+          StringBuffer buf = new StringBuffer(200);
+          buf.append("" + _dn + "\n");
+          buf.append(dumpAttrMap(_attrs));
+          buf.append("\n");
+          return buf.toString();
+      }
+
+      /*
+       * (non-Javadoc)
+       * 
+       * @see simple_jndiclient.Entry#clearAttribute(java.lang.String)
+       */
+      public void clearAttribute(String attr) {
+          _attrs.remove(attr);
+
+      }
+
+      /*
+       * (non-Javadoc)
+       * 
+       * @see simple_jndiclient.Entry#setAttributeValue(java.lang.String, java.lang.Object)
+       */
+      public void setAttributeValue(String attr, Object value) {
+          List val = new ArrayList();
+          val.add(value);
+          _attrs.put(attr, val);
+
+      }
+
+      /*
+       * (non-Javadoc)
+       * 
+       * @see simple_jndiclient.Entry#addAttributeValue(java.lang.String, java.lang.Object)
+       */
+      public void addAttributeValue(String attr, Object value) {
+          List currValues = (List) _attrs.get(attr);
+          if (currValues == null) {
+              currValues = new ArrayList();
+              _attrs.put(attr, currValues);
+          }
+          currValues.add(value);
+      }
+
+      /*
+       * (non-Javadoc)
+       * 
+       * @see simple_jndiclient.Entry#setAttributeValue(java.lang.String, java.lang.Object[])
+       */
+      public void setAttributeValue(String attr, Object[] values) {
+          List vals = new ArrayList();
+
+          for (int i = 0; i < values.length; i++) {
+              vals.add(values[i]);
+          }
+          _attrs.put(attr, vals);
+
+      }
+
+      public Map getAttributes() {
+          return _attrs;
+      }
+
+  }
 }
