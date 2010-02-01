@@ -1,5 +1,5 @@
 /**
- * Copyright 2009 VŠstra Gštalandsregionen
+ * Copyright 2009 Vï¿½stra Gï¿½talandsregionen
  *
  *   This library is free software; you can redistribute it and/or modify
  *   it under the terms of version 2.1 of the GNU Lesser General Public
@@ -27,7 +27,6 @@ import java.util.Properties;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
-import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
@@ -48,152 +47,18 @@ public class LdapServiceImpl implements LdapService {
     private Object[] _objectClasses;
 
     private DirContext _ctx;
-    private String base;
-    private Properties properties;
+    protected String base;
+    protected Properties properties;
 
     public Properties getProperties() {
         return properties;
     }
-
-    class EntryImpl implements LdapUser {
-        private String _dn;
-
-        Map _attrs;
-
-        public EntryImpl(String base, SearchResult res) {
-            _dn = res.getName();
-            if (base != null && base.length() != 0) {
-                _dn = _dn + "," + base;
-            }
-            _attrs = attrsToHashtable(res.getAttributes());
-        }
-
-        public Attributes getAttributes(String[] modifyAttrs) {
-            return mapToAttrs(modifyAttrs, _attrs);
-        }
-
-        /**
-         * @param rdn
-         */
-        public EntryImpl(String rdn) {
-            _dn = rdn;
-            _attrs = new HashMap();
-        }
-
-        private Map attrsToHashtable(Attributes attrs) {
-            try {
-                Map res = new HashMap();
-                NamingEnumeration attrIter = attrs.getAll();
-                while (attrIter.hasMore()) {
-                    Attribute oneAttr = (Attribute) attrIter.next();
-                    String attrId = oneAttr.getID();
-                    NamingEnumeration attrValuesIter = oneAttr.getAll();
-                    List attrValues = new ArrayList();
-                    while (attrValuesIter.hasMore()) {
-                        Object oneValue = attrValuesIter.next();
-                        attrValues.add(oneValue);
-                    }
-                    if (attrValues.isEmpty()) {
-                        attrValues.add(null);
-                    }
-                    res.put(attrId, attrValues);
-                }
-                return res;
-            }
-            catch (Exception e) {
-                throw new RuntimeException("Parsing attrs failed", e);
-            }
-        }
-
-        public String getDN() {
-            return _dn;
-        }
-
-        public String getAttributeValue(String attrName) {
-            String[] vals = getAttributeValues(attrName);
-            if (vals.length > 0) {
-                return vals[0];
-            }
-            return null;
-        }
-
-        public String[] getAttributeValues(String attrName) {
-            List vals = (List) _attrs.get(attrName);
-            if (vals == null) {
-                vals = new ArrayList();
-            }
-            String[] res = new String[vals.size()];
-            for (int i = 0; i < res.length; i++) {
-                res[i] = (String) vals.get(i);
-            }
-
-            return res;
-        }
-
-        @Override
-        public String toString() {
-            StringBuffer buf = new StringBuffer(200);
-            buf.append("" + _dn + "\n");
-            buf.append(dumpAttrMap(_attrs));
-            buf.append("\n");
-            return buf.toString();
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see simple_jndiclient.Entry#clearAttribute(java.lang.String)
-         */
-        public void clearAttribute(String attr) {
-            _attrs.remove(attr);
-
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see simple_jndiclient.Entry#setAttributeValue(java.lang.String, java.lang.Object)
-         */
-        public void setAttributeValue(String attr, Object value) {
-            List val = new ArrayList();
-            val.add(value);
-            _attrs.put(attr, val);
-
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see simple_jndiclient.Entry#addAttributeValue(java.lang.String, java.lang.Object)
-         */
-        public void addAttributeValue(String attr, Object value) {
-            List currValues = (List) _attrs.get(attr);
-            if (currValues == null) {
-                currValues = new ArrayList();
-                _attrs.put(attr, currValues);
-            }
-            currValues.add(value);
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see simple_jndiclient.Entry#setAttributeValue(java.lang.String, java.lang.Object[])
-         */
-        public void setAttributeValue(String attr, Object[] values) {
-            List vals = new ArrayList();
-
-            for (int i = 0; i < values.length; i++) {
-                vals.add(values[i]);
-            }
-            _attrs.put(attr, vals);
-
-        }
-
-        public Map getAttributes() {
-            return _attrs;
-        }
-
+    
+    /**
+     * Default zero-arg constructor
+     */
+    public LdapServiceImpl() {
+      
     }
 
     public LdapServiceImpl(Properties p) {
@@ -266,7 +131,7 @@ public class LdapServiceImpl implements LdapService {
 
             while (results.hasMore()) {
                 SearchResult oneRes = (SearchResult) results.next();
-                entries.add(new EntryImpl(base, oneRes));
+                entries.add(new LdapUserEntryImpl(base, oneRes));
             }
             LdapUser[] res = new LdapUser[entries.size()];
             for (int i = 0; i < res.length; i++) {
@@ -300,7 +165,7 @@ public class LdapServiceImpl implements LdapService {
 
             while (results.hasMore()) {
                 SearchResult oneRes = (SearchResult) results.next();
-                entries.add(new EntryImpl(base, oneRes));
+                entries.add(new LdapUserEntryImpl(base, oneRes));
             }
 
             if (entries.size() > 1) {
@@ -343,7 +208,7 @@ public class LdapServiceImpl implements LdapService {
             e.addAttributeValue("objectclass", "vgrUser");
             e.addAttributeValue("objectclass", "inetOrgPerson");
 
-            Attributes attrs = ((EntryImpl) e).getAttributes(addAttrs);
+            Attributes attrs = ((LdapUserEntryImpl) e).getAttributes(addAttrs);
             String dn = e.getDN();
             getBaseContext().createSubcontext(dn, attrs);
             return true;
@@ -372,7 +237,7 @@ public class LdapServiceImpl implements LdapService {
                 e.setAttributeValue(attName, modifyAttributes.get(attName));
             }
 
-            Attributes attrs = ((EntryImpl) e).getAttributes(modifyAttrs);
+            Attributes attrs = ((LdapUserEntryImpl) e).getAttributes(modifyAttrs);
             getBaseContext().modifyAttributes(e.getDN(), InitialDirContext.REPLACE_ATTRIBUTE, attrs);
             return true;
         }
@@ -461,7 +326,7 @@ public class LdapServiceImpl implements LdapService {
     }
 
     private LdapUser newUser(String rdn) {
-        LdapUser e = new EntryImpl(rdn);
+        LdapUser e = new LdapUserEntryImpl(rdn);
         e.setAttributeValue("objectclass", _objectClasses);
         return e;
     }
