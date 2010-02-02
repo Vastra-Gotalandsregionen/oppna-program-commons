@@ -1,33 +1,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-<!-- TODO: define common props in JAVG-parent-POM  
-  <parent>
-    <groupId>JAVG_PARENT_POM</groupId>
-    <artifactId>JAVG_PARENT_POM</artifactId>
-    <version>1.1-RC1</version>
-  </parent>
--->
   <groupId>se.vgr.commons-util</groupId>
   <artifactId>commons-util-system</artifactId>
   <packaging>pom</packaging>
   <version>1.1-SNAPSHOT</version>
   <name>${project.artifactId}</name>
   
+  <parent>
+	<groupId>se.vgregion.common</groupId>
+	<artifactId>profile</artifactId>
+	<version>1.1</version>
+  </parent>
+  
   <scm>
     <!-- <connection>scm:svn:http://somerepository.com/svn_repo/trunk</connection> -->
     <developerConnection>scm:svn:https://oppna-program-commons.googlecode.com/svn/trunk</developerConnection>
     <url>http://oppna-program-commons.googlecode.com/svn/trunk</url>
   </scm>
-
-
-  <!-- common library versions -->
-  <properties>
-    <javg.version>1.1</javg.version>
-    <spring.fw.version>3.0.0.RC1</spring.fw.version>
-    <apache.cxf.version>2.1.1</apache.cxf.version>
-    <portlet-api.version>2.0</portlet-api.version>
-    <jstl.version>1.2</jstl.version>
-  </properties>
 
   <modules>
     <module>core-bc</module>
