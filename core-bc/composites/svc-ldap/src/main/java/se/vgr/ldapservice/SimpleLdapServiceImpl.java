@@ -36,17 +36,10 @@ import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.core.simple.ParameterizedContextMapper;
 import org.springframework.ldap.core.simple.SimpleLdapTemplate;
-import org.springframework.ldap.core.support.BaseLdapPathAware;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 
-public class SimpleLdapServiceImpl extends LdapServiceImpl implements BaseLdapPathAware {
-
-    private DistinguishedName basePath;
-
-    public void setBaseLdapPath(DistinguishedName basePath) {
-        this.basePath = basePath;
-    }
+public class SimpleLdapServiceImpl extends LdapServiceImpl {
 
     private SimpleLdapTemplate ldapTemplate;
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleLdapServiceImpl.class);
@@ -94,11 +87,10 @@ public class SimpleLdapServiceImpl extends LdapServiceImpl implements BaseLdapPa
     public LdapUser getLdapUserByUid(String uid) {
         ParameterizedContextMapper<SimpleLdapUser> ldapUserMapper = new SimpleLdapServiceImpl.LdapUserMapper();
         SimpleLdapUser ldapUser = null;
-        AndFilter uidFilter = new AndFilter();
-        uidFilter.and(new EqualsFilter("uid", uid));
-        uidFilter.and(new EqualsFilter("objectclass", "person"));
+        AndFilter filter = new AndFilter();
+        filter.and(new EqualsFilter("objectclass", "person")).and(new EqualsFilter("uid", uid));
         try {
-            ldapUser = ldapTemplate.searchForObject(basePath, uidFilter.encode(), ldapUserMapper);
+            ldapUser = ldapTemplate.searchForObject(DistinguishedName.EMPTY_PATH, filter.encode(), ldapUserMapper);
         } catch (EmptyResultDataAccessException e) {
             // User was not found.
         }
