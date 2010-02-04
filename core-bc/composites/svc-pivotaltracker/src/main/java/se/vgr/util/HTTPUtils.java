@@ -156,28 +156,38 @@ public class HTTPUtils {
 	 * @throws Exception
 	 */
 	public static HttpResponse makePostAttachments(String url, String token,
-			DefaultHttpClient httpclient, List<File> list) throws Exception {
+			DefaultHttpClient httpclient, File aFile, String aFileName) throws Exception {
 		
         
-        //httpclient.getParams().setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, true);
-		
-		httpclient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-		HttpPost httppost = new HttpPost(url);
+        HttpPost httppost = new HttpPost(url);
 		
 		httppost.addHeader("X-TrackerToken", token);
-		
+		//httppost.addHeader("Accept", "*/*");
+		httppost.removeHeaders("Connection");
+		//System.out.println("Token="+token);
 		MultipartEntity mpEntity = new MultipartEntity();//HttpMultipartMode.BROWSER_COMPATIBLE);
 		
-		//FileEntity mPEntity = new FileEntity(list.get(i), "binary/octet-stream"); 
-		for (int i = 0; i < list.size(); i++) {
-			System.out.println("Adding file:"+list.get(i).getName());
-			
-			ContentBody cbFile = new FileBody(list.get(i),
+		
+	
+			File f=aFile;
+			if (aFileName != null && aFileName.length() > 0) {
+				
+                File newFile = new File(f.getParentFile(), aFileName);
+                boolean renameSuccess = f.renameTo(newFile);
+                if (renameSuccess) {
+                    f = newFile;
+                }
+            }
+			//System.out.println("Adding file:"+aFile.getName());
+			//System.out.println("with filename:"+aFileName);
+			ContentBody cbFile = new FileBody(f,
 					"binary/octet-stream");
-			mpEntity.addPart(list.get(i).getName(), cbFile);
+			
+			mpEntity.addPart("Filedata", cbFile);
+			
 			
 
-		}
+		
 		httppost.setEntity(mpEntity);
 		HttpResponse response = httpclient.execute(httppost);
 		//System.out.println(response.getStatusLine());
@@ -185,7 +195,7 @@ public class HTTPUtils {
 //
 //		
 //		if (resEntity != null) {
-//			System.out.println(EntityUtils.toString(resEntity));
+//			//System.out.println(EntityUtils.toString(resEntity));
 //		}
 //		if (resEntity != null) {
 //			resEntity.consumeContent();

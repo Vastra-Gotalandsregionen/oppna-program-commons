@@ -27,6 +27,12 @@ public class PTStory {
     private String type;
     private String id;
     private List<File> attachments;
+    private List<String> attachmentNames;
+    
+	public void setAttachmentNames(List<String> attachmentNames) {
+		this.attachmentNames = attachmentNames;
+	}
+
 	private String name;
     private String requestedBy;
     private String description;
@@ -86,6 +92,10 @@ public class PTStory {
 
 	public List<File> getAttachments() {
 		return attachments;
+	}
+
+	public List<String> getAttachmentNames() {
+		return attachmentNames;
 	}
 
 }

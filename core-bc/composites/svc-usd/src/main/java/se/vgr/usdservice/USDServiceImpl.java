@@ -113,7 +113,7 @@ public class USDServiceImpl implements USDService {
         ((org.apache.axis.client.Stub) service).addAttachment(dhandler);
         // Create attachment
         service.createAttachment(sid, repHandle, objectHandle, description, fileName);
-        System.out.println("Creating attachment...SUCCESS");
+        //System.out.println("Creating attachment...SUCCESS");
 
     }
 

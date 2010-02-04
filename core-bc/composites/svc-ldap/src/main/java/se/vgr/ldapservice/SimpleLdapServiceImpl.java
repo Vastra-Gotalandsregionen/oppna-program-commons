@@ -38,7 +38,7 @@ import org.springframework.ldap.core.simple.SimpleLdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 
-public class SimpleLdapServiceImpl extends LdapServiceImpl {
+public class SimpleLdapServiceImpl implements LdapService {
 
     private SimpleLdapTemplate ldapTemplate;
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleLdapServiceImpl.class);
@@ -50,29 +50,29 @@ public class SimpleLdapServiceImpl extends LdapServiceImpl {
     /**
      * {@inheritDoc}
      */
-    @Override
+   
     public LdapUser[] search(String base, String filter) {
         ParameterizedContextMapper<SimpleLdapUser> ldapUserMapper = new SimpleLdapServiceImpl.LdapUserMapper();
         List<SimpleLdapUser> ldapUsers = ldapTemplate.search(base, filter, ldapUserMapper);
         return ldapUsers.toArray(new SimpleLdapUser[] {});
     }
 
-    @Override
+    
     public boolean addLdapUser(String context, HashMap<String, String> attributes) {
         throw new UnsupportedOperationException("Not implemented in simple ldap service, use LdapServiceImpl.");
     }
 
-    @Override
+   
     public boolean deleteLdapUser(LdapUser e) {
         throw new UnsupportedOperationException("Not implemented in simple ldap service, use LdapServiceImpl.");
     }
 
-    @Override
+    
     public LdapUser getLdapUser(String base, String filter, String[] attributes) {
         throw new UnsupportedOperationException("Not implemented in simple ldap service, use LdapServiceImpl.");
     }
 
-    @Override
+   
     public LdapUser getLdapUser(String base, String filter) {
         throw new UnsupportedOperationException("Not implemented in simple ldap service, use LdapServiceImpl.");
     }
@@ -96,17 +96,17 @@ public class SimpleLdapServiceImpl extends LdapServiceImpl {
         return ldapUser;
     }
 
-    @Override
+   
     public Properties getProperties() {
         throw new UnsupportedOperationException("Not implemented in simple ldap service, use LdapServiceImpl.");
     }
 
-    @Override
+    
     public boolean modifyLdapUser(LdapUser e, HashMap<String, String> modifyAttributes) {
         throw new UnsupportedOperationException("Not implemented in simple ldap service, use LdapServiceImpl.");
     }
 
-    @Override
+   
     public LdapUser[] search(String base, String filter, String[] attributes) {
         throw new UnsupportedOperationException("Not implemented in simple ldap service, use LdapServiceImpl.");
     }

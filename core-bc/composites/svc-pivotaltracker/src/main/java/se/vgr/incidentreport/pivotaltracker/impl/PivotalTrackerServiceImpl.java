@@ -68,6 +68,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 
 	private static final String GET_USER_TOKEN = "https://www.pivotaltracker.com/services/tokens/active";
 	private static final String GET_PROJECT = "http://www.pivotaltracker.com/services/v3/projects";
+	private static final String GET_PROJECT_TEST = "http://127.0.0.1/services/v3/projects";
 
 	// http://www.pivotaltracker.com/services/v3/projects/PROJECT_ID/stories/STORY_ID/attachments
 
@@ -177,7 +178,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 					+ projectId + "/stories", token, client);
 			HttpEntity entity = response.getEntity();
 			String xml = convertStreamToString(entity.getContent());
-			System.out.println(xml);
+			//System.out.println(xml);
 
 			// Convert the xml response into an object
 			// result = getProjectData((entity.getContent()));
@@ -206,7 +207,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 					+ projectId + "/stories", token, client, xml);
 			HttpEntity entity = response.getEntity();
 			String xmlout = convertStreamToString(entity.getContent());
-			System.out.println(xmlout);
+			//System.out.println(xmlout);
 			String url = getTagValue(xmlout, 0, "url");
 
 			story.setProjectId(projectId);
@@ -353,35 +354,38 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 		return addStoryForProject(ptstory.getProjectId(), ptstory);
 	}
 
-	
-
 	public void addAttachmentToStory(String projectId, PTStory story) {
-		String token = getUserToken(ptUser, ptPwd);
 
-		DefaultHttpClient client = new DefaultHttpClient();
-		String result = null;
-		System.out.println("URLEN:" + GET_PROJECT + "/" + projectId
-				+ "/stories/" + story.getStoryId() + "/attachments");
-		try {
-			HttpResponse response = HTTPUtils.makePostAttachments(GET_PROJECT
-					+ "/" + projectId + "/stories/" + story.getStoryId()
-					+ "/attachments", token, client, story.getAttachments());
-			HttpEntity entity = response.getEntity();
+		DefaultHttpClient client = null;
+		int i = 0;
+		for (File f : story.getAttachments()) {
+			
+			try {
+				String token = getUserToken(ptUser, ptPwd);
 
-			entity.writeTo(System.out);
+				 client = new DefaultHttpClient();
+				String result = null;
+				//System.out.println("URLEN:" + GET_PROJECT + "/" + projectId						+ "/stories/" + story.getStoryId() + "/attachments");
+				HttpResponse response = HTTPUtils.makePostAttachments(
+						GET_PROJECT + "/" + projectId + "/stories/"
+								+ story.getStoryId() + "/attachments", token,
+						client, f, story.getAttachmentNames().get(i));
+				HttpEntity entity = response.getEntity();
+				entity.writeTo(System.out);
 
-			// Convert the xml response into an object
-			// result = getProjectData((entity.getContent()));
-
-		} catch (Exception e) {
-			throw new RuntimeException(
-					"Failed to add attachment to PivotalTracker", e);
-		} finally {
-			client.getConnectionManager().shutdown();
+				// Convert the xml response into an object
+				// result = getProjectData((entity.getContent()));
+				i++;
+			} catch (Exception e) {
+				throw new RuntimeException(
+						"Failed to add attachment to PivotalTracker", e);
+			} finally {
+				client.getConnectionManager().shutdown();
+			}
 		}
 
 	}
-	
+
 	public static void main(String[] args) {
 		Properties p = new Properties();
 		p.put(TYCK_TILL_PT_USER_KEY, "TyckTill");
@@ -398,18 +402,25 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 		story.setRequestedBy("TyckTill");
 		story.setType("bug");
 
-		List att = new ArrayList<Screenshot>();
+		List<File> att = new ArrayList<File>();
+		List attNames = new ArrayList<String>();
 		att
 				.add(new File(
-						"C:\\Documents and Settings\\carlssonul\\My Documents\\DeploymentDiagramUSD.gif"));
+						"C:\\Documents and Settings\\carlssonul\\My Documents\\fil3.gif"));
+		att
+				.add(new File(
+						"C:\\Documents and Settings\\carlssonul\\My Documents\\fil4.gif"));
+		attNames.add("Fil3.gif");
+		attNames.add("Fil4.gif");
 		story.setAttachments(att);
+		story.setAttachmentNames(attNames);
 
-		//String url = ptc.addStoryForProject(projId, story);
-		//System.out.println("URL:*" + url);
-		//int sidIndex = url.lastIndexOf("/");
-		//String storyId = url.substring(sidIndex + 1);
+		// String url = ptc.addStoryForProject(projId, story);
+		// System.out.println("URL:*" + url);
+		// int sidIndex = url.lastIndexOf("/");
+		// String storyId = url.substring(sidIndex + 1);
 		story.setStoryId("2282828");
-		System.out.println("storyID=" + story.getStoryId());
+		//System.out.println("storyID=" + story.getStoryId());
 		ptc.addAttachmentToStory(projId, story);
 
 	}

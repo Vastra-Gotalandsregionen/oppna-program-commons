@@ -38,5 +38,7 @@ public interface LdapService {
     public abstract boolean modifyLdapUser(LdapUser e, HashMap<String, String> modifyAttributes);
 
     public abstract boolean deleteLdapUser(LdapUser e);
+    
+    public LdapUser getLdapUserByUid(String uid);
 
 }

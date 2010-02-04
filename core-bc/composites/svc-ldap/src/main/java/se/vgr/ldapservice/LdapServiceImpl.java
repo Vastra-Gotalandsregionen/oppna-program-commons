@@ -331,4 +331,9 @@ public class LdapServiceImpl implements LdapService {
         e.setAttributeValue("objectclass", _objectClasses);
         return e;
     }
+
+	public LdapUser getLdapUserByUid(String uid) {
+		throw new UnsupportedOperationException("Not implemented in LdapServiceImpl, use simple ldap service");
+		 
+	}
 }
