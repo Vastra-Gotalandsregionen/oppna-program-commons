@@ -27,7 +27,6 @@ import java.util.Properties;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
-import javax.naming.directory.Attributes;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,25 +119,16 @@ public class SimpleLdapServiceImpl extends LdapServiceImpl {
             DirContextAdapter adapter = (DirContextAdapter) ctx;
             SimpleLdapUser simpleLdapUser = new SimpleLdapUser(adapter.getDn().toString());
             try {
-                Attributes cnAttributes = adapter.getAttributes("cn");
-                Attributes mailAttributes = adapter.getAttributes("mail");
-                Attributes telephoneNumberAttributes = adapter.getAttributes("telephoneNumber");
-                if (cnAttributes.size() > 0) {
-                    simpleLdapUser.setCn(cnAttributes.getAll().next().get().toString());
-                }
-                if (mailAttributes.size() > 0) {
-                    simpleLdapUser.setMail(mailAttributes.getAll().next().get().toString());
-                }
-                if (telephoneNumberAttributes.size() > 0) {
-                    simpleLdapUser.setTelephoneNumber(telephoneNumberAttributes.getAll().next().get().toString());
-                }
+                simpleLdapUser.setCn(adapter.getStringAttribute("cn"));
+                simpleLdapUser.setMail(adapter.getStringAttribute("mail"));
+                simpleLdapUser.setTelephoneNumber(adapter.getStringAttribute("telephoneNumber"));
 
                 // Set all attributes in order to conform with old low-level style of LdapUserEntryImpl.
                 NamingEnumeration<? extends Attribute> allAttributes = adapter.getAttributes().getAll();
                 ArrayList<? extends Attribute> allAttributesList = Collections.list(allAttributes);
                 for (Attribute attribute : allAttributesList) {
                     if (attribute.size() > 0) {
-                        simpleLdapUser.setAttributeValue(attribute.getID(), attribute.getAll());
+                        simpleLdapUser.setAttributeValue(attribute.getID(), attribute.get(0));
                     }
                 }
 
