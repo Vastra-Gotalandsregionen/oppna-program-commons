@@ -60,12 +60,9 @@ import org.apache.http.util.EntityUtils;
 /**
  * Utilities for dealing with urls.
  * 
- * @author Jon Stevens
  */
 public class HTTPUtils {
-	/**
-	 * Hides the irritating declared exception.
-	 */
+	
 	public static String encode(String value) {
 		try {
 			return URLEncoder.encode(value, "utf-8");
@@ -74,13 +71,7 @@ public class HTTPUtils {
 		}
 	}
 
-	/**
-	 * Hides the irritating declared exception.
-	 * 
-	 * @return null if there is an IllegalArgumentException
-	 * @throws RuntimeException
-	 *             if there is an UnsupportedEncodingException
-	 */
+	
 	public static String decode(String value) {
 		try {
 			return URLDecoder.decode(value, "utf-8");
@@ -176,6 +167,13 @@ public class HTTPUtils {
                 boolean renameSuccess = f.renameTo(newFile);
                 if (renameSuccess) {
                     f = newFile;
+                } else {
+                	// Due to problem with rename when temp file already exists with same name.
+                	 newFile = new File(f.getParentFile(), ""+(System.currentTimeMillis()%1000000)+aFileName);
+                     renameSuccess = f.renameTo(newFile);
+                     if (renameSuccess) {
+                         f = newFile;
+                     } 
                 }
             }
 			//System.out.println("Adding file:"+aFile.getName());
