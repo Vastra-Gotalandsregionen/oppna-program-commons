@@ -111,14 +111,6 @@ public class SimpleLdapServiceImpl implements LdapService {
         throw new UnsupportedOperationException("Not implemented in simple ldap service, use LdapServiceImpl.");
     }
 
-    public SimpleLdapTemplate getLdapTemplate() {
-      return ldapTemplate;
-    }
-
-    public void setLdapTemplate(SimpleLdapTemplate ldapTemplate) {
-      this.ldapTemplate = ldapTemplate;
-    }
-
     /**
      * Used to map an LDAP entry into a SimpleLdapUser.
      */
