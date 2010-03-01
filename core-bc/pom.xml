@@ -16,11 +16,6 @@
     <module>composites/svc-ldap</module>
 	<module>composites/svc-usd</module>
 	<module>composites/svc-pivotaltracker</module>
-    <!-- <module>composites/webcomp</module> -->
     <module>composites/schema</module>
-    <!-- <module>modules/web</module> -->
-    <!-- <module>modules/portlet</module> -->
-    <!-- <module>modules/intsvc</module> -->
-    <!-- <module>applications/core-bc</module> --> 
   </modules>
 </project>
