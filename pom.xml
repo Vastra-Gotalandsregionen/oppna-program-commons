@@ -9,7 +9,7 @@
   <parent>
 	<groupId>se.vgregion.common</groupId>
 	<artifactId>profile</artifactId>
-	<version>1.3-SNAPSHOT</version>
+	<version>1.5</version>
   </parent>
   
   <scm>
