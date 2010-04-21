@@ -1,32 +1,28 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>se.vgr.commons-util</groupId>
-		<artifactId>commons-util-core-bc</artifactId>
-		<version>1.4-SNAPSHOT</version>
-	</parent>
-	<groupId>se.vgr.commons-util</groupId>
-	<artifactId>commons-util-core-bc-composite-svc-ldap</artifactId>
-	<packaging>jar</packaging>
-	<name>${project.artifactId}</name>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>se.vgregion.commons-util</groupId>
+    <artifactId>commons-util-core-bc</artifactId>
+    <version>2.0-SNAPSHOT</version>
+  </parent>
+  <groupId>se.vgregion.commons-util</groupId>
+  <artifactId>commons-util-core-bc-composite-svc-ldap</artifactId>
+  <packaging>jar</packaging>
+  <name>${project.artifactId}</name>
 
-	<dependencies>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>commons-util-core-bc-composite-types</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.ldap</groupId>
-			<artifactId>spring-ldap-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.ldap</groupId>
-			<artifactId>spring-ldap-core-tiger</artifactId>
-		</dependency>
-	</dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.ldap</groupId>
+      <artifactId>spring-ldap-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.ldap</groupId>
+      <artifactId>spring-ldap-core-tiger</artifactId>
+    </dependency>
+  </dependencies>
 </project>
