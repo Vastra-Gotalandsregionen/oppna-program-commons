@@ -62,6 +62,7 @@ public class SitemapService<T> {
         // Check if list of entries is populated, otherwise we fill it up!
         if (entries.size() < 1) {
             sitemapCacheService.reloadCache();
+            cache = (SitemapCache) sitemapCacheService.getCache();
             entries = cache.getEntries();
         }
 
