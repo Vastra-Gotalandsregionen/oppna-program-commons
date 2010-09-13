@@ -40,26 +40,22 @@ import se.vgregion.sitemap.service.SitemapService;
 public class DefaultSitemapServlet extends HttpServlet {
     private static final long serialVersionUID = -5951290101644382810L;
     private static final String ENCODING_UTF8 = "UTF-8";
-    private static final String CLASS_NAME = DefaultSitemapServlet.class.getName();
-    private static final Log LOGGER = LogFactory.getLog(DefaultSitemapServlet.class);
 
-    private SitemapService<?> sitemapService;
+    private final Log logger = LogFactory.getLog(this.getClass());
+
+    protected SitemapService<?> sitemapService;
 
     /**
-     * Get reference to sitemapService from Spring context.
+     * Get reference to SitemapService from Spring context. Override loadSitemapService to control which service
+     * bean to load.
      * 
      * @throws ServletException
      *             if an exception occurs that interrupts the servlet's normal operation.
      */
     @Override
     public void init() throws ServletException {
-        LOGGER.info(CLASS_NAME + ".init()");
         super.init();
-
-        WebApplicationContext springContext = WebApplicationContextUtils
-                .getWebApplicationContext(getServletContext());
-
-        sitemapService = (SitemapService<?>) springContext.getBean("sitemapService");
+        loadSitemapService();
     }
 
     /**
@@ -67,8 +63,7 @@ public class DefaultSitemapServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        LOGGER.debug(CLASS_NAME + ".doGet()");
-        LOGGER.debug("DefaultSitemapServlet starting to put together the sitemap.");
+        logger.debug("doGet(): Starting to put together the sitemap.");
 
         long startTimeMillis = System.currentTimeMillis();
 
@@ -76,8 +71,7 @@ public class DefaultSitemapServlet extends HttpServlet {
 
         long endTimeMillis = System.currentTimeMillis();
 
-        LOGGER.debug("DefaultSitemapServlet generation finished. It took: " + (endTimeMillis - startTimeMillis)
-                / 1000 + " seconds.");
+        logger.debug("Generation finished. It took: " + (endTimeMillis - startTimeMillis) / 1000 + " seconds.");
 
         response.setCharacterEncoding(ENCODING_UTF8);
 
@@ -85,5 +79,15 @@ public class DefaultSitemapServlet extends HttpServlet {
         pw.write(sitemapContent);
         pw.flush();
         pw.close();
+    }
+
+    /**
+     * Override if you want to load other service bean than default bean "sitemapService".
+     */
+    protected void loadSitemapService() {
+        WebApplicationContext springContext = WebApplicationContextUtils
+                .getWebApplicationContext(getServletContext());
+
+        sitemapService = (SitemapService<?>) springContext.getBean("sitemapService");
     }
 }
