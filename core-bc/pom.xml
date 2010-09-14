@@ -3,12 +3,12 @@
   <parent>
     <groupId>se.vgregion.commons-util</groupId>
     <artifactId>commons-util-system</artifactId>
-    <version>2.1</version>
+    <version>2.2-SNAPSHOT</version>
   </parent>
   <groupId>se.vgregion.commons-util</groupId>
   <artifactId>commons-util-core-bc</artifactId>
   <packaging>pom</packaging>
-  <version>2.1</version>
+  <version>2.2-SNAPSHOT</version>
   <name>${project.artifactId}</name>
 
   <modules>
