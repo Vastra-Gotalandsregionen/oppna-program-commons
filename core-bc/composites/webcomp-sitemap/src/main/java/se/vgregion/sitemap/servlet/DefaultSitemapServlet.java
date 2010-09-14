@@ -27,8 +27,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -41,9 +41,8 @@ public class DefaultSitemapServlet extends HttpServlet {
     private static final long serialVersionUID = -5951290101644382810L;
     private static final String ENCODING_UTF8 = "UTF-8";
 
-    private final Log logger = LogFactory.getLog(this.getClass());
-
-    protected SitemapService<?> sitemapService;
+    private transient Logger logger;
+    private transient SitemapService<?> sitemapService;
 
     /**
      * Get reference to SitemapService from Spring context. Override loadSitemapService to control which service
@@ -63,15 +62,16 @@ public class DefaultSitemapServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        logger.debug("doGet(): Starting to put together the sitemap.");
+        getLogger().debug("doGet(): Starting to put together the sitemap.");
 
         long startTimeMillis = System.currentTimeMillis();
 
-        String sitemapContent = sitemapService.getSitemapContent();
+        String sitemapContent = getSitemapService().getSitemapContent();
 
         long endTimeMillis = System.currentTimeMillis();
 
-        logger.debug("Generation finished. It took: " + (endTimeMillis - startTimeMillis) / 1000 + " seconds.");
+        getLogger().debug(
+                "Generation finished. It took: " + (endTimeMillis - startTimeMillis) / 1000 + " seconds.");
 
         response.setCharacterEncoding(ENCODING_UTF8);
 
@@ -82,12 +82,38 @@ public class DefaultSitemapServlet extends HttpServlet {
     }
 
     /**
-     * Override if you want to load other service bean than default bean "sitemapService".
+     * Override if you want to load/set other service bean than default "sitemapService" from Spring context.
      */
     protected void loadSitemapService() {
         WebApplicationContext springContext = WebApplicationContextUtils
                 .getWebApplicationContext(getServletContext());
 
-        sitemapService = (SitemapService<?>) springContext.getBean("sitemapService");
+        setSitemapService((SitemapService<?>) springContext.getBean("sitemapService"));
+    }
+
+    /**
+     * Setting SitemapService field,primarily to be used when overriding loadSitemapService().
+     * 
+     * @param sitemapService
+     *            The SitemapService to set
+     */
+    protected void setSitemapService(SitemapService<?> sitemapService) {
+        this.sitemapService = sitemapService;
+    }
+
+    // Transient...
+    protected Logger getLogger() {
+        if (logger == null) {
+            logger = LoggerFactory.getLogger(this.getClass());
+        }
+        return logger;
+    }
+
+    // Transient...
+    private SitemapService<?> getSitemapService() {
+        if (sitemapService == null) {
+            loadSitemapService();
+        }
+        return sitemapService;
     }
 }
