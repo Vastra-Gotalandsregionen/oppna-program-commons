@@ -8,7 +8,7 @@
   <parent>
     <groupId>se.vgregion.commons-util</groupId>
     <artifactId>commons-util-core-bc</artifactId>
-    <version>2.2-SNAPSHOT</version>
+    <version>3.0</version>
   </parent>
   <artifactId>commons-util-core-bc-composite-types-jpa</artifactId>
   <packaging>jar</packaging>
