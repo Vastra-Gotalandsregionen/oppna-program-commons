@@ -19,19 +19,20 @@
 
 package se.vgregion.portal.core.domain.patterns.repository;
 
-import org.springframework.transaction.annotation.Transactional;
-import se.vgregion.portal.core.domain.patterns.entity.Entity;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import se.vgregion.portal.core.domain.patterns.entity.Entity;
+
 /**
- * @author Anders Asplund - Logica
+ * @author Anders Asplund - Callista Enterprise
+ * @param <T>
+ *            The Entity type
  * @param <ID>
+ *            The Id type
  * 
  */
-@Transactional
 public interface Repository<T extends Entity<T, ID>, ID extends Serializable> {
     /**
      * Store <code>object</code> in the database.
@@ -53,15 +54,27 @@ public interface Repository<T extends Entity<T, ID>, ID extends Serializable> {
      * @param object
      *            the object to be removed from the database
      */
-    void removeEntity(T object);
+    void remove(T object);
 
     /**
      * Delete by primary key.
      * 
      * @param pk
      *            primary key
+     * 
+     * @deprecated To find an entity by it's id use {@link Repository#deleteById(Serializable)} instead. This
+     *             method will be removed in the next version of JpaRepository.
      */
+    @Deprecated
     void deleteByPk(ID pk);
+
+    /**
+     * Delete by entity ID.
+     * 
+     * @param id
+     *            The id of the entity
+     */
+    void remove(ID id);
 
     /**
      * Find all instances of <code>T</code> in the database.
@@ -125,8 +138,22 @@ public interface Repository<T extends Entity<T, ID>, ID extends Serializable> {
      * @param pk
      *            The primary key
      * @return an object of <code>T</code>
+     * 
+     * @deprecated To find an entity by it's id use {@link Repository#findByID(Serializable)} instead. This method
+     *             will be removed in the next version of JpaRepository.
      */
+    @Deprecated
     T findByPk(ID pk);
+
+    /**
+     * Finds the instance of <code>T</code> identified by it's <code>ID</code>.
+     * 
+     * @param id
+     *            The id of the entity
+     * 
+     * @return an object of <code>T</code>
+     */
+    T find(ID id);
 
     /**
      * Taken from the EntityManager documentation: Clear the persistence context, causing all managed entities to
@@ -154,16 +181,18 @@ public interface Repository<T extends Entity<T, ID>, ID extends Serializable> {
 
     /**
      * Check if the entity is available in the EntityManager.
-     *
-     * @param entity the entity object
+     * 
+     * @param entity
+     *            the entity object
      * @return true if present
      */
     boolean contains(T entity);
 
     /**
      * Convenience method that lets you persist or merge an entity transparently depending on its state.
-     *
-     * @param entity the entity
+     * 
+     * @param entity
+     *            the entity
      * @return the stored entity
      */
     T store(T entity);

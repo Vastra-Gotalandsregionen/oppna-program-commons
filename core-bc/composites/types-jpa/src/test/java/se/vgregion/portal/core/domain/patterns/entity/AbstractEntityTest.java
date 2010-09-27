@@ -19,14 +19,14 @@
 
 package se.vgregion.portal.core.domain.patterns.entity;
 
+import static org.junit.Assert.*;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * This action do that and that, if it has something special it is.
- *
+ * 
  * @author <a href="mailto:david.rosell@redpill-linpro.com">David Rosell</a>
  */
 public class AbstractEntityTest {
@@ -71,6 +71,7 @@ public class AbstractEntityTest {
 
     private class TestEntity extends AbstractEntity<TestEntity, Long> {
 
+        private static final long serialVersionUID = 1L;
         private Long id;
 
         @Override

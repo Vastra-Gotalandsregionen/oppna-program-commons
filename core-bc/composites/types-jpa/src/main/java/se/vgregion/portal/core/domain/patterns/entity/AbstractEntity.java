@@ -19,17 +19,26 @@
 
 package se.vgregion.portal.core.domain.patterns.entity;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import java.io.Serializable;
-
 /**
- * @author Anders Asplund - Logica
+ * @author Anders Asplund - Callista Enterprise
  * 
  */
-@SuppressWarnings({"unchecked", "serial"})
-public abstract class AbstractEntity<T extends Entity, ID extends Serializable> implements Entity<T, ID> {
+public abstract class AbstractEntity<T extends Entity<T, ID>, ID extends Serializable> implements Entity<T, ID> {
+
+    private static final long serialVersionUID = 2057056983838805747L;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final boolean sameAs(final T other) {
+        return other != null && this.getId().equals(other.getId());
+    }
 
     /**
      * {@inheritDoc}
@@ -50,14 +59,14 @@ public abstract class AbstractEntity<T extends Entity, ID extends Serializable> 
         if (other == null) {
             return false;
         }
-        if (this == other) {
+        if (other == this) {
             return true;
         }
-
         if (getClass() != other.getClass()) {
             return false;
         }
 
+        @SuppressWarnings("unchecked")
         T otherType = (T) other;
 
         if (getId() == null || otherType.getId() == null) {

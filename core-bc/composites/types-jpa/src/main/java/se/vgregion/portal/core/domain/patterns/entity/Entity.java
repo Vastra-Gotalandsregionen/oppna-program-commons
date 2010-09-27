@@ -27,7 +27,7 @@ import java.io.Serializable;
 /**
  * An entity, as explained in the DDD book.
  * 
- * @author Anders Asplund - Logica
+ * @author Anders Asplund - Callista Enterprise
  */
 public interface Entity<T, ID> extends Serializable {
     /**
@@ -36,5 +36,14 @@ public interface Entity<T, ID> extends Serializable {
      * @return The identity of this entity.
      */
     ID getId();
+
+    /**
+     * Entities compare by identity, not by attributes.
+     * 
+     * @param other
+     *            The other entity.
+     * @return true if the identities are the same, regardless of other attributes.
+     */
+    boolean sameAs(T other);
 
 }

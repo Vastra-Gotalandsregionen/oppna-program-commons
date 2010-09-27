@@ -19,6 +19,10 @@
 
 package se.vgregion.portal.core.infrastructure.persistence.jpa;
 
+import static org.junit.Assert.*;
+
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,25 +30,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
-import org.springframework.transaction.annotation.Transactional;
+
 import se.vgregion.portal.core.domain.patterns.entity.MockEntity;
 import se.vgregion.portal.core.domain.patterns.entity.MockEntityRepository;
 
-import java.util.List;
-
-import static org.junit.Assert.*;
-
 /**
  * This action do that and that, if it has something special it is.
- *
+ * 
  * @author <a href="mailto:david.rosell@redpill-linpro.com">David Rosell</a>
+ * @author Anders Asplund - Callista Enterprise
  */
 @ContextConfiguration("classpath:JpaMockEntityRepositoryTest-context.xml")
 public class JpaMockEntityRepositoryTest extends AbstractTransactionalJUnit4SpringContextTests {
 
     @Autowired
     private MockEntityRepository testRepository;
-
 
     @Before
     public void setUp() throws Exception {
@@ -57,16 +57,14 @@ public class JpaMockEntityRepositoryTest extends AbstractTransactionalJUnit4Spri
     }
 
     @Test
-    @Transactional
     @Rollback(false)
-    public void findByPk() {
-        MockEntity entity = testRepository.findByPk(1L);
+    public void findByPrimaryKey() {
+        MockEntity entity = testRepository.find(1L);
 
         assertEquals("entityName1", entity.getName());
     }
 
     @Test
-    @Transactional
     @Rollback(false)
     public void findAll() {
         List<MockEntity> entityList = testRepository.findAll();
@@ -75,26 +73,24 @@ public class JpaMockEntityRepositoryTest extends AbstractTransactionalJUnit4Spri
     }
 
     @Test
-    @Transactional
     @Rollback(false)
     public void merge() {
-        MockEntity entity = testRepository.findByPk(1L);
+        MockEntity entity = testRepository.find(1L);
         entity.setName("newName");
         testRepository.merge(entity);
         testRepository.flush();
 
-        entity = testRepository.findByPk(1L);
+        entity = testRepository.find(1L);
 
         assertEquals("newName", entity.getName());
     }
 
     @Test
-    @Transactional
     @Rollback(false)
     public void removeEntity() {
         List<MockEntity> entityList = testRepository.findAll();
 
-        testRepository.removeEntity(entityList.get(0));
+        testRepository.remove(entityList.get(0));
 
         testRepository.flush();
 
@@ -104,24 +100,22 @@ public class JpaMockEntityRepositoryTest extends AbstractTransactionalJUnit4Spri
     }
 
     @Test
-    @Transactional
     @Rollback(false)
     public void deleteByPk() {
-        testRepository.deleteByPk(2L);
+        testRepository.remove(2L);
 
         testRepository.flush();
 
         List<MockEntity> entityList = testRepository.findAll();
 
         assertEquals(1, entityList.size());
-        assertEquals(new Long(1), (Long)entityList.get(0).getId());
+        assertEquals(new Long(1), entityList.get(0).getId());
     }
 
     @Test
-    @Transactional
     @Rollback(false)
     public void refresh() {
-        MockEntity entity = testRepository.findByPk(1L);
+        MockEntity entity = testRepository.find(1L);
 
         entity.setName("newName");
 
@@ -131,7 +125,6 @@ public class JpaMockEntityRepositoryTest extends AbstractTransactionalJUnit4Spri
     }
 
     @Test
-    @Transactional
     @Rollback(false)
     public void persist() {
         MockEntity entity = new MockEntity();
@@ -149,7 +142,6 @@ public class JpaMockEntityRepositoryTest extends AbstractTransactionalJUnit4Spri
     }
 
     @Test
-    @Transactional
     @Rollback(false)
     public void clear() {
         MockEntity entity = testRepository.findByPk(1L);
@@ -166,7 +158,6 @@ public class JpaMockEntityRepositoryTest extends AbstractTransactionalJUnit4Spri
     }
 
     @Test
-    @Transactional
     @Rollback(false)
     public void store() {
         MockEntity entity = testRepository.findByPk(1L);

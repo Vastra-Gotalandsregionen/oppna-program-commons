@@ -17,16 +17,35 @@
  *
  */
 
+/**
+ * 
+ */
 package se.vgregion.portal.core.infrastructure.persistence.jpa;
 
-import se.vgregion.portal.core.domain.patterns.entity.MockEntity;
-import se.vgregion.portal.core.domain.patterns.entity.MockEntityRepository;
+import se.vgregion.portal.core.domain.patterns.entity.Entity;
 
 /**
- * This action do that and that, if it has something special it is.
+ * @author Anders Asplund - Callista Enterprise
  * 
- * @author <a href="mailto:david.rosell@redpill-linpro.com">David Rosell</a>
+ *         Default implementation of JpaRepository where Entity ID and database primary key are equal and of type
+ *         Long.
+ * 
  */
-public class JpaMockEntityRepository extends DefaultJpaRepository<MockEntity> implements MockEntityRepository {
+public abstract class DefaultJpaRepository<T extends Entity<T, Long>> extends JpaRepository<T, Long, Long> {
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public T find(Long id) {
+        return findByPrimaryKey(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void remove(Long id) {
+        removeByPrimaryKey(id);
+    }
 }

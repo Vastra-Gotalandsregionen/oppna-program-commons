@@ -34,9 +34,9 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  * 
  * @param <T>
  */
-public abstract class AbstractValueObject<T extends ValueObject> implements ValueObject<T> {
+public abstract class AbstractValueObject<T extends ValueObject<T>> implements ValueObject<T> {
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings("unused")
     private final Long _primaryKey = null;
     private transient int _cachedHashCode = 0;
     private static final String[] EXCLUDED_FIELDS = { "_primaryKey", "_cachedHashCode" };
@@ -79,7 +79,7 @@ public abstract class AbstractValueObject<T extends ValueObject> implements Valu
      *            other object
      * @return True if other object has the same value as this value object.
      */
-    @SuppressWarnings({ "SimplifiableIfStatement", "unchecked", "EqualsWhichDoesntCheckParameterClass" })
+    @SuppressWarnings("unchecked")
     @Override
     public final boolean equals(final Object other) {
         if (other == null) {

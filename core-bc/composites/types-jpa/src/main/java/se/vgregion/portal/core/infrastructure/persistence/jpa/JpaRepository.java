@@ -31,15 +31,18 @@ import javax.persistence.Query;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import se.vgregion.portal.core.domain.patterns.entity.Entity;
-import se.vgregion.portal.core.domain.patterns.repository.Repository;
+import se.vgregion.portal.persistance.DatabseRepository;
 
 /**
- * @author Anders Asplund - Logica
+ * @author Anders Asplund - Callista Enterprise
  * 
  */
-public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializable> implements Repository<T, ID> {
+public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializable, PK> implements
+        DatabseRepository<T, ID, PK> {
     private static final Logger LOGGER = LoggerFactory.getLogger(JpaRepository.class);
 
     /**
@@ -82,6 +85,7 @@ public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializ
      *            Entity to check for
      * @return true if found
      */
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public boolean contains(T entity) {
         return entityManager.contains(entity);
     }
@@ -90,6 +94,7 @@ public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializ
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public List<T> findAll() {
         Query query = entityManager.createQuery("select o from " + type.getSimpleName() + " o");
         return query.getResultList();
@@ -99,6 +104,7 @@ public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializ
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public List<T> findByNamedQuery(String queryName, Map<String, ? extends Object> args) {
         Query namedQuery = entityManager.createNamedQuery(queryName);
         for (Map.Entry<String, ? extends Object> parameter : args.entrySet()) {
@@ -111,6 +117,7 @@ public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializ
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public List<T> findByNamedQuery(String queryName, Object[] args) {
         Query namedQuery = entityManager.createNamedQuery(queryName);
         if (args != null) {
@@ -124,6 +131,7 @@ public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializ
     /**
      * {@inheritDoc}
      */
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public T findInstanceByNamedQuery(String queryName, Object[] args) {
         Query namedQuery = entityManager.createNamedQuery(queryName);
         if (args != null) {
@@ -148,6 +156,7 @@ public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializ
     /**
      * {@inheritDoc}
      */
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public T findInstanceByNamedQuery(String queryName, Map<String, ? extends Object> args) {
         Query namedQuery = entityManager.createNamedQuery(queryName);
         if (args != null) {
@@ -157,7 +166,6 @@ public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializ
                 namedQuery.setParameter(entry.getKey(), entry.getValue());
             }
         }
-
         try {
             @SuppressWarnings("unchecked")
             T result = (T) namedQuery.getSingleResult();
@@ -166,12 +174,13 @@ public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializ
             LOGGER.warn("No entity found for query: {}", namedQuery);
             return null;
         }
-
     }
 
     /**
      * {@inheritDoc}
      */
+    @Deprecated
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public T findByPk(ID pk) {
         return entityManager.find(type, pk);
     }
@@ -179,6 +188,23 @@ public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializ
     /**
      * {@inheritDoc}
      */
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public T find(ID id) {
+        return entityManager.find(type, id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public T findByPrimaryKey(PK pk) {
+        return entityManager.find(type, pk);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
     public void flush() {
         entityManager.flush();
     }
@@ -186,6 +212,7 @@ public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializ
     /**
      * {@inheritDoc}
      */
+    @Transactional(propagation = Propagation.REQUIRED)
     public T persist(T entity) {
         entityManager.persist(entity);
         return entity;
@@ -194,6 +221,7 @@ public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializ
     /**
      * {@inheritDoc}
      */
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public void clear() {
         entityManager.clear();
     }
@@ -201,13 +229,8 @@ public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializ
     /**
      * {@inheritDoc}
      */
-    public void removeEntity(T entity) {
-        entityManager.remove(entity);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
+    @Deprecated
+    @Transactional(propagation = Propagation.REQUIRED)
     public void deleteByPk(ID taskId) {
         T entity = entityManager.find(type, taskId);
         entityManager.remove(entity);
@@ -216,6 +239,33 @@ public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializ
     /**
      * {@inheritDoc}
      */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void remove(T entity) {
+        entityManager.remove(entity);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void remove(ID id) {
+        T entity = find(id);
+        entityManager.remove(entity);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void removeByPrimaryKey(PK pk) {
+        T entity = findByPrimaryKey(pk);
+        entityManager.remove(entity);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
     public T merge(T entity) {
         return entityManager.merge(entity);
     }
@@ -223,6 +273,7 @@ public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializ
     /**
      * {@inheritDoc}
      */
+    @Transactional(propagation = Propagation.REQUIRED)
     public T store(T entity) {
         if (entity.getId() == null || entityManager.find(type, entity.getId()) == null) {
             persist(entity);
@@ -235,6 +286,7 @@ public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializ
     /**
      * {@inheritDoc}
      */
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public void refresh(T entity) {
         entityManager.refresh(entity);
     }
