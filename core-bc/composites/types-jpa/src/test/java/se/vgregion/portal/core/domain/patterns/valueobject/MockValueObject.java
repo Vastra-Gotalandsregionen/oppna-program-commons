@@ -17,37 +17,31 @@
  *
  */
 
-/**
- * 
- */
-package se.vgregion.portal.core.infrastructure.persistence.jpa;
+package se.vgregion.portal.core.domain.patterns.valueobject;
 
-import se.vgregion.portal.core.domain.patterns.entity.Entity;
+import java.io.Serializable;
 
 /**
- * A convenient implementation of JpaRepository where Entity ID and database primary key(PK) are equal and of type
- * Long. Use this when PK=ID=Long to get find(ID) and remove(ID) implemented.
- * 
- * @param T
- *            the Entity Type
+ * This action do that and that, if it has something special it is.
  * 
  * @author Anders Asplund - <a href="http://www.callistaenterprise.se">Callista Enterprise</a>
  */
-public abstract class DefaultJpaRepository<T extends Entity<T, Long>> extends JpaRepository<T, Long, Long> {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public T find(Long id) {
-        return findByPrimaryKey(id);
+public class MockValueObject extends AbstractValueObject<MockValueObject> implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    protected MockValueObject() {
+        // Used by JPA
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void remove(Long id) {
-        removeByPrimaryKey(id);
+    public MockValueObject(String name) {
+        this.name = name;
+    }
+
+    private String name;
+
+    public String getName() {
+        return name;
     }
 }

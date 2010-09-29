@@ -1,6 +1,6 @@
 /**
- * Copyright 2010 Västra Götalandsregionen
  *
+ * Copyright 2010 Västra Götalandsregionen
  *   This library is free software; you can redistribute it and/or modify
  *   it under the terms of version 2.1 of the GNU Lesser General Public
  *   License as published by the Free Software Foundation.
@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
+import org.springframework.transaction.annotation.Transactional;
 
 import se.vgregion.portal.core.domain.patterns.entity.MockEntity;
 import se.vgregion.portal.core.domain.patterns.entity.MockEntityRepository;
@@ -58,7 +59,8 @@ public class JpaMockEntityRepositoryTest extends AbstractTransactionalJUnit4Spri
 
     @Test
     @Rollback(false)
-    public void findByPrimaryKey() {
+    @Transactional(readOnly = true)
+    public void find() {
         MockEntity entity = testRepository.find(1L);
 
         assertEquals("entityName1", entity.getName());
@@ -66,6 +68,7 @@ public class JpaMockEntityRepositoryTest extends AbstractTransactionalJUnit4Spri
 
     @Test
     @Rollback(false)
+    @Transactional(readOnly = true)
     public void findAll() {
         List<MockEntity> entityList = testRepository.findAll();
 
@@ -74,6 +77,7 @@ public class JpaMockEntityRepositoryTest extends AbstractTransactionalJUnit4Spri
 
     @Test
     @Rollback(false)
+    @Transactional
     public void merge() {
         MockEntity entity = testRepository.find(1L);
         entity.setName("newName");
@@ -87,6 +91,7 @@ public class JpaMockEntityRepositoryTest extends AbstractTransactionalJUnit4Spri
 
     @Test
     @Rollback(false)
+    @Transactional
     public void removeEntity() {
         List<MockEntity> entityList = testRepository.findAll();
 
@@ -101,7 +106,8 @@ public class JpaMockEntityRepositoryTest extends AbstractTransactionalJUnit4Spri
 
     @Test
     @Rollback(false)
-    public void deleteByPk() {
+    @Transactional
+    public void remove() {
         testRepository.remove(2L);
 
         testRepository.flush();
@@ -114,6 +120,7 @@ public class JpaMockEntityRepositoryTest extends AbstractTransactionalJUnit4Spri
 
     @Test
     @Rollback(false)
+    @Transactional(readOnly = true)
     public void refresh() {
         MockEntity entity = testRepository.find(1L);
 
@@ -126,6 +133,7 @@ public class JpaMockEntityRepositoryTest extends AbstractTransactionalJUnit4Spri
 
     @Test
     @Rollback(false)
+    @Transactional
     public void persist() {
         MockEntity entity = new MockEntity();
         entity.setName("newentity");
@@ -143,8 +151,9 @@ public class JpaMockEntityRepositoryTest extends AbstractTransactionalJUnit4Spri
 
     @Test
     @Rollback(false)
+    @Transactional(readOnly = true)
     public void clear() {
-        MockEntity entity = testRepository.findByPk(1L);
+        MockEntity entity = testRepository.find(1L);
 
         entity.setName("newName");
         assertTrue(testRepository.contains(entity));
@@ -153,14 +162,15 @@ public class JpaMockEntityRepositoryTest extends AbstractTransactionalJUnit4Spri
 
         assertFalse(testRepository.contains(entity));
 
-        MockEntity entityAgain = testRepository.findByPk(1L);
+        MockEntity entityAgain = testRepository.find(1L);
         assertEquals("entityName1", entityAgain.getName());
     }
 
     @Test
     @Rollback(false)
+    @Transactional
     public void store() {
-        MockEntity entity = testRepository.findByPk(1L);
+        MockEntity entity = testRepository.find(1L);
 
         entity.setName("newName");
 

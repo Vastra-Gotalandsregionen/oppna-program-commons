@@ -19,21 +19,22 @@
 
 package se.vgregion.portal.core.domain.patterns.repository;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 import se.vgregion.portal.core.domain.patterns.entity.Entity;
 
 /**
- * @author Anders Asplund - Callista Enterprise
+ * Common methods for retrieving domain object.
+ * 
  * @param <T>
  *            The Entity type
  * @param <ID>
  *            The Id type
  * 
+ * @author Anders Asplund - <a href="http://www.callistaenterprise.se">Callista Enterprise</a>
  */
-public interface Repository<T extends Entity<T, ID>, ID extends Serializable> {
+public interface Repository<T extends Entity<T, ID>, ID> {
     /**
      * Store <code>object</code> in the database.
      * 
@@ -62,8 +63,8 @@ public interface Repository<T extends Entity<T, ID>, ID extends Serializable> {
      * @param pk
      *            primary key
      * 
-     * @deprecated To find an entity by it's id use {@link Repository#deleteById(Serializable)} instead. This
-     *             method will be removed in the next version of JpaRepository.
+     * @deprecated Deprecated as of types-jpa 3.0, replaced by {@link Repository#remove(Object)}. This method will
+     *             be removed in version 3.2.
      */
     @Deprecated
     void deleteByPk(ID pk);
@@ -139,8 +140,8 @@ public interface Repository<T extends Entity<T, ID>, ID extends Serializable> {
      *            The primary key
      * @return an object of <code>T</code>
      * 
-     * @deprecated To find an entity by it's id use {@link Repository#findByID(Serializable)} instead. This method
-     *             will be removed in the next version of JpaRepository.
+     * @deprecated Deprecated as of types-jpa 3.0, replaced by {@link Repository#find(Object)}. This method will be
+     *             removed in version 3.2.
      */
     @Deprecated
     T findByPk(ID pk);

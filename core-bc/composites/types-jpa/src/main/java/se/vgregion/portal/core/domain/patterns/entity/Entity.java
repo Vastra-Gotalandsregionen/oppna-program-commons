@@ -25,9 +25,21 @@ package se.vgregion.portal.core.domain.patterns.entity;
 import java.io.Serializable;
 
 /**
- * An entity, as explained in the DDD book.
+ * <strong>From wikipedia</strong>: An object that is not defined by its attributes, but rather by a thread of
+ * continuity and its identity.
+ * <p/>
+ * <strong>Example</strong>: Most airlines distinguish each seat uniquely on every flight. Each seat is an entity
+ * in this context. However, Southwest Airlines (or EasyJet/RyanAir for you Europeans...) does not distinguish
+ * between every seat; all seats are the same. In this context, a seat is actually a
+ * {@link se.vgregion.portal.core.domain.patterns.valueobject.ValueObject value object}.
  * 
- * @author Anders Asplund - Callista Enterprise
+ * @param <T>
+ *            The Entity Type
+ * 
+ * @param <ID>
+ *            The ID of the Entity
+ * 
+ * @author Anders Asplund - <a href="http://www.callistaenterprise.se">Callista Enterprise</a>
  */
 public interface Entity<T, ID> extends Serializable {
     /**

@@ -35,14 +35,24 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import se.vgregion.portal.core.domain.patterns.entity.Entity;
-import se.vgregion.portal.persistance.DatabseRepository;
+import se.vgregion.portal.core.infrastructure.persistence.DatabaseRepository;
 
 /**
- * @author Anders Asplund - Callista Enterprise
+ * An abstract default implementation of a {@link DatabaseRepository}. This is an JPA implementation used with any
+ * JPA implementation such as Hibernate.
+ * 
+ * @param <T>
+ *            The Entity Type
+ * @param <ID>
+ *            The ID of the Entity
+ * @param <PK>
+ *            The type of the primary key
+ * 
+ * @author Anders Asplund - <a href="http://www.callistaenterprise.se">Callista Enterprise</a>
  * 
  */
-public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializable, PK> implements
-        DatabseRepository<T, ID, PK> {
+public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializable, PK extends Serializable>
+        implements DatabaseRepository<T, ID, PK> {
     private static final Logger LOGGER = LoggerFactory.getLogger(JpaRepository.class);
 
     /**
@@ -178,6 +188,9 @@ public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializ
 
     /**
      * {@inheritDoc}
+     * 
+     * @deprecated Deprecated as of types-jpa 3.0, replaced by {@link JpaRepository#find(Serializable)}. This
+     *             method will be removed in version 3.2.
      */
     @Deprecated
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
@@ -228,6 +241,9 @@ public abstract class JpaRepository<T extends Entity<T, ID>, ID extends Serializ
 
     /**
      * {@inheritDoc}
+     * 
+     * @deprecated Deprecated as of types-jpa 3.0, replaced by {@link JpaRepository#remove(Serializable)}. This
+     *             method will be removed in version 3.2.
      */
     @Deprecated
     @Transactional(propagation = Propagation.REQUIRED)

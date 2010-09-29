@@ -19,18 +19,23 @@
 
 package se.vgregion.portal.core.domain.patterns.entity;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * @author Anders Asplund - Callista Enterprise
+ * Abstract default implementation common to all concrete implementation of Entity.
+ * 
+ * @param <T>
+ *            The Entity Type
+ * @param <ID>
+ *            The ID of the Entity
+ * 
+ * @author Anders Asplund - <a href="http://www.callistaenterprise.se">Callista Enterprise</a>
  * 
  */
-public abstract class AbstractEntity<T extends Entity<T, ID>, ID extends Serializable> implements Entity<T, ID> {
+public abstract class AbstractEntity<T extends Entity<T, ID>, ID> implements Entity<T, ID> {
 
-    private static final long serialVersionUID = 2057056983838805747L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * {@inheritDoc}

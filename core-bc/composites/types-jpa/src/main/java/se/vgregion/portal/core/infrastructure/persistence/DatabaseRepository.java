@@ -17,10 +17,7 @@
  *
  */
 
-/**
- * 
- */
-package se.vgregion.portal.persistance;
+package se.vgregion.portal.core.infrastructure.persistence;
 
 import java.io.Serializable;
 
@@ -28,7 +25,9 @@ import se.vgregion.portal.core.domain.patterns.entity.Entity;
 import se.vgregion.portal.core.domain.patterns.repository.Repository;
 
 /**
- * @author Anders Asplund - Callista Enterprise
+ * An extended repository interface with additional methods for find and remove {@link Entity entities} by its
+ * database primary key.
+ * 
  * @param <T>
  *            The Entity Type
  * @param <ID>
@@ -36,8 +35,10 @@ import se.vgregion.portal.core.domain.patterns.repository.Repository;
  * @param <PK>
  *            The type of the primary key
  * 
+ * @author Anders Asplund - <a href="http://www.callistaenterprise.se">Callista Enterprise</a>
  */
-public interface DatabseRepository<T extends Entity<T, ID>, ID extends Serializable, PK> extends Repository<T, ID> {
+public interface DatabaseRepository<T extends Entity<T, ID>, ID extends Serializable, PK extends Serializable>
+        extends Repository<T, ID> {
 
     /**
      * Finds the instance of <code>T</code> identified by the database primary key. The primary key and the ID of
