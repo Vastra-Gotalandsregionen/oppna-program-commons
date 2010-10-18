@@ -12,8 +12,6 @@
   <name>${project.artifactId}</name>
 
   <modules>
-	<module>composites/types-jpa</module>
-    <module>composites/svc-ldap</module>
     <module>composites/svc-pivotaltracker</module>
 	<module>composites/svc-sitemap</module>
 	<module>composites/svc-usd</module>
