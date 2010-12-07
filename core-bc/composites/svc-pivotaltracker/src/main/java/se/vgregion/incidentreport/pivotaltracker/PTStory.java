@@ -19,33 +19,28 @@
 
 package se.vgregion.incidentreport.pivotaltracker;
 
-import java.io.File;
 import java.util.List;
+
+import se.vgregion.util.Attachment;
 
 public class PTStory {
 
     private String projectId;
     private String type;
     private String id;
-    private List<File> attachments;
-    private List<String> attachmentNames;
-    
-	public void setAttachmentNames(List<String> attachmentNames) {
-		this.attachmentNames = attachmentNames;
-	}
+    private List<Attachment> attachments;
 
-	private String name;
+    private String name;
     private String requestedBy;
     private String description;
 
-    
     public String getStoryId() {
-		return id;
-	}
+        return id;
+    }
 
-	public void setStoryId(String id) {
-		this.id = id;
-	}
+    public void setStoryId(String id) {
+        this.id = id;
+    }
 
     public String getProjectId() {
         return projectId;
@@ -87,16 +82,12 @@ public class PTStory {
         this.description = description;
     }
 
-	public void setAttachments(List<File> attachments) {
-		this.attachments = attachments;
-	}
+    public void setAttachments(List<Attachment> attachments) {
+        this.attachments = attachments;
+    }
 
-	public List<File> getAttachments() {
-		return attachments;
-	}
-
-	public List<String> getAttachmentNames() {
-		return attachmentNames;
-	}
+    public List<Attachment> getAttachments() {
+        return attachments;
+    }
 
 }
