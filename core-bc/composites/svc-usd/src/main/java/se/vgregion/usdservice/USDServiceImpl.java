@@ -20,19 +20,21 @@
 package se.vgregion.usdservice;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
 import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
+import javax.activation.DataSource;
+import javax.mail.util.ByteArrayDataSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.rpc.holders.StringHolder;
@@ -51,6 +53,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import se.vgregion.usdservice.domain.Issue;
+import se.vgregion.util.Attachment;
 
 import com.ca.www.UnicenterServicePlus.ServiceDesk.USD_WebServiceSoap;
 import com.ca.www.UnicenterServicePlus.ServiceDesk.USD_WebServiceSoapSoapBindingStub;
@@ -104,17 +107,23 @@ public class USDServiceImpl implements USDService {
     }
 
     private void createAttachment(USD_WebServiceSoap service, int sid, String repHandle, String objectHandle,
-            String description, String fileName) throws Exception {
+            String description, se.vgregion.util.Attachment attachment) throws Exception {
 
-        FileDataSource fds = new FileDataSource(fileName);
-        DataHandler dhandler = new DataHandler(fds);
+        DataSource source;
+        try {
+            source = new ByteArrayDataSource(attachment.getData(), "application/octet-stream");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        DataHandler dhandler = new DataHandler(source);
+
         // Affix DIME type header to attachment before sending
         ((javax.xml.rpc.Stub) service)._setProperty(org.apache.axis.client.Call.ATTACHMENT_ENCAPSULATION_FORMAT,
                 Call.ATTACHMENT_ENCAPSULATION_FORMAT_DIME);
         ((org.apache.axis.client.Stub) service).addAttachment(dhandler);
         // Create attachment
-        service.createAttachment(sid, repHandle, objectHandle, description, fileName);
-        //System.out.println("Creating attachment...SUCCESS");
+        service.createAttachment(sid, repHandle, objectHandle, description, attachment.getFilename());
+        // System.out.println("Creating attachment...SUCCESS");
 
     }
 
@@ -153,8 +162,8 @@ public class USDServiceImpl implements USDService {
 
     }
 
-    public String createRequest(Properties requestParameters, String userId, List<File> files,
-            List<String> filenames) {
+    @Override
+    public String createRequest(Properties requestParameters, String userId, Collection<Attachment> attachments) {
 
         String result = null;
         int sessionID = 0;
@@ -206,27 +215,17 @@ public class USDServiceImpl implements USDService {
             }
 
             if (handle != "") {
-                if (files != null && files.size() > 0) {
+                for (se.vgregion.util.Attachment attachment : attachments) {
                     int i = 0;
-                    for (File f : files) {
-                        try {
-                            if (filenames != null && filenames.size() > 0) {
-                                File newFile = new File(f.getParentFile(), filenames.get(i));
-                                boolean renameSuccess = f.renameTo(newFile);
-                                if (renameSuccess) {
-                                    f = new File(f.getParentFile(), filenames.get(i));
-                                }
-                            }
-                            // System.out.println("Attaching: " +
-                            // f.getAbsolutePath());
-                            this.createAttachment(getWebService(), sessionID, wsAttachmentRepHandle, handle,
-                                    "Attachment " + i, f.getAbsolutePath());
-                        } catch (Exception e) {
-                            throw new RuntimeException("Error creating attchment in USD", e);
-                        }
-                        i++;
+                    try {
+                        this.createAttachment(getWebService(), sessionID, wsAttachmentRepHandle, handle,
+                                "Attachment " + i, attachment);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Error creating attchment in USD", e);
                     }
+                    i++;
                 }
+
             }
 
         } catch (RemoteException e) {
@@ -265,6 +264,7 @@ public class USDServiceImpl implements USDService {
         return webService;
     }
 
+    @Override
     public String getUSDGroupHandleForApplicationName(String appName) {
         String usdGroupName = usdAppToGroupMappings.getProperty(appName);
         // System.out.println("usdAppToGroupMappings=" + usdAppToGroupMappings);
@@ -480,6 +480,7 @@ public class USDServiceImpl implements USDService {
      * 
      * @see se.vgregion.usdservice.USDService#getRecordsForContact(java.lang.String, java.lang.Integer)
      */
+    @Override
     public List<Issue> getRecordsForContact(String userId, Integer maxRows) {
         List<Issue> records = new ArrayList<Issue>();
 
@@ -536,7 +537,4 @@ public class USDServiceImpl implements USDService {
         return new StringBuffer(getWebService().getHandleForUserid(sessionID, userId)).toString();
     }
 
-    public String createRequest(Properties testParameters, String string, List<File> files) {
-        return createRequest(testParameters, string, files, null);
-    }
 }

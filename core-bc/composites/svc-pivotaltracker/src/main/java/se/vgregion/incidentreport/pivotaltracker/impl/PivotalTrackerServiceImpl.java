@@ -181,8 +181,6 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
     }
 
     public String addStoryForProject(String projectId, PTStory story) {
-
-        System.out.println("---->> TAG (addStoryForProject())"); // TODO: Remove
         String token = getUserToken(ptUser, ptPwd);
 
         DefaultHttpClient client = new DefaultHttpClient();
@@ -334,8 +332,6 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 
     @Override
     public String createuserStory(PTStory ptstory) {
-
-        System.out.println("---->> TAG (PivotalTrackerServiceImpl.createuserStory())"); // TODO: Remove
         ptstory.setRequestedBy(ptUser);
         return addStoryForProject(ptstory.getProjectId(), ptstory);
     }

@@ -19,11 +19,12 @@
 
 package se.vgregion.usdservice;
 
-import se.vgregion.usdservice.domain.Issue;
-
-import java.io.File;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+
+import se.vgregion.usdservice.domain.Issue;
+import se.vgregion.util.Attachment;
 
 /**
  * 
@@ -33,9 +34,7 @@ import java.util.Properties;
  */
 public interface USDService {
 
-    String createRequest(Properties testParameters, String string, List<File> files);
-
-    String createRequest(Properties testParameters, String string, List<File> files, List<String> filenames);
+    String createRequest(Properties testParameters, String string, Collection<Attachment> attachments);
 
     String getUSDGroupHandleForApplicationName(String appName);
 

@@ -20,6 +20,8 @@
 package se.vgregion.usdservice;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -52,16 +54,14 @@ public class USDServiceTest extends TestCase {
             p.load(ClassLoader.getSystemResourceAsStream("usd.properties"));
             mappings.load(ClassLoader.getSystemResourceAsStream("usdAppToGroup.properties"));
             usdService = new USDServiceImpl(p);
-        }
-        else {
+        } else {
             usdService = new USDServiceImpl(p) {
 
                 @Override
                 protected USD_WebServiceSoapSoapBindingStub getWebService() {
                     try {
                         return new Mock_USD_WebServiceSoapSoapBindingStub();
-                    }
-                    catch (AxisFault e) {
+                    } catch (AxisFault e) {
                         throw new RuntimeException("TODO: Handle this exception better", e);
                     }
                 }
@@ -116,18 +116,26 @@ public class USDServiceTest extends TestCase {
     public void testCreateRequestWithAttachments() {
         if (integrationTest) {
 
-            List<File> files = new ArrayList<File>();
             File file;
             try {
                 file = File.createTempFile("attachtestäöå", ".doc", new File("c:/program files/temp"));
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 throw new RuntimeException("TODO: Handle this exception better", e);
             }
 
-            files.add(file);
+            se.vgregion.util.Attachment attachment = new se.vgregion.util.Attachment();
+            attachment.setFilename("temp");
+            try {
+                attachment.setData(new FileInputStream(file));
+            } catch (FileNotFoundException fnfe) {
 
-            String result = usdService.createRequest(getTestParameters(), "andcu1", files);
+                throw new RuntimeException(fnfe);
+            }
+
+            List<se.vgregion.util.Attachment> attachments = new ArrayList<se.vgregion.util.Attachment>();
+            attachments.add(attachment);
+
+            String result = usdService.createRequest(getTestParameters(), "andcu1", attachments);
             System.out.println("result=" + result);
             assertNotNull(result);
             file.delete();
