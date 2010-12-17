@@ -19,21 +19,8 @@
 
 package se.vgregion.util;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-
-import org.apache.http.HttpException;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScheme;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.AuthState;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.*;
+import org.apache.http.auth.*;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpGet;
@@ -48,6 +35,12 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 
 /**
@@ -131,7 +124,6 @@ public class HTTPUtils {
      * @param url
      * @param token
      * @param httpclient
-     * @param list
      * @return
      * @throws Exception
      */
@@ -141,16 +133,32 @@ public class HTTPUtils {
         HttpPost httppost = new HttpPost(url);
 
         httppost.addHeader("X-TrackerToken", token);
-        // httppost.addHeader("Accept", "*/*");
+//        httppost.addHeader("content-length", attachment.getFileLength()+"");
+//        httppost.addHeader("Accept", "*/*");
         httppost.removeHeaders("Connection");
-        // System.out.println("Token="+token);
         MultipartEntity mpEntity = new MultipartEntity();// HttpMultipartMode.BROWSER_COMPATIBLE);
-        ContentBody content = new InputStreamBody(attachment.getData(), attachment.getFilename());
+
+        ContentBody content = new SizedInputStreamBody(attachment.getData(), attachment.getFilename(), attachment.getFileLength());
+
         mpEntity.addPart("Attachment", content);
         httppost.setEntity(mpEntity);
         HttpResponse response = httpclient.execute(httppost);
 
         return response;
+    }
+
+    private static class SizedInputStreamBody extends InputStreamBody {
+        private long fileLength = -1;
+
+        SizedInputStreamBody(final InputStream in, final String filename, final long fileLength) {
+            super(in, filename);
+            this.fileLength = fileLength;
+        }
+
+        @Override
+        public long getContentLength() {
+            return fileLength;
+        }
     }
 
     /** */

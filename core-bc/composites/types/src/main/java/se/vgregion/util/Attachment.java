@@ -10,12 +10,22 @@ public class Attachment {
 
     private String mimeType;
 
+    private long fileLength;
+
     public String getFilename() {
         return filename;
     }
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    public long getFileLength() {
+        return fileLength;
+    }
+
+    public void setFileLength(long fileLength) {
+        this.fileLength = fileLength;
     }
 
     public InputStream getData() {

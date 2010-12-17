@@ -19,18 +19,6 @@
 
 package se.vgregion.incidentreport.pivotaltracker.impl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -39,13 +27,19 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import se.vgregion.incidentreport.pivotaltracker.PTStory;
 import se.vgregion.incidentreport.pivotaltracker.PivotalTrackerService;
 import se.vgregion.incidentreport.pivotaltracker.TyckTillProjectData;
 import se.vgregion.util.Attachment;
 import se.vgregion.util.HTTPUtils;
 import se.vgregion.util.HttpUtilsException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * This class implements the api method calls to send and retrieve the data objects.
@@ -338,10 +332,8 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 
     @Override
     public void addAttachmentToStory(String projectId, PTStory story) {
-
+        logger.info("Adding attachments...");
         DefaultHttpClient client = null;
-        int i = 0;
-
         for (Attachment attachment : story.getAttachments()) {
 
             try {
@@ -349,16 +341,13 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 
                 client = new DefaultHttpClient();
                 String result = null;
-                // System.out.println("URLEN:" + GET_PROJECT + "/" + projectId + "/stories/" + story.getStoryId() +
-                // "/attachments");
                 HttpResponse response = HTTPUtils.makePostAttachments(GET_PROJECT + "/" + projectId + "/stories/"
                         + story.getStoryId() + "/attachments", token, client, attachment);
-                HttpEntity entity = response.getEntity();
-                entity.writeTo(System.out);
 
-                // Convert the xml response into an object
-                // result = getProjectData((entity.getContent()));
-                i++;
+                // TODO: check for failure when uploading attachment
+
+                logger.info("attachment ["+attachment.getFilename() + "] has been added to story ["+projectId+" : "+ story.getStoryId()+"]");
+
             } catch (Exception e) {
                 throw new RuntimeException("Failed to add attachment to PivotalTracker", e);
             } finally {
