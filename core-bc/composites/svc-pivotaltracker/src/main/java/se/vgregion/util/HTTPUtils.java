@@ -131,33 +131,28 @@ public class HTTPUtils {
             Attachment attachment) throws Exception {
 
         HttpPost httppost = new HttpPost(url);
-
         httppost.addHeader("X-TrackerToken", token);
-//        httppost.addHeader("content-length", attachment.getFileLength()+"");
-//        httppost.addHeader("Accept", "*/*");
         httppost.removeHeaders("Connection");
-        MultipartEntity mpEntity = new MultipartEntity();// HttpMultipartMode.BROWSER_COMPATIBLE);
 
+        MultipartEntity mpEntity = new MultipartEntity();
         ContentBody content = new SizedInputStreamBody(attachment.getData(), attachment.getFilename(), attachment.getFileLength());
-
-        mpEntity.addPart("Attachment", content);
+        mpEntity.addPart("Filedata", content);
         httppost.setEntity(mpEntity);
-        HttpResponse response = httpclient.execute(httppost);
 
-        return response;
+        return httpclient.execute(httppost);
     }
 
     private static class SizedInputStreamBody extends InputStreamBody {
-        private long fileLength = -1;
+        private long size = -1;
 
-        SizedInputStreamBody(final InputStream in, final String filename, final long fileLength) {
+        SizedInputStreamBody(final InputStream in, final String filename, final long size) {
             super(in, filename);
-            this.fileLength = fileLength;
+            this.size = size;
         }
 
         @Override
         public long getContentLength() {
-            return fileLength;
+            return size;
         }
     }
 

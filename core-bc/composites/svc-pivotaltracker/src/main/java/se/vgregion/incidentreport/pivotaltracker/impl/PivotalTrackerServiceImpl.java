@@ -100,14 +100,11 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 
             // Convert the xml response into an object
             String xml = convertStreamToString(entity.getContent());
-            // System.out.println(xml);
             String guid = getTagValue(xml, 0, "guid");
-            // System.out.println("guid=" + guid);
 
             tokenFound = guid;
         } catch (HttpUtilsException e) {
             throw new RuntimeException("Failed to get token", e);
-
         } catch (IllegalStateException e) {
             throw new RuntimeException("Failed to get token", e);
         } catch (IOException e) {
@@ -333,28 +330,40 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
     @Override
     public void addAttachmentToStory(String projectId, PTStory story) {
         logger.info("Adding attachments...");
-        DefaultHttpClient client = null;
+        String token = getUserToken(ptUser, ptPwd);
+
         for (Attachment attachment : story.getAttachments()) {
-
+            DefaultHttpClient client = new DefaultHttpClient();
             try {
-                String token = getUserToken(ptUser, ptPwd);
+                String uploadUrl = getUploadUrl(story);
 
-                client = new DefaultHttpClient();
-                String result = null;
-                HttpResponse response = HTTPUtils.makePostAttachments(GET_PROJECT + "/" + projectId + "/stories/"
-                        + story.getStoryId() + "/attachments", token, client, attachment);
+                HttpResponse response = HTTPUtils.makePostAttachments(uploadUrl, token, client, attachment);
 
-                // TODO: check for failure when uploading attachment
-
-                logger.info("attachment ["+attachment.getFilename() + "] has been added to story ["+projectId+" : "+ story.getStoryId()+"]");
-
+                logUploadResponse(story, attachment, response);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to add attachment to PivotalTracker", e);
             } finally {
                 client.getConnectionManager().shutdown();
             }
         }
+    }
 
+    private void logUploadResponse(PTStory story, Attachment attachment, HttpResponse response) {
+        if (response.getStatusLine().getStatusCode() == 200) {
+            String msg = String.format("Uploaded attachment [%s] to PivotalTracker [%s: %s]",
+                    attachment.getFilename(), story.getProjectId(), story.getStoryId());
+            logger.info(msg);
+        } else {
+            String msg = String.format("Failed to upload attachment [%s] to PivotalTracker [%s: %s]",
+                    attachment.getFilename(), story.getProjectId(), story.getStoryId());
+            logger.error(msg);
+        }
+    }
+
+    private String getUploadUrl(PTStory story) {
+        String template = GET_PROJECT + "/%s/stories/%s/attachments";
+
+        return String.format(template, story.getProjectId(), story.getStoryId());
     }
 
     public static void main(String[] args) {
