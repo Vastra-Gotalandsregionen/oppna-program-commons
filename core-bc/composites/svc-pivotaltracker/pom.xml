@@ -3,13 +3,12 @@
         This is the Service-composite Maven POM. Template version:
         1.2-SNAPSHOT Generation time : 2009-10-29 15:22:41 CET
     -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>se.vgregion.commons-util</groupId>
     <artifactId>commons-util-core-bc</artifactId>
-    <version>3.2-SNAPSHOT</version>
+    <version>3.2</version>
   </parent>
   <groupId>se.vgregion.commons-util</groupId>
   <artifactId>commons-util-core-bc-composite-svc-pivotaltracker</artifactId>
@@ -21,7 +20,7 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>commons-util-core-bc-composite-types</artifactId>
-      <version>2.1-SNAPSHOT</version>
+      <version>3.2</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
