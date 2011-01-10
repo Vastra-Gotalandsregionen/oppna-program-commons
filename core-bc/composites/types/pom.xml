@@ -11,12 +11,12 @@ Generation time : 2009-04-17 09:01:59 CEST
   <parent>
     <groupId>se.vgregion.commons-util</groupId>
     <artifactId>commons-util-core-bc</artifactId>
-    <version>3.2</version>
+    <version>3.3-SNAPSHOT</version>
   </parent>
   <artifactId>commons-util-core-bc-composite-types</artifactId>
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
-  <version>3.2</version>
+  <version>3.3-SNAPSHOT</version>
 
   <dependencies>
   </dependencies>
