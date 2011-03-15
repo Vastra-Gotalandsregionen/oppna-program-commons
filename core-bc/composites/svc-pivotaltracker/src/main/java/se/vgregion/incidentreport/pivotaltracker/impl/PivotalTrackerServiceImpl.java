@@ -102,7 +102,6 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
             // Convert the xml response into an object
             String xml = convertStreamToString(entity.getContent());
 
-            System.out.println(xml);
             String guid = getTagValue(xml, 0, "guid");
 
             tokenFound = guid;
@@ -120,15 +119,9 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
     }
 
     private String getTagValue(String xml, int index, String tagName) {
-        System.out.println("t: "+tagName);
-        System.out.println("x: "+xml);
         int beginIndex = xml.indexOf("<" + tagName + ">") + tagName.length() + 2;
-        System.out.println("b: "+beginIndex);
         int endIndex = xml.indexOf("</" + tagName + ">", beginIndex);
-        System.out.println("e: "+endIndex);
         String result = xml.substring(beginIndex, endIndex);
-        System.out.println("r: "+result);
-
 
         return result;
     }
