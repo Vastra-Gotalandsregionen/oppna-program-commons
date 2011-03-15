@@ -59,7 +59,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
     private String ptUser;
 
     private static final String GET_USER_TOKEN = "https://www.pivotaltracker.com/services/tokens/active";
-    private static final String GET_PROJECT = "http://www.pivotaltracker.com/services/v3/projects";
+    private static final String GET_PROJECT = "https://www.pivotaltracker.com/services/v3/projects";
     private static final String GET_PROJECT_TEST = "http://127.0.0.1/services/v3/projects";
 
     // http://www.pivotaltracker.com/services/v3/projects/PROJECT_ID/stories/STORY_ID/attachments
@@ -92,6 +92,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
         try {
             // Use basicAuth to make the request to the server
             HttpResponse response = HTTPUtils.basicAuthRequest(GET_USER_TOKEN, username, password, client);
+
             HttpEntity entity = response.getEntity();
 
             if ((response.getStatusLine().getStatusCode() != 200) || (entity.getContentLength() == 1)) {
@@ -100,6 +101,8 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 
             // Convert the xml response into an object
             String xml = convertStreamToString(entity.getContent());
+
+            System.out.println(xml);
             String guid = getTagValue(xml, 0, "guid");
 
             tokenFound = guid;
@@ -117,10 +120,15 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
     }
 
     private String getTagValue(String xml, int index, String tagName) {
-
+        System.out.println("t: "+tagName);
+        System.out.println("x: "+xml);
         int beginIndex = xml.indexOf("<" + tagName + ">") + tagName.length() + 2;
+        System.out.println("b: "+beginIndex);
         int endIndex = xml.indexOf("</" + tagName + ">", beginIndex);
+        System.out.println("e: "+endIndex);
         String result = xml.substring(beginIndex, endIndex);
+        System.out.println("r: "+result);
+
 
         return result;
     }
