@@ -3,7 +3,7 @@
   <groupId>se.vgregion.commons-util</groupId>
   <artifactId>commons-util-system</artifactId>
   <packaging>pom</packaging>
-  <version>3.4-SNAPSHOT</version>
+  <version>3.4</version>
   <name>${project.artifactId}</name>
 
   <parent>
@@ -13,8 +13,8 @@
   </parent>
 
   <scm>
-    <developerConnection>scm:svn:https://oppna-program-commons.googlecode.com/svn/trunk</developerConnection>
-    <url>http://oppna-program-commons.googlecode.com/svn/trunk</url>
+    <developerConnection>scm:svn:https://oppna-program-commons.googlecode.com/svn/tags/commons-util-system-3.4</developerConnection>
+    <url>http://oppna-program-commons.googlecode.com/svn/tags/commons-util-system-3.4</url>
   </scm>
 
   <modules>
