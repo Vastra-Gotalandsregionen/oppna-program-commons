@@ -21,6 +21,7 @@ package se.vgregion.incidentreport.pivotaltracker.impl;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ import se.vgregion.incidentreport.pivotaltracker.TyckTillProjectData;
 import se.vgregion.util.Attachment;
 import se.vgregion.util.HTTPUtils;
 import se.vgregion.util.HttpUtilsException;
+import se.vgregion.util.WebClientWrapper;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -88,6 +90,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
      */
     private String getUserToken(String username, String password) {
         DefaultHttpClient client = new DefaultHttpClient();
+        client = WebClientWrapper.wrapClient(client);
         String tokenFound = null;
         try {
             // Use basicAuth to make the request to the server
@@ -133,6 +136,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
         }
 
         DefaultHttpClient client = new DefaultHttpClient();
+        client = WebClientWrapper.wrapClient(client);
         TyckTillProjectData result = null;
         try {
             HttpResponse response = HTTPUtils.makeRequest(GET_PROJECT + "/" + projectId, token, client);
@@ -153,6 +157,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
             throw new RuntimeException("Token cannot be null. Please set it first.");
         }
         DefaultHttpClient client = new DefaultHttpClient();
+        client = WebClientWrapper.wrapClient(client);
         String result = null;
         try {
             HttpResponse response = HTTPUtils.makeRequest(GET_PROJECT + "/" + projectId + "/stories", token,
@@ -176,6 +181,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
         String token = getUserToken(ptUser, ptPwd);
 
         DefaultHttpClient client = new DefaultHttpClient();
+        client = WebClientWrapper.wrapClient(client);
         String result = null;
         String xml = "<story><story_type>" + story.getType() + "</story_type><name>" + story.getName() + "</name>"
                 + "<description>" + story.getDescription() + "</description><requested_by>"
@@ -214,6 +220,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
         }
 
         DefaultHttpClient client = new DefaultHttpClient();
+        client = WebClientWrapper.wrapClient(client);
         List result = null;
         try {
             HttpResponse response = HTTPUtils.makeRequest(GET_PROJECT, token, client);
@@ -335,6 +342,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 
         for (Attachment attachment : story.getAttachments()) {
             DefaultHttpClient client = new DefaultHttpClient();
+            client = WebClientWrapper.wrapClient(client);
             try {
                 String uploadUrl = getUploadUrl(story);
 
