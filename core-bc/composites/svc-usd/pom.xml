@@ -8,7 +8,7 @@
   <parent>
     <groupId>se.vgregion.commons-util</groupId>
     <artifactId>commons-util-core-bc</artifactId>
-    <version>3.5</version>
+    <version>3.6-SNAPSHOT</version>
   </parent>
   <groupId>se.vgregion.commons-util</groupId>
   <artifactId>commons-util-core-bc-composite-svc-usd</artifactId>
@@ -19,7 +19,7 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>commons-util-core-bc-composite-types</artifactId>
-      <version>3.5</version>
+      <version>3.6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
