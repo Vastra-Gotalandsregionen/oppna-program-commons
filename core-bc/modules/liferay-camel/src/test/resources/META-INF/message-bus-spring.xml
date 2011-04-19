@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
+>
+	<!-- Message bus -->
+
+	<bean id="messageBus" class="com.liferay.portal.kernel.messaging.DefaultMessageBus" destroy-method="destroy" />
+	
+	<bean id="messageSender" class="com.liferay.portal.kernel.messaging.sender.DefaultMessageSender">
+		<property name="messageBus" ref="messageBus" />
+	</bean>
+	
+	<bean id="com.liferay.portal.kernel.uuid.PortalUUID" class="com.liferay.portal.esb.camel.util.PortalUUIDImpl" />
+	
+	<bean id="synchronousMessageSender" class="com.liferay.portal.kernel.messaging.sender.DefaultSynchronousMessageSender">
+		<constructor-arg index="0" type="com.liferay.portal.kernel.messaging.MessageBus" ref="messageBus" />
+		<constructor-arg index="1" type="com.liferay.portal.kernel.uuid.PortalUUID" ref="com.liferay.portal.kernel.uuid.PortalUUID" />
+		<constructor-arg index="2" type="long" value="10000" />
+	</bean>
+	
+	<!-- Destinations -->
+	
+	<bean id="destination.message_bus_test" class="com.liferay.portal.kernel.messaging.SerialDestination">
+		<constructor-arg index="0" type="java.lang.String" value="liferay/message_bus/test" />
+	</bean>
+	<bean id="destination.message_bus_default_response" class="com.liferay.portal.kernel.messaging.ParallelDestination">
+		<constructor-arg index="0" type="java.lang.String" value="liferay/message_bus/default_response" />
+	</bean>
+	
+	<!-- Configurator -->
+	
+	<bean id="messagingConfigurator.core" class="com.liferay.portal.kernel.messaging.config.DefaultMessagingConfigurator" init-method="init" destroy-method="destroy">
+		<property name="destinations">
+			<list>
+				<ref bean="destination.message_bus_default_response" />
+				<ref bean="destination.message_bus_test" />
+			</list>
+		</property>
+		<property name="messageBus">
+			<ref bean="messageBus" />
+		</property>
+	</bean>
+
+</beans>

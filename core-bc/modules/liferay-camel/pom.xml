@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>se.vgregion.commons-util</groupId>
+    <artifactId>commons-util-core-bc</artifactId>
+    <version>3.6-SNAPSHOT</version>
+  </parent>
+  <artifactId>commons-util-core-bc-module-liferay-camel</artifactId>
+  <packaging>war</packaging>
+  <name>${project.artifactId}</name>
+
+  <properties>
+    <camel-version>2.7.1</camel-version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-core</artifactId>
+      <version>${camel-version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-spring</artifactId>
+      <version>${camel-version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.liferay.portal</groupId>
+      <artifactId>portal-service</artifactId>
+      <version>6.0.5</version>
+      <scope>provided</scope>
+      <!--<classifier>ee</classifier>-->
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>liferay-camel</finalName>
+  </build>
+
+</project>
