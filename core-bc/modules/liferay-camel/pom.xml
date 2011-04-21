@@ -18,6 +18,7 @@
   </properties>
 
   <dependencies>
+
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-core</artifactId>
@@ -42,6 +43,12 @@
       <version>6.0.5</version>
       <scope>provided</scope>
       <!--<classifier>ee</classifier>-->
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-xstream</artifactId>
+      <version>${camel-version}</version>
     </dependency>
 
     <dependency>
