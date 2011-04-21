@@ -13,7 +13,7 @@
 		<property name="messageBus" ref="messageBus" />
 	</bean>
 	
-	<bean id="com.liferay.portal.kernel.uuid.PortalUUID" class="com.liferay.portal.esb.camel.util.PortalUUIDImpl" />
+	<bean id="com.liferay.portal.kernel.uuid.PortalUUID" class="se.vgregion.messagebus.util.PortalUUIDImpl" />
 	
 	<bean id="synchronousMessageSender" class="com.liferay.portal.kernel.messaging.sender.DefaultSynchronousMessageSender">
 		<constructor-arg index="0" type="com.liferay.portal.kernel.messaging.MessageBus" ref="messageBus" />

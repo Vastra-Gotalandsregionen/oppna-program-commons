@@ -20,32 +20,31 @@
  * SOFTWARE.
  */
 
-package com.liferay.portal.esb.camel;
+package se.vgregion.messagebus;
 
-import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.MessageBus;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.impl.DefaultProducer;
+import java.util.Map;
+
+import org.apache.camel.Endpoint;
+import org.apache.camel.impl.DefaultComponent;
 
 /**
  * @author Bruno Farache
  */
-public class MessageBusProducer extends DefaultProducer {
+public class MessageBusComponent extends DefaultComponent {
 
-	public MessageBusProducer(MessageBusEndpoint endpoint) {
-		super(endpoint);
+	protected Endpoint createEndpoint(String uri, String remaining, Map params) 
+		throws Exception {
+
+		return new MessageBusEndpoint(
+			uri, remaining, params, this, _messageBus);
 	}
 
-	public void process(Exchange exchange) throws Exception {
-		MessageBusEndpoint endpoint = (MessageBusEndpoint)getEndpoint();
-		MessageBus messageBus = endpoint.getMessageBus();
-		
-		String destination = endpoint.getDestination();
-
-		Message body = exchange.getIn().getBody(Message.class);
-
-		messageBus.sendMessage(destination, body);
+	public void setMessageBus(MessageBus messageBus) {
+		_messageBus = messageBus;
 	}
+	
+	private MessageBus _messageBus;
 
 }

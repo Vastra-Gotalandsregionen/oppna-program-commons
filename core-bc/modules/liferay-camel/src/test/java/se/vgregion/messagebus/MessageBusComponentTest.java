@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package com.liferay.portal.esb.camel;
+package se.vgregion.messagebus;
 
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.MessageBus;
@@ -45,8 +45,8 @@ import org.springframework.test.context.junit38.AbstractJUnit38SpringContextTest
  */
 @ContextConfiguration(
 	locations={
-		"/META-INF/message-bus-spring.xml", "/META-INF/camel-spring.xml", 
-		"/META-INF/routes-spring.xml"})
+		"/META-INF/message-bus-spring.xml", "/META-INF/spring/camel-spring.xml",
+		"/META-INF/test-routes.xml"})
 public class MessageBusComponentTest extends AbstractJUnit38SpringContextTests {
 	
 	@DirtiesContext
@@ -64,8 +64,10 @@ public class MessageBusComponentTest extends AbstractJUnit38SpringContextTests {
 			});
 		
 		String testString = "testing";
+        Message message = new Message();
+        message.setPayload(testString);
 
-		template.sendBody("direct:testProducer", testString);
+		template.sendBody("direct:testProducer", message);
 		
 		Thread.sleep(500);
 
@@ -87,18 +89,24 @@ public class MessageBusComponentTest extends AbstractJUnit38SpringContextTests {
     
     @DirtiesContext
     public void testFile() throws Exception {
-    	String testString = "testing";
-    	
-    	Message message = new Message();
-    	message.setPayload(testString);
-    	
-    	messageBus.sendMessage("testFile", message);
-    	
-    	Thread.sleep(1000);
-    	
-    	File file = new File("bin/testFile.txt");
+        File file = null;
+        try {
+            String testString = "testing";
 
-    	assertEquals(testString, IOConverter.toString(file));
+            Message message = new Message();
+            message.setPayload(testString);
+
+            messageBus.sendMessage("testFile", message);
+
+            Thread.sleep(1000);
+
+            file = new File("bin/testFile.txt");
+
+            assertEquals(testString, IOConverter.toString(file));
+        } finally {
+            file.delete();
+        }
+
     }
     
     public static String result;

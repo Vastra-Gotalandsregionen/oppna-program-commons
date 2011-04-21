@@ -20,31 +20,25 @@
  * SOFTWARE.
  */
 
-package com.liferay.portal.esb.camel;
+package se.vgregion.messagebus.converter;
 
-import com.liferay.portal.kernel.messaging.MessageBus;
+import com.liferay.portal.kernel.messaging.Message;
 
-import java.util.Map;
-
-import org.apache.camel.Endpoint;
-import org.apache.camel.impl.DefaultComponent;
+import org.apache.camel.Converter;
 
 /**
  * @author Bruno Farache
  */
-public class MessageBusComponent extends DefaultComponent {
+@Converter
+public class MessageConverter {
 
-	protected Endpoint createEndpoint(String uri, String remaining, Map params) 
-		throws Exception {
+	@Converter
+	public static Message toMessage(String string) {
+		Message message = new Message();
 
-		return new MessageBusEndpoint(
-			uri, remaining, params, this, _messageBus);
+		message.setPayload(string);
+
+		return message;
 	}
-
-	public void setMessageBus(MessageBus messageBus) {
-		_messageBus = messageBus;
-	}
-	
-	private MessageBus _messageBus;
 
 }

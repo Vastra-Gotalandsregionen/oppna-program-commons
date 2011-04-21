@@ -20,25 +20,32 @@
  * SOFTWARE.
  */
 
-package com.liferay.portal.esb.camel.converter;
+package se.vgregion.messagebus;
 
 import com.liferay.portal.kernel.messaging.Message;
+import com.liferay.portal.kernel.messaging.MessageBus;
 
-import org.apache.camel.Converter;
+import org.apache.camel.Exchange;
+import org.apache.camel.impl.DefaultProducer;
 
 /**
  * @author Bruno Farache
  */
-@Converter
-public class MessageConverter {
+public class MessageBusProducer extends DefaultProducer {
 
-	@Converter
-	public static Message toMessage(String string) {
-		Message message = new Message();
+	public MessageBusProducer(MessageBusEndpoint endpoint) {
+		super(endpoint);
+	}
 
-		message.setPayload(string);
+	public void process(Exchange exchange) throws Exception {
+		MessageBusEndpoint endpoint = (MessageBusEndpoint)getEndpoint();
+		MessageBus messageBus = endpoint.getMessageBus();
+		
+		String destination = endpoint.getDestination();
 
-		return message;
+		Message body = exchange.getIn().getBody(Message.class);
+
+		messageBus.sendMessage(destination, body);
 	}
 
 }

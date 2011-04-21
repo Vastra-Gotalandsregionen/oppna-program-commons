@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
+        >
+  <!-- Message bus -->
+
+  <bean id="messageBus" class="com.liferay.portal.kernel.messaging.DefaultMessageBus" destroy-method="destroy"/>
+
+  <!-- Destinations -->
+
+  <bean id="destination.account_activation" class="com.liferay.portal.kernel.messaging.SerialDestination">
+    <constructor-arg index="0" type="java.lang.String" value="vgr/testJmsDestination"/>
+  </bean>
+
+  <!-- Configurator -->
+
+  <bean id="messagingConfigurator.core" class="com.liferay.portal.kernel.messaging.config.DefaultMessagingConfigurator"
+        init-method="init" destroy-method="destroy">
+    <property name="destinations">
+      <list>
+        <ref bean="destination.account_activation"/>
+      </list>
+    </property>
+    <property name="messageBus">
+      <ref bean="messageBus"/>
+    </property>
+  </bean>
+
+</beans>

@@ -20,48 +20,19 @@
  * SOFTWARE.
  */
 
-package com.liferay.portal.esb.camel;
+package se.vgregion.messagebus.util;
 
-import com.liferay.portal.kernel.messaging.Message;
-import com.liferay.portal.kernel.messaging.MessageListener;
+import com.liferay.portal.kernel.uuid.PortalUUID;
 
-import org.apache.camel.Endpoint;
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
-import org.apache.camel.impl.DefaultExchange;
-import org.apache.camel.impl.DefaultMessage;
+import java.util.UUID;
 
 /**
  * @author Bruno Farache
  */
-public class EndpointMessageListener implements MessageListener {
+public class PortalUUIDImpl implements PortalUUID {
 
-	public EndpointMessageListener(Endpoint endpoint, Processor processor) {
-		_endpoint = endpoint;
-		_processor = processor;
+	public String generate() {
+		return UUID.randomUUID().toString();
 	}
-	
-	public void receive(Message message) {
-		try {
-			_processor.process(createExchange(message));
-		} 
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public Exchange createExchange(Message message) {
-		Exchange exchange = new DefaultExchange(_endpoint);
-		org.apache.camel.Message in = new DefaultMessage();
-		
-		in.setBody(message.getPayload());
-		
-		exchange.setIn(in);
 
-		return exchange;
-	}
-	
-	private Endpoint _endpoint;
-	private Processor _processor;
-	
 }

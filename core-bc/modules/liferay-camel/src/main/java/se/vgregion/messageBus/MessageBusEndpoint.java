@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package com.liferay.portal.esb.camel;
+package se.vgregion.messagebus;
 
 import com.liferay.portal.kernel.messaging.MessageBus;
 
