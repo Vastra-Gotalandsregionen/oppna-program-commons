@@ -1,17 +1,40 @@
 package se.vgregion.messagebus.util;
 
-import javax.jms.JMSException;
-import javax.jms.TextMessage;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
+
+import javax.jms.*;
 
 public class SimpleMessageListener implements javax.jms.MessageListener {
 
+    private JmsTemplate jmsTemplate;
+
+    public void setJmsTemplate(JmsTemplate template) {
+        this.jmsTemplate = template;
+    }
+
     public static boolean messageReceived = false;
+
+    public static String readMessage = "";
 
     @Override
     public void onMessage(javax.jms.Message message) {
         try {
-            System.out.println("Message received: " + ((TextMessage) message).getText());
+            readMessage = ((TextMessage) message).getText();
+            System.out.println("Message received: " + readMessage);
             messageReceived = true;
+
+            Destination dest = message.getJMSReplyTo();
+            if (dest != null) {
+                jmsTemplate.send(dest, new MessageCreator() {
+                    @Override
+                    public Message createMessage(Session session) throws JMSException {
+                        return session.createTextMessage(readMessage.toUpperCase());
+                    }
+                });
+            }
+
+
         } catch (JMSException e) {
             e.printStackTrace();
         }

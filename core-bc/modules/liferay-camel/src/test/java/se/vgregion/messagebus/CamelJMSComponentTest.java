@@ -28,43 +28,72 @@ public class CamelJMSComponentTest extends AbstractJUnit38SpringContextTests {
     @DirtiesContext
     public void testJMSMessage() throws Exception {
         SimpleMessageListener.messageReceived = false;
+        final String msg = "A test message";
 
         //Send to SimpleMessageListener
-        jmsTemplate.send("testQueue", new MessageCreator() {
+        jmsTemplate.send("TEST.QUEUE", new MessageCreator() {
             @Override
             public javax.jms.Message createMessage(Session session) throws JMSException {
-                return session.createTextMessage("A test message");
+                return session.createTextMessage(msg);
             }
         });
 
         Thread.sleep(100);
 
         assertEquals(true, SimpleMessageListener.messageReceived);
+        assertEquals(msg, SimpleMessageListener.readMessage);
     }
 
     @DirtiesContext
     public void testMessageBusToJms() throws Exception{
         SimpleMessageListener.messageReceived = false;
-        final List<Object> list = sendToMessageBus();
+        String payload = "test payload";
+
+        final List<Object> list = sendToMessageBus(payload);
 
         Thread.sleep(100);
 
         assertEquals(true, SimpleMessageListener.messageReceived);
+        assertEquals(payload, SimpleMessageListener.readMessage);
     }
 
     @DirtiesContext
     public void testMessageBus() throws Exception {
-        final List<Object> list = sendToMessageBus();
+        String payload = "test payload";
+        final List<Object> list = sendToMessageBus(payload);
 
         Thread.sleep(100);
 
         assertEquals(1, list.size());
     }
 
-    private List<Object> sendToMessageBus() {
+    @DirtiesContext
+    public void testCamelQueueReply() throws Exception {
+        final String payload = "apa bepa";
+        Message message = new Message();
+        message.setPayload(payload);
+
         final List<Object> list = new ArrayList();
 
-        final String payload = "test payload";
+        messageBus.registerMessageListener("vgr/testCamelDestinationReply", new MessageListener() {
+            @Override
+            public void receive(Message message) {
+                assertEquals(payload.toUpperCase(), message.getPayload());
+                list.add(new Object());
+            }
+        });
+
+        messageBus.sendMessage("vgr/testCamelDestination", message);
+
+        Thread.sleep(1000);
+
+        assertEquals(1, list.size());
+    }
+
+
+    private List<Object> sendToMessageBus(final String payload) {
+        final List<Object> list = new ArrayList();
+
         String destinationName = "vgr/testJmsDestination";
 
         Message message = new Message();

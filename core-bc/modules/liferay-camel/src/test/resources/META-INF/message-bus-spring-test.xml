@@ -14,6 +14,12 @@
   <bean id="destination.account_activation" class="com.liferay.portal.kernel.messaging.SerialDestination">
     <constructor-arg index="0" type="java.lang.String" value="vgr/testJmsDestination"/>
   </bean>
+  <bean id="destination.test" class="com.liferay.portal.kernel.messaging.SerialDestination">
+    <constructor-arg index="0" type="java.lang.String" value="vgr/testCamelDestination"/>
+  </bean>
+  <bean id="destination.test.reply" class="com.liferay.portal.kernel.messaging.SerialDestination">
+    <constructor-arg index="0" type="java.lang.String" value="vgr/testCamelDestinationReply"/>
+  </bean>
 
   <!-- Configurator -->
 
@@ -22,6 +28,8 @@
     <property name="destinations">
       <list>
         <ref bean="destination.account_activation"/>
+        <ref bean="destination.test"/>
+        <ref bean="destination.test.reply" />
       </list>
     </property>
     <property name="messageBus">

@@ -8,6 +8,7 @@
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
     ">
 
+
   <camelContext xmlns="http://camel.apache.org/schema/spring">
     <route>
       <from uri="direct:testProducer"/>
@@ -21,8 +22,28 @@
 
     <route>
       <from uri="liferay:vgr/testJmsDestination"/>
-      <to uri="activemq:queue:testQueue"/>
+      <to uri="activemq:queue:TEST.QUEUE"/>
     </route>
+
+    <route>
+      <from uri="liferay:vgr/testCamelDestination"/>
+      <log message="1 b: ${body} h: ${headers}" loggingLevel="INFO"/>
+      <to uri="activemq:queue:TEST.QUEUE?preserveMessageQos=true&amp;replyTo=TEST.QUEUE.REPLY"/>
+    </route>
+
+    <route>
+      <from uri="activemq:queue:TEST.QUEUE.REPLY"/>
+      <log message="3 b: ${body} h: ${headers}" loggingLevel="INFO"/>
+      <to uri="liferay:vgr/testCamelDestinationReply"/>
+    </route>
+
+    <!--<route>-->
+      <!--&lt;!&ndash;<from uri="direct:apa"/>&ndash;&gt;-->
+      <!--<from uri="activemq:queue:TEST.QUEUE"/>-->
+      <!--<log message="2 b: ${body} h: ${headers}" loggingLevel="INFO"/>-->
+      <!--<to uri="activemq:queue:TEST.QUEUE.REPLY"/>-->
+      <!--&lt;!&ndash;<to uri="direct:apa.reply"/>&ndash;&gt;-->
+    <!--</route>-->
 
     <route>
       <from uri="liferay:testFile"/>

@@ -38,7 +38,7 @@ public class MessageBusProducer extends DefaultProducer {
 	}
 
 	public void process(Exchange exchange) throws Exception {
-		MessageBusEndpoint endpoint = (MessageBusEndpoint)getEndpoint();
+		se.vgregion.messagebus.MessageBusEndpoint endpoint = (MessageBusEndpoint)getEndpoint();
 		MessageBus messageBus = endpoint.getMessageBus();
 		
 		String destination = endpoint.getDestination();

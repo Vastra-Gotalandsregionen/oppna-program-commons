@@ -102,7 +102,7 @@ public class MessageBusComponentTest extends AbstractJUnit38SpringContextTests {
 
             file = new File("bin/testFile.txt");
 
-            assertEquals(testString, IOConverter.toString(file));
+            assertEquals(testString, IOConverter.toString(file, null));
         } finally {
             file.delete();
         }

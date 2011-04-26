@@ -9,9 +9,9 @@
   <camelContext xmlns="http://camel.apache.org/schema/spring">
     <route>
       <from uri="liferay:vgr/account_activation"/>
-      <marshal>
-        <xstream encoding="UTF-8"/>
-      </marshal>
+      <!--<marshal>-->
+        <!--<jaxb prettyPrint="true" contextPath="se.vgregion.activation.dto" encoding="UTF-8"/>-->
+      <!--</marshal>-->
       <log message="${body}" loggingLevel="INFO"/>
       <to uri="mock:result"/>
 
