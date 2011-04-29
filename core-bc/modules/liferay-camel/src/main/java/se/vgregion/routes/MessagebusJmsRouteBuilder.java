@@ -1,6 +1,8 @@
 package se.vgregion.routes;
 
 import org.apache.camel.spring.SpringRouteBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * User: pabe
@@ -8,6 +10,7 @@ import org.apache.camel.spring.SpringRouteBuilder;
  * Time: 10:29
  */
 public class MessagebusJmsRouteBuilder extends SpringRouteBuilder {
+    private static Logger log = LoggerFactory.getLogger(MessagebusJmsRouteBuilder.class);
 
     private String messageBusDestination;
     private String activeMqDestination;
@@ -15,6 +18,8 @@ public class MessagebusJmsRouteBuilder extends SpringRouteBuilder {
     public MessagebusJmsRouteBuilder(String messageBusDestination, String activeMqDestination) {
         this.messageBusDestination = messageBusDestination;
         this.activeMqDestination = activeMqDestination;
+
+        log.info("MB: {} MQ: {}", messageBusDestination, activeMqDestination);
     }
 
     @Override
