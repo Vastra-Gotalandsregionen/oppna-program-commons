@@ -55,6 +55,7 @@ public class EndpointMessageListener implements MessageListener {
 		org.apache.camel.Message in = new DefaultMessage();
 		
 		in.setBody(message.getPayload());
+        in.setHeader("JMSCorrelationID", message.getResponseId());
 		
 		exchange.setIn(in);
 

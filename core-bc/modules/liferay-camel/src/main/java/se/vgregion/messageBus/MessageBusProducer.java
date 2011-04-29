@@ -44,6 +44,7 @@ public class MessageBusProducer extends DefaultProducer {
 		String destination = endpoint.getDestination();
 
 		Message body = exchange.getIn().getBody(Message.class);
+        body.setResponseId((String) exchange.getIn().getHeader("JMSCorrelationID"));
 
 		messageBus.sendMessage(destination, body);
 	}
