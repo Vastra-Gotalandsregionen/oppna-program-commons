@@ -18,7 +18,7 @@ public class SimpleMessageListener implements javax.jms.MessageListener {
     public static String readMessage = "";
 
     @Override
-    public void onMessage(javax.jms.Message message) {
+    public void onMessage(final javax.jms.Message message) {
         try {
             readMessage = ((TextMessage) message).getText();
             System.out.println("Message received: " + readMessage);
@@ -29,7 +29,9 @@ public class SimpleMessageListener implements javax.jms.MessageListener {
                 jmsTemplate.send(dest, new MessageCreator() {
                     @Override
                     public Message createMessage(Session session) throws JMSException {
-                        return session.createTextMessage(readMessage.toUpperCase());
+                        TextMessage textMessage = session.createTextMessage(readMessage.toUpperCase());
+                        textMessage.setJMSCorrelationID(message.getJMSCorrelationID());
+                        return textMessage;
                     }
                 });
             }

@@ -15,10 +15,10 @@
     <constructor-arg index="0" type="java.lang.String" value="vgr/testJmsDestination"/>
   </bean>
   <bean id="destination.test" class="com.liferay.portal.kernel.messaging.SerialDestination">
-    <constructor-arg index="0" type="java.lang.String" value="vgr/testCamelDestination"/>
+    <constructor-arg index="0" type="java.lang.String" value="${messagebus.destination}"/>
   </bean>
   <bean id="destination.test.reply" class="com.liferay.portal.kernel.messaging.SerialDestination">
-    <constructor-arg index="0" type="java.lang.String" value="vgr/testCamelDestinationReply"/>
+    <constructor-arg index="0" type="java.lang.String" value="${messagebus.destination}.REPLY"/>
   </bean>
 
   <!-- Configurator -->
