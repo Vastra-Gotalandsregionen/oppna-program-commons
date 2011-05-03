@@ -13,8 +13,8 @@
 
   <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
     <!--<property name="brokerURL" value="ssl://localhost:61717"/>-->
-    <property name="brokerURL" value="ssl://localhost:61617"/>
-    <!--<property name="brokerURL" value="tcp://localhost:61716"/>-->
+    <!--<property name="brokerURL" value="ssl://localhost:61617"/>-->
+    <property name="brokerURL" value="tcp://localhost:61616"/>
     <!--<property name="brokerURL" value="vm://localhost"/>-->
   </bean>
 
