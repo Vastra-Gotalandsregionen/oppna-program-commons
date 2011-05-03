@@ -12,7 +12,7 @@
   </bean>
 
   <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
-    <property name="brokerURL" value="tcp://vgas0187.vgregion.se:61616"/>
+    <property name="brokerURL" value="${brokerURL}"/>
   </bean>
 
 </beans>

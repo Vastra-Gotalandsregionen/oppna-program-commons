@@ -5,17 +5,15 @@
         xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
         >
 
-  <import resource="classpath*:META-INF/spring/messagebus-routes.xml"/>
+  <import resource="classpath*:META-INF/messagebus-routes-test.xml"/>
 
   <bean id="liferay" class="se.vgregion.messagebus.MessageBusComponent">
     <property name="messageBus" ref="messageBus"/>
   </bean>
 
   <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
-    <!--<property name="brokerURL" value="ssl://localhost:61717"/>-->
-    <!--<property name="brokerURL" value="ssl://localhost:61617"/>-->
-    <property name="brokerURL" value="tcp://localhost:61616"/>
-    <!--<property name="brokerURL" value="vm://localhost"/>-->
+    <property name="brokerURL" value="ssl://localhost:61617"/>
+    <property name="connectionFactory" ref="jmsFactory" />
   </bean>
 
 </beans>
