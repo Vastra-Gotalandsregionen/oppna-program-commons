@@ -17,7 +17,8 @@ public class ActiveMQListener {
                 "<activateUserResponse><userId>theuserid</userId><statusCode>Error</statusCode>" +
                 "<message>The reply message</message></activateUserResponse>";
 
-        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(ActiveMQConnection.DEFAULT_BROKER_URL);
+        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("ssl://localhost:61617");
+//        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(ActiveMQConnection.DEFAULT_BROKER_URL);
         Connection connection = connectionFactory.createConnection();
         final Session session = connection.createSession(false, 1);
         connection.start();

@@ -104,10 +104,10 @@ public class CamelJMSComponentTest extends AbstractJUnit38SpringContextTests {
         });
 
         messageBus.sendMessage(messagebusDestination, message);
-        Thread.sleep(10);
+        Thread.sleep(100);
         messageBus.sendMessage(messagebusDestination, message2);
 
-        Thread.sleep(1000);
+        Thread.sleep(500);
 
         assertEquals(2, list.size());
         for (Message m : list) {

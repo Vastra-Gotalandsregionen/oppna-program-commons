@@ -79,14 +79,42 @@
     </dependency>
 
     <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
-        <version>1.6.1</version>
+      <groupId>org.apache.xbean</groupId>
+      <artifactId>xbean</artifactId>
+      <version>3.7</version>
+      <type>pom</type>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.xbean</groupId>
+      <artifactId>xbean-spring</artifactId>
+      <version>3.7</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.6.1</version>
     </dependency>
   </dependencies>
 
   <build>
     <finalName>liferay-camel</finalName>
+    <plugins>
+      <plugin>
+        <groupId>com.liferay.maven.plugins</groupId>
+        <artifactId>liferay-maven-plugin</artifactId>
+        <version>6.1.0-SNAPSHOT</version>
+        <configuration>
+          <autoDeployDir>\java\liferay\liferay-portal-6.0.6\deploy</autoDeployDir>
+          <deployDir>\java\liferay\liferay-portal-6.0.6\deploy</deployDir>
+          <jbossPrefix>unknown</jbossPrefix>
+          <liferayVersion>6.0</liferayVersion>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 
 </project>

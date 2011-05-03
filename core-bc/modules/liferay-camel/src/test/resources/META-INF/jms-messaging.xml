@@ -1,19 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans
-  xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:amq="http://activemq.apache.org/schema/core"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
+
+  <!--  lets create an embedded ActiveMQ Broker -->
+  <!--<amq:broker useJmx="false" persistent="false">
+
+    <amq:sslContext>
+      <amq:sslContext keyStore="broker.ks" keyStorePassword="password"/>
+    </amq:sslContext>
+
+    <amq:transportConnectors>
+      <amq:transportConnector uri="ssl://localhost:61617"/>
+      &lt;!&ndash;<amq:transportConnector uri="tcp://localhost:61716" />&ndash;&gt;
+    </amq:transportConnectors>
+  </amq:broker>-->
+
 
   <!-- JMS ConnectionFactory to use, configuring the embedded broker using XML -->
   <!-- a pooling based JMS provider -->
-  <bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
+  <!--<bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
     <property name="connectionFactory">
       <bean class="org.apache.activemq.ActiveMQConnectionFactory">
         <property name="brokerURL">
-          <value>vm://localhost</value>
+          <value>ssl://localhost:61617</value>
+          &lt;!&ndash;<value>tcp://localhost:61716</value>&ndash;&gt;
+          &lt;!&ndash;<value>vm://localhost</value>&ndash;&gt;
         </property>
       </bean>
     </property>
+  </bean>-->
+
+  <bean id="jmsFactory" class="se.vgregion.messagebus.util.CustomActiveMQSslConnectionFactory">
+    <!--<bean id="jmsFactory" class="org.apache.activemq.ActiveMQSslConnectionFactory">-->
+    <property name="brokerURL" value="ssl://localhost:61617"/>
+    <property name="trustStore" value="/client.ts"/>
+    <property name="trustStorePassword" value="password"/>
+    <property name="keyStore" value="/broker.ks"/>
+    <property name="keyStorePassword" value="password"/>
   </bean>
 
   <!-- and this is the message listener container -->
