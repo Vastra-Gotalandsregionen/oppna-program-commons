@@ -24,13 +24,14 @@ public class SimpleMessageListener implements javax.jms.MessageListener {
             System.out.println("Message received: " + readMessage);
             messageReceived = true;
 
-            Destination dest = message.getJMSReplyTo();
+            final Destination dest = message.getJMSReplyTo();
             if (dest != null) {
                 jmsTemplate.send(dest, new MessageCreator() {
                     @Override
                     public Message createMessage(Session session) throws JMSException {
                         TextMessage textMessage = session.createTextMessage(readMessage.toUpperCase());
                         textMessage.setJMSCorrelationID(message.getJMSCorrelationID());
+                        textMessage.setJMSReplyTo(dest); //To assure that we can handle this without replying when we don't want to
                         return textMessage;
                     }
                 });

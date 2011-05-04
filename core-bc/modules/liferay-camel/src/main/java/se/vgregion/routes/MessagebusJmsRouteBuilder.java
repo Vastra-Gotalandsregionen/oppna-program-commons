@@ -28,7 +28,7 @@ public class MessagebusJmsRouteBuilder extends SpringRouteBuilder {
                 .log("1 b: ${body} h: ${header.JMSCorrelationID}")
                 .to("activemq:queue:" + activeMqDestination + "?preserveMessageQos=true&replyTo=" + activeMqDestination + ".REPLY");
 
-        from("activemq:queue:" + activeMqDestination + ".REPLY")
+        from("activemq:queue:" + activeMqDestination + ".REPLY?disableReplyTo=true")
                 .log("3 b: ${body} h: ${headers}")
                 .to("liferay:" + messageBusDestination + ".REPLY");
     }
