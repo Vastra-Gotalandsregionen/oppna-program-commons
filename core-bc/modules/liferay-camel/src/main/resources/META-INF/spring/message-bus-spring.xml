@@ -1,24 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <beans
-        xmlns="http://www.springframework.org/schema/beans"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
-        >
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
+  >
+
   <!-- Message bus -->
 
-  <bean id="messageBus" class="com.liferay.portal.kernel.messaging.MessageBusUtil"
+  <bean id="messageBus"
+        class="com.liferay.portal.kernel.messaging.MessageBusUtil"
         factory-method="getMessageBus"/>
 
   <!-- Destinations -->
 
   <bean id="destination.account_activation" class="com.liferay.portal.kernel.messaging.SerialDestination"
         init-method="afterPropertiesSet">
-    <property name="name" value="${messagebus.destination}"/>
+    <property name="name" value="${activate.messagebus.destination}"/>
   </bean>
   <bean id="destination.account_activation_reply" class="com.liferay.portal.kernel.messaging.SerialDestination"
         init-method="afterPropertiesSet">
-    <property name="name" value="${messagebus.destination}.REPLY"/>
+    <property name="name" value="${activate.messagebus.destination}.REPLY"/>
+  </bean>
+
+  <bean id="destination.account_create" class="com.liferay.portal.kernel.messaging.SerialDestination"
+        init-method="afterPropertiesSet">
+    <property name="name" value="${activate.messagebus.destination}"/>
+  </bean>
+  <bean id="destination.account_create_reply" class="com.liferay.portal.kernel.messaging.SerialDestination"
+        init-method="afterPropertiesSet">
+    <property name="name" value="${activate.messagebus.destination}.REPLY"/>
+  </bean>
+
+  <bean id="destination.account_invite" class="com.liferay.portal.kernel.messaging.SerialDestination"
+        init-method="afterPropertiesSet">
+    <property name="name" value="${activate.messagebus.destination}"/>
+  </bean>
+  <bean id="destination.account_invite_reply" class="com.liferay.portal.kernel.messaging.SerialDestination"
+        init-method="afterPropertiesSet">
+    <property name="name" value="${activate.messagebus.destination}.REPLY"/>
   </bean>
 
   <!-- Configurator -->
@@ -30,6 +50,12 @@
       <list>
         <ref bean="destination.account_activation"/>
         <ref bean="destination.account_activation_reply"/>
+
+        <ref bean="destination.account_create"/>
+        <ref bean="destination.account_create_reply"/>
+
+        <ref bean="destination.account_invite"/>
+        <ref bean="destination.account_invite_reply"/>
       </list>
     </property>
     <property name="messageBus">

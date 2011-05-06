@@ -7,16 +7,28 @@
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
                            http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-  <context:property-placeholder location="classpath:META-INF/messaging.properties" />
+  <context:property-placeholder location="classpath:META-INF/messaging.properties"/>
 
-  <bean id="messagebusJmsRoutes" class="se.vgregion.routes.MessagebusJmsRouteBuilder">
-    <constructor-arg index="0" value="${messagebus.destination}"/>
-    <constructor-arg index="1" value="${activemq.destination}"/>
+  <bean id="activateRoutes" class="se.vgregion.routes.MessagebusJmsRouteBuilder">
+    <constructor-arg index="0" value="${activate.messagebus.destination}"/>
+    <constructor-arg index="1" value="${activate.activemq.destination}"/>
+  </bean>
+
+  <bean id="createRoutes" class="se.vgregion.routes.MessagebusJmsRouteBuilder">
+    <constructor-arg index="0" value="${create.messagebus.destination}"/>
+    <constructor-arg index="1" value="${create.activemq.destination}"/>
+  </bean>
+
+  <bean id="inviteRoutes" class="se.vgregion.routes.MessagebusJmsRouteBuilder">
+    <constructor-arg index="0" value="${invite.messagebus.destination}"/>
+    <constructor-arg index="1" value="${invite.activemq.destination}"/>
   </bean>
 
   <camelContext xmlns="http://camel.apache.org/schema/spring">
 
-    <routeBuilder ref="messagebusJmsRoutes" />
+    <routeBuilder ref="activateRoutes"/>
+    <routeBuilder ref="createRoutes"/>
+    <routeBuilder ref="inviteRoutes"/>
 
   </camelContext>
 

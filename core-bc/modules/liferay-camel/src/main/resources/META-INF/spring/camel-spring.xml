@@ -7,10 +7,6 @@
 
   <import resource="classpath*:META-INF/spring/messagebus-routes.xml"/>
 
-  <bean id="liferay" class="se.vgregion.messagebus.MessageBusComponent">
-    <property name="messageBus" ref="messageBus"/>
-  </bean>
-
   <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
     <property name="brokerURL" value="${brokerURL}"/>
   </bean>

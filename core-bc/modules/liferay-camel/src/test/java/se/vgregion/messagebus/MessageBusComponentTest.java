@@ -45,8 +45,8 @@ import org.springframework.test.context.junit38.AbstractJUnit38SpringContextTest
  */
 @ContextConfiguration(
 	locations={
-		"/META-INF/message-bus-spring.xml", "/META-INF/spring/camel-spring.xml",
-		"/META-INF/test-routes.xml"})
+		"/META-INF/message-bus-spring-test.xml", "/META-INF/camel-spring-test.xml",
+		"/META-INF/test-routes.xml", "/META-INF/jms-messaging.xml"})
 public class MessageBusComponentTest extends AbstractJUnit38SpringContextTests {
 	
 	@DirtiesContext
