@@ -26,7 +26,7 @@ import java.util.UUID;
 @ContextConfiguration(
         locations = {
                 "/META-INF/message-bus-spring-test.xml", "/META-INF/camel-spring-test.xml",
-                "/META-INF/test-routes.xml", "/META-INF/jms-messaging.xml"})
+                "/META-INF/test-routes.xml"})
 public class CamelJMSComponentTest extends AbstractJUnit38SpringContextTests {
 
     private static final Logger log = Logger.getLogger(CamelJMSComponentTest.class);

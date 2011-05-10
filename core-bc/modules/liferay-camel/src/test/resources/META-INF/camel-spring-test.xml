@@ -6,6 +6,8 @@
         >
 
   <import resource="classpath*:META-INF/messagebus-routes-test.xml"/>
+  <import resource="classpath*:META-INF/jms-messaging.xml"/>
+
 
   <bean id="liferay" class="se.vgregion.messagebus.MessageBusComponent">
     <property name="messageBus" ref="messageBus"/>

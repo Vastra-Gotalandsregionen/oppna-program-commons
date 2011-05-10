@@ -14,9 +14,9 @@
     <constructor-arg index="1" value="${activate.activemq.destination}"/>
   </bean>
 
-  <bean id="createRoutes" class="se.vgregion.routes.MessagebusJmsRouteBuilder">
+  <bean id="createRoutes" class="se.vgregion.routes.MessagebusRestRouteBuilder">
     <constructor-arg index="0" value="${create.messagebus.destination}"/>
-    <constructor-arg index="1" value="${create.activemq.destination}"/>
+    <constructor-arg index="1" value="${create.rest.destination}"/>
   </bean>
 
   <bean id="inviteRoutes" class="se.vgregion.routes.MessagebusJmsRouteBuilder">
