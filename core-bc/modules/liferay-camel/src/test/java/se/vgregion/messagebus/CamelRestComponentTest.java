@@ -43,8 +43,8 @@ public class CamelRestComponentTest extends AbstractJUnit4SpringContextTests {
 
     @Value("${messagebus.rest.destination}")
     String messagebusDestination;
-    @Value("${activemq.destination}")
-    String activemqDestination;
+    @Value("${rest.destination}")
+    String restDestination;
 
     private Server server = new Server(8008);
 
