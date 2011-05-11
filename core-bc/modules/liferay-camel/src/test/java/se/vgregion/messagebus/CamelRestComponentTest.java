@@ -34,8 +34,7 @@ import static org.junit.Assert.assertEquals;
  * Time: 16:12
  */
 @ContextConfiguration(
-        locations = {
-                "/META-INF/message-bus-spring-test.xml", "/META-INF/camel-spring-test.xml"})
+        locations = {"/META-INF/camelRestComponentTest.xml"})
 public class CamelRestComponentTest extends AbstractJUnit4SpringContextTests {
 
     @Autowired
@@ -61,6 +60,19 @@ public class CamelRestComponentTest extends AbstractJUnit4SpringContextTests {
             }
         });
         server.start();
+
+
+
+        /*JAXRSServerFactoryBean sf = new JAXRSServerFactoryBean();
+        sf.setResourceClasses(RestService.class);
+        sf.setResourceProvider(RestService.class, new SingletonResourceProvider(new RestService()));
+        sf.setAddress("http://localhost:8008/");
+        sf.setTransportId("http://cxf.apache.org/transports/camel");
+        BindingFactoryManager manager = sf.getBus().getExtension(BindingFactoryManager.class);
+        JAXRSBindingFactory factory = new JAXRSBindingFactory();
+        factory.setBus(sf.getBus());
+        manager.registerBindingFactory(JAXRSBindingFactory.JAXRS_BINDING_ID, factory);
+        sf.create();*/
     }
 
     @After
@@ -78,13 +90,13 @@ public class CamelRestComponentTest extends AbstractJUnit4SpringContextTests {
         Message message = new Message();
         message.setPayload("test");
 
-        /*messageBus.registerMessageListener(destinationName, new MessageListener() {
+        messageBus.registerMessageListener("vgr/messagebus_rest_test_destination.REPLY", new MessageListener() {
             @Override
             public void receive(Message message) {
                 assertEquals("test", message.getPayload());
                 list.add(new Object());
             }
-        });*/
+        });
 
 
         DefaultSynchronousMessageSender sender = new DefaultSynchronousMessageSender();
@@ -96,8 +108,7 @@ public class CamelRestComponentTest extends AbstractJUnit4SpringContextTests {
             }
         });
         sender.setMessageBus(messageBus);
-//        sender.send(destinationName, message);todo
-//        messageBus.sendMessage(destinationName, message);
-//        return list;
+        Object result = sender.send(destinationName, message);
+        System.out.println(result);
     }
 }

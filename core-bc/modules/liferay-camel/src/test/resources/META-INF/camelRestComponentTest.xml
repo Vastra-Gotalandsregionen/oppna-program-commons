@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://camel.apache.org/schema/spring
+       http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+  <context:property-placeholder location="classpath*:META-INF/messaging.properties"/>
+
+  <bean id="messageBus" class="com.liferay.portal.kernel.messaging.DefaultMessageBus" destroy-method="destroy"/>
+
+  <bean id="liferay" class="se.vgregion.messagebus.MessageBusComponent">
+    <property name="messageBus" ref="messageBus"/>
+  </bean>
+
+  <bean id="destination.test" class="com.liferay.portal.kernel.messaging.SerialDestination">
+    <constructor-arg index="0" type="java.lang.String" value="vgr/messagebus_rest_test_destination"/>
+  </bean>
+
+  <bean id="destination.message_bus_default_response" class="com.liferay.portal.kernel.messaging.ParallelDestination">
+		<constructor-arg index="0" type="java.lang.String" value="liferay/message_bus/default_response" />
+	</bean>
+
+  <bean id="destination.test.reply" class="com.liferay.portal.kernel.messaging.SerialDestination">
+		<constructor-arg index="0" type="java.lang.String" value="vgr/messagebus_rest_test_destination.REPLY" />
+	</bean>
+
+  <bean id="messagingConfigurator.core" class="com.liferay.portal.kernel.messaging.config.DefaultMessagingConfigurator"
+        init-method="init" destroy-method="destroy">
+    <property name="destinations">
+      <list>
+        <ref bean="destination.test"/>
+        <ref bean="destination.message_bus_default_response"/>
+        <ref bean="destination.test.reply"/>
+      </list>
+    </property>
+    <property name="messageBus">
+      <ref bean="messageBus"/>
+    </property>
+  </bean>
+
+  <bean id="messagebusRestRoutes" class="se.vgregion.routes.MessagebusRestRouteBuilder">
+    <constructor-arg index="0" value="vgr/messagebus_rest_test_destination"/>
+    <constructor-arg index="1" value="http://localhost:8008/testrest"/>
+  </bean>
+
+  <camelContext xmlns="http://camel.apache.org/schema/spring">
+
+    <routeBuilder ref="messagebusRestRoutes"/>
+
+  </camelContext>
+
+</beans>
