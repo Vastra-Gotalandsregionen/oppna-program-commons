@@ -7,6 +7,7 @@
 
   <import resource="classpath*:META-INF/messagebus-routes-test.xml"/>
   <import resource="classpath*:META-INF/jms-messaging.xml"/>
+  <import resource="classpath*:META-INF/rest-config.xml"/>
 
 
   <bean id="liferay" class="se.vgregion.messagebus.MessageBusComponent">
@@ -17,5 +18,8 @@
     <property name="brokerURL" value="ssl://localhost:61617"/>
     <property name="connectionFactory" ref="jmsFactory" />
   </bean>
+
+  <!--<bean id="cxfrs" class="org.apache.camel.component.cxf.CxfComponent" >
+  </bean>-->
 
 </beans>

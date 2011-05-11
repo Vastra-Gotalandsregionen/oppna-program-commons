@@ -14,15 +14,15 @@
     <constructor-arg index="1" value="${activemq.destination}"/>
   </bean>
 
-  <!--<bean id="messagebusRestRoutes" class="se.vgregion.routes.MessagebusRestRouteBuilder">-->
-    <!--<constructor-arg index="0" value="${messagebus.destination}"/>-->
-    <!--<constructor-arg index="1" value="${rest.destination}"/>-->
-  <!--</bean>-->
+  <bean id="messagebusRestRoutes" class="se.vgregion.routes.MessagebusRestRouteBuilder">
+    <constructor-arg index="0" value="${messagebus.rest.destination}"/>
+    <constructor-arg index="1" value="${rest.destination}"/>
+  </bean>
 
   <camelContext xmlns="http://camel.apache.org/schema/spring">
 
     <routeBuilder ref="messagebusJmsRoutes" />
-    <!--<routeBuilder ref="messagebusRestRoutes" />-->
+    <routeBuilder ref="messagebusRestRoutes" />
 
   </camelContext>
 

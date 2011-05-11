@@ -32,7 +32,7 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
                         exchange.getIn().setHeader(Exchange.HTTP_METHOD, "POST");
                     }
                 })
-//                .to("cxfrs://" + restDestination + "?synchronous=true")
+                .to("cxfrs://" + restDestination + "?synchronous=true")
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
