@@ -47,32 +47,31 @@ public class CamelRestComponentTest extends AbstractJUnit4SpringContextTests {
 
     private Server server = new Server(8008);
 
+    private StringBuilder expected;
+
     @Before
     public void setUp() throws Exception {
         server.addHandler(new AbstractHandler() {
             @Override
             public void handle(String s, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, int i) throws IOException, ServletException {
+                expected = new StringBuilder();
                 System.out.println(httpServletRequest);
                 PrintWriter writer = httpServletResponse.getWriter();
                 writer.append("testsvar");
+                expected.append("testsvar");
+                Random r = new Random();
+                for (int j = 0; j < 10; j++) {
+                    int value = r.nextInt(Integer.MAX_VALUE);
+                    writer.append(value + "");
+                    expected.append(value);
+                }
+                System.out.println();
                 writer.close();
                 httpServletResponse.setStatus(HttpServletResponse.SC_OK);
             }
         });
         server.start();
 
-
-
-        /*JAXRSServerFactoryBean sf = new JAXRSServerFactoryBean();
-        sf.setResourceClasses(RestService.class);
-        sf.setResourceProvider(RestService.class, new SingletonResourceProvider(new RestService()));
-        sf.setAddress("http://localhost:8008/");
-        sf.setTransportId("http://cxf.apache.org/transports/camel");
-        BindingFactoryManager manager = sf.getBus().getExtension(BindingFactoryManager.class);
-        JAXRSBindingFactory factory = new JAXRSBindingFactory();
-        factory.setBus(sf.getBus());
-        manager.registerBindingFactory(JAXRSBindingFactory.JAXRS_BINDING_ID, factory);
-        sf.create();*/
     }
 
     @After
@@ -90,6 +89,7 @@ public class CamelRestComponentTest extends AbstractJUnit4SpringContextTests {
         Message message = new Message();
         message.setPayload("test");
 
+/*
         messageBus.registerMessageListener("vgr/messagebus_rest_test_destination.REPLY", new MessageListener() {
             @Override
             public void receive(Message message) {
@@ -97,6 +97,7 @@ public class CamelRestComponentTest extends AbstractJUnit4SpringContextTests {
                 list.add(new Object());
             }
         });
+*/
 
 
         DefaultSynchronousMessageSender sender = new DefaultSynchronousMessageSender();
@@ -109,6 +110,6 @@ public class CamelRestComponentTest extends AbstractJUnit4SpringContextTests {
         });
         sender.setMessageBus(messageBus);
         Object result = sender.send(destinationName, message);
-        System.out.println(result);
+        assertEquals(expected.toString(), result);
     }
 }

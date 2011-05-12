@@ -1,5 +1,7 @@
 package se.vgregion.routes;
 
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
 import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,11 +27,11 @@ public class MessagebusJmsRouteBuilder extends SpringRouteBuilder {
     @Override
     public void configure() throws Exception {
         from("liferay:" + messageBusDestination)
-                .log("1 b: ${body} h: ${header.JMSCorrelationID}")
+                .setHeader("JMSCorrelationID", header("responseId"))
                 .to("activemq:queue:" + activeMqDestination + "?preserveMessageQos=true&replyTo=" + activeMqDestination + ".REPLY");
 
         from("activemq:queue:" + activeMqDestination + ".REPLY?disableReplyTo=true")
-                .log("3 b: ${body} h: ${headers}")
+                .setHeader("responseId", header("JMSCorrelationID"))
                 .to("liferay:" + messageBusDestination + ".REPLY");
     }
 }
