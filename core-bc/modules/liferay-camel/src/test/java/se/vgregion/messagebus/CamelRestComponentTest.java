@@ -3,7 +3,6 @@ package se.vgregion.messagebus;
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.MessageBus;
 import com.liferay.portal.kernel.messaging.MessageBusException;
-import com.liferay.portal.kernel.messaging.MessageListener;
 import com.liferay.portal.kernel.messaging.sender.DefaultSynchronousMessageSender;
 import com.liferay.portal.kernel.uuid.PortalUUID;
 import org.junit.After;
@@ -71,7 +70,6 @@ public class CamelRestComponentTest extends AbstractJUnit4SpringContextTests {
             }
         });
         server.start();
-
     }
 
     @After
@@ -81,7 +79,7 @@ public class CamelRestComponentTest extends AbstractJUnit4SpringContextTests {
 
     @Test
     @DirtiesContext
-    public void test() throws MessageBusException {
+    public void testMessageBusToRestAndBackToMessageBus() throws MessageBusException {
         final List<Object> list = new ArrayList();
 
         String destinationName = messagebusDestination;

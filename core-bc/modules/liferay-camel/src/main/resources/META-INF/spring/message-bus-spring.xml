@@ -34,12 +34,12 @@
 
   <bean id="destination.account_invite" class="com.liferay.portal.kernel.messaging.SerialDestination"
         init-method="afterPropertiesSet">
-    <property name="name" value="${activate.messagebus.destination}"/>
+    <property name="name" value="${invite.messagebus.destination}"/>
   </bean>
-  <bean id="destination.account_invite_reply" class="com.liferay.portal.kernel.messaging.SerialDestination"
+  <!--<bean id="destination.account_invite_reply" class="com.liferay.portal.kernel.messaging.SerialDestination"
         init-method="afterPropertiesSet">
     <property name="name" value="${activate.messagebus.destination}.REPLY"/>
-  </bean>
+  </bean>-->
 
   <!-- Configurator -->
 
@@ -55,7 +55,7 @@
         <ref bean="destination.account_create_reply"/>
 
         <ref bean="destination.account_invite"/>
-        <ref bean="destination.account_invite_reply"/>
+        <!--<ref bean="destination.account_invite_reply"/>-->
       </list>
     </property>
     <property name="messageBus">
