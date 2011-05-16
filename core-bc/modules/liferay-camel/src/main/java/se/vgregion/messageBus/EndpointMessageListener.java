@@ -24,7 +24,6 @@ package se.vgregion.messagebus;
 
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.MessageListener;
-
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -55,8 +54,8 @@ public class EndpointMessageListener implements MessageListener {
 		org.apache.camel.Message in = new DefaultMessage();
 		
 		in.setBody(message.getPayload());
-        in.setHeader("JMSCorrelationID", message.getResponseId());
-		
+        in.setHeader("responseId", message.getResponseId());
+
 		exchange.setIn(in);
 
 		return exchange;
