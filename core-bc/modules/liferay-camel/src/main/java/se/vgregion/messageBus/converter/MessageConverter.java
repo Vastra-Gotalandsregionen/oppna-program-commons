@@ -41,4 +41,13 @@ public class MessageConverter {
 		return message;
 	}
 
+	@Converter
+	public static Message toMessage(Exception ex) {
+		Message message = new Message();
+
+		message.setPayload(ex);
+
+		return message;
+	}
+
 }
