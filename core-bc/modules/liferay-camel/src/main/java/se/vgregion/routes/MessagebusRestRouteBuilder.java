@@ -11,8 +11,6 @@ import javax.ws.rs.core.Response;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * User: pabe
@@ -20,6 +18,9 @@ import java.util.Map;
  * Time: 15:56
  */
 public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
+
+    private static Logger logger = LoggerFactory.getLogger(MessagebusRestRouteBuilder.class);
+
     private String messageBusDestination;
     private String restDestination;
 
@@ -30,7 +31,34 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
 
     @Override
     public void configure() throws Exception {
+
+        from("direct:error_"+messageBusDestination)
+                .process(new Processor() {
+                    @Override
+                    public void process(Exchange exchange) throws Exception {
+                        //Handle REST connection error
+                        Exception routeException = new Exception();
+                        Object exception = exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
+                        if (exception instanceof Throwable) {
+                            Throwable ex = (Throwable) exception;
+                            while (ex.getCause() != null) {
+                                ex = ex.getCause();
+                            }
+                            if (ex.getClass().getPackage().getName().startsWith("java.net")) {
+                                exchange.getOut().setBody(ex);
+                            } else {
+                                exchange.getOut().setBody(new Exception(((Throwable) exception).getMessage()));
+                            }
+                        } else {
+                            exchange.getOut().setBody(new Exception("Unknown error"));
+                        }
+                    }
+                })
+                .setHeader("responseId", property("correlationId"))
+                .to("liferay:" + DestinationNames.MESSAGE_BUS_DEFAULT_RESPONSE);
+
         from("liferay:" + messageBusDestination)
+                .errorHandler(deadLetterChannel("direct:error_" + messageBusDestination))
                 .setHeader(Exchange.HTTP_METHOD, simple("POST"))
                 .setProperty("correlationId", header("responseId"))
                 .inOut("cxfrs://" + restDestination + "?synchronous=true")

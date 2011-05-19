@@ -21,19 +21,24 @@
     <constructor-arg index="0" type="java.lang.String" value="vgr/messagebus_rest_test_destination"/>
   </bean>
 
+  <bean id="destination.unresponsive.test" class="com.liferay.portal.kernel.messaging.SerialDestination">
+    <constructor-arg index="0" type="java.lang.String" value="vgr/messagebus_unresponsive_rest_test_destination"/>
+  </bean>
+
   <bean id="destination.message_bus_default_response" class="com.liferay.portal.kernel.messaging.ParallelDestination">
-		<constructor-arg index="0" type="java.lang.String" value="liferay/message_bus/default_response" />
-	</bean>
+    <constructor-arg index="0" type="java.lang.String" value="liferay/message_bus/default_response"/>
+  </bean>
 
   <bean id="destination.test.reply" class="com.liferay.portal.kernel.messaging.SerialDestination">
-		<constructor-arg index="0" type="java.lang.String" value="vgr/messagebus_rest_test_destination.REPLY" />
-	</bean>
+    <constructor-arg index="0" type="java.lang.String" value="vgr/messagebus_rest_test_destination.REPLY"/>
+  </bean>
 
   <bean id="messagingConfigurator.core" class="com.liferay.portal.kernel.messaging.config.DefaultMessagingConfigurator"
         init-method="init" destroy-method="destroy">
     <property name="destinations">
       <list>
         <ref bean="destination.test"/>
+        <ref bean="destination.unresponsive.test"/>
         <ref bean="destination.message_bus_default_response"/>
         <ref bean="destination.test.reply"/>
       </list>
@@ -48,9 +53,15 @@
     <constructor-arg index="1" value="http://localhost:8008/testrest"/>
   </bean>
 
+  <bean id="messagebusUnresponsiveRestRoutes" class="se.vgregion.routes.MessagebusRestRouteBuilder">
+    <constructor-arg index="0" value="${messagebus.unresponsive.rest.destination}"/>
+    <constructor-arg index="1" value="${unresponsive.rest.destination}"/>
+  </bean>
+
   <camelContext xmlns="http://camel.apache.org/schema/spring">
 
     <routeBuilder ref="messagebusRestRoutes"/>
+    <routeBuilder ref="messagebusUnresponsiveRestRoutes"/>
 
   </camelContext>
 

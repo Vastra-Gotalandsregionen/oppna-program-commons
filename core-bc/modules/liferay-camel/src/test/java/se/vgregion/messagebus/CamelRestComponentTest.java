@@ -21,11 +21,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * User: pabe
@@ -41,8 +39,8 @@ public class CamelRestComponentTest extends AbstractJUnit4SpringContextTests {
 
     @Value("${messagebus.rest.destination}")
     String messagebusDestination;
-    @Value("${rest.destination}")
-    String restDestination;
+    @Value("${messagebus.unresponsive.rest.destination}")
+    String messagebusUnresponsiveDestination;
 
     private Server server = new Server(8008);
 
@@ -74,31 +72,16 @@ public class CamelRestComponentTest extends AbstractJUnit4SpringContextTests {
 
     @After
     public void tearDown() throws Exception {
-//        server.stop();
+        server.stop();
     }
 
     @Test
     @DirtiesContext
     public void testMessageBusToRestAndBackToMessageBus() throws MessageBusException {
-        final List<Object> list = new ArrayList();
-
-        String destinationName = messagebusDestination;
-
         Message message = new Message();
         message.setPayload("test");
 
-/*
-        messageBus.registerMessageListener("vgr/messagebus_rest_test_destination.REPLY", new MessageListener() {
-            @Override
-            public void receive(Message message) {
-                assertEquals("test", message.getPayload());
-                list.add(new Object());
-            }
-        });
-*/
-
-
-        DefaultSynchronousMessageSender sender = new DefaultSynchronousMessageSender();
+       DefaultSynchronousMessageSender sender = new DefaultSynchronousMessageSender();
         sender.setPortalUUID(new PortalUUID() {
             @Override
             public String generate() {
@@ -107,7 +90,49 @@ public class CamelRestComponentTest extends AbstractJUnit4SpringContextTests {
             }
         });
         sender.setMessageBus(messageBus);
-        Object result = sender.send(destinationName, message);
+        Object result = sender.send(messagebusDestination, message, 15000);
         assertEquals(expected.toString(), result);
+    }
+
+    @Test
+    @DirtiesContext
+    public void testMessageBusToRestTimeout() throws MessageBusException {
+        Message message = new Message();
+        message.setPayload("test");
+
+       DefaultSynchronousMessageSender sender = new DefaultSynchronousMessageSender();
+        sender.setPortalUUID(new PortalUUID() {
+            @Override
+            public String generate() {
+                Random random = new Random();
+                return random.nextInt() + "";
+            }
+        });
+        sender.setMessageBus(messageBus);
+        try {
+            sender.send(messagebusDestination, message, 1);
+            fail();
+        } catch (Exception ex) {
+            assertTrue(ex.getMessage().startsWith("No reply received for message"));
+        }
+    }
+
+    @Test
+    @DirtiesContext
+    public void testMessageBusToUnresponsiveRestAndBackToMessageBus() throws MessageBusException {
+        Message message = new Message();
+        message.setPayload("test");
+
+       DefaultSynchronousMessageSender sender = new DefaultSynchronousMessageSender();
+        sender.setPortalUUID(new PortalUUID() {
+            @Override
+            public String generate() {
+                Random random = new Random();
+                return random.nextInt() + "";
+            }
+        });
+        sender.setMessageBus(messageBus);
+        Object result = sender.send(messagebusUnresponsiveDestination, message, 15000);
+        assertTrue(result instanceof Exception);
     }
 }
