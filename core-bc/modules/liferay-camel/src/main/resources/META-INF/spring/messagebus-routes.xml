@@ -7,6 +7,14 @@
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
                            http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
+  <camelContext xmlns="http://camel.apache.org/schema/spring">
+
+    <routeBuilder ref="activateRoutes"/>
+    <routeBuilder ref="createRoutes"/>
+    <routeBuilder ref="inviteRoutes"/>
+
+  </camelContext>
+
   <context:property-placeholder location="classpath:META-INF/messaging.properties"/>
 
   <bean id="activateRoutes" class="se.vgregion.routes.MessagebusJmsRouteBuilder">
@@ -23,13 +31,5 @@
     <constructor-arg index="0" value="${invite.messagebus.destination}"/>
     <constructor-arg index="1" value="${invite.activemq.destination}"/>
   </bean>
-
-  <camelContext xmlns="http://camel.apache.org/schema/spring">
-
-    <routeBuilder ref="activateRoutes"/>
-    <routeBuilder ref="createRoutes"/>
-    <routeBuilder ref="inviteRoutes"/>
-
-  </camelContext>
 
 </beans>

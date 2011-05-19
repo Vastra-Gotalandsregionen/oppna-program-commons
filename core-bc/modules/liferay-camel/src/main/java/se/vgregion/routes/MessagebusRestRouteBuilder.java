@@ -31,6 +31,20 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
 
     @Override
     public void configure() throws Exception {
+        from("liferay:" + messageBusDestination)
+                .errorHandler(deadLetterChannel("direct:error_" + messageBusDestination))
+                .setHeader(Exchange.HTTP_METHOD, simple("POST"))
+                .setProperty("correlationId", header("responseId"))
+                .inOut("cxfrs://" + restDestination + "?synchronous=true")
+                .process(new Processor() {
+                    @Override
+                    public void process(Exchange exchange) throws Exception {
+                        String result = extractResponseBody(exchange);
+                        exchange.getOut().setBody(result);
+                    }
+                })
+                .setHeader("responseId", property("correlationId"))
+                .to("liferay:" + DestinationNames.MESSAGE_BUS_DEFAULT_RESPONSE);
 
         from("direct:error_"+messageBusDestination)
                 .process(new Processor() {
@@ -52,21 +66,6 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
                         } else {
                             exchange.getOut().setBody(new Exception("Unknown error"));
                         }
-                    }
-                })
-                .setHeader("responseId", property("correlationId"))
-                .to("liferay:" + DestinationNames.MESSAGE_BUS_DEFAULT_RESPONSE);
-
-        from("liferay:" + messageBusDestination)
-                .errorHandler(deadLetterChannel("direct:error_" + messageBusDestination))
-                .setHeader(Exchange.HTTP_METHOD, simple("POST"))
-                .setProperty("correlationId", header("responseId"))
-                .inOut("cxfrs://" + restDestination + "?synchronous=true")
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        String result = extractResponseBody(exchange);
-                        exchange.getOut().setBody(result);
                     }
                 })
                 .setHeader("responseId", property("correlationId"))
