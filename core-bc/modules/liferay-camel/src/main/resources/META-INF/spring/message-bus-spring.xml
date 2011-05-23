@@ -18,28 +18,16 @@
         init-method="afterPropertiesSet">
     <property name="name" value="${activate.messagebus.destination}"/>
   </bean>
-  <bean id="destination.account_activation_reply" class="com.liferay.portal.kernel.messaging.SerialDestination"
-        init-method="afterPropertiesSet">
-    <property name="name" value="${activate.messagebus.destination}.REPLY"/>
-  </bean>
 
   <bean id="destination.account_create" class="com.liferay.portal.kernel.messaging.SerialDestination"
         init-method="afterPropertiesSet">
     <property name="name" value="${activate.messagebus.destination}"/>
-  </bean>
-  <bean id="destination.account_create_reply" class="com.liferay.portal.kernel.messaging.SerialDestination"
-        init-method="afterPropertiesSet">
-    <property name="name" value="${activate.messagebus.destination}.REPLY"/>
   </bean>
 
   <bean id="destination.account_invite" class="com.liferay.portal.kernel.messaging.SerialDestination"
         init-method="afterPropertiesSet">
     <property name="name" value="${invite.messagebus.destination}"/>
   </bean>
-  <!--<bean id="destination.account_invite_reply" class="com.liferay.portal.kernel.messaging.SerialDestination"
-        init-method="afterPropertiesSet">
-    <property name="name" value="${activate.messagebus.destination}.REPLY"/>
-  </bean>-->
 
   <!-- Configurator -->
 
@@ -49,13 +37,10 @@
     <property name="destinations">
       <list>
         <ref bean="destination.account_activation"/>
-        <ref bean="destination.account_activation_reply"/>
 
         <ref bean="destination.account_create"/>
-        <ref bean="destination.account_create_reply"/>
 
         <ref bean="destination.account_invite"/>
-        <!--<ref bean="destination.account_invite_reply"/>-->
       </list>
     </property>
     <property name="messageBus">

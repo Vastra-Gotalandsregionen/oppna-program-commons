@@ -13,12 +13,13 @@ import javax.jms.*;
 public class ActiveMQListener {
 
     public static void main(String[] args) throws JMSException {
-        final String replyText = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                "<activateUserResponse><userId>theuserid</userId><statusCode>Error</statusCode>" +
-                "<message>The reply message</message></activateUserResponse>";
+        final String replyText = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><activateUserResponse xmlns=\"" +
+                                "http://portal.vgregion.se/activateuser\">" +
+                                "<userId>theuserid</userId><statusCode>SUCCESS</statusCode>" +
+                                "<message>The message</message></activateUserResponse>";
 
-        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("ssl://localhost:61617");
-//        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(ActiveMQConnection.DEFAULT_BROKER_URL);
+//        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("ssl://localhost:61617");
+        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(ActiveMQConnection.DEFAULT_BROKER_URL);
         Connection connection = connectionFactory.createConnection();
         final Session session = connection.createSession(false, 1);
         connection.start();
