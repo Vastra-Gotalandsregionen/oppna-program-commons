@@ -18,7 +18,7 @@
     <constructor-arg index="0" type="java.lang.String" value="${messagebus.destination}"/>
   </bean>
   <bean id="destination.test.reply" class="com.liferay.portal.kernel.messaging.SerialDestination">
-    <constructor-arg index="0" type="java.lang.String" value="${messagebus.destination}.REPLY"/>
+    <constructor-arg index="0" type="java.lang.String" value="liferay/message_bus/default_response"/>
   </bean>
 
   <!-- Configurator -->

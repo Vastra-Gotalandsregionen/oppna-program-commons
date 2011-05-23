@@ -1,5 +1,6 @@
 package se.vgregion.messagebus;
 
+import com.liferay.portal.kernel.messaging.DestinationNames;
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.MessageBus;
 import com.liferay.portal.kernel.messaging.MessageListener;
@@ -106,7 +107,7 @@ public class CamelJMSComponentTest {
 
         final List<Message> list = new ArrayList();
 
-        messageBus.registerMessageListener(messagebusDestination + ".REPLY", new MessageListener() {
+        messageBus.registerMessageListener(DestinationNames.MESSAGE_BUS_DEFAULT_RESPONSE, new MessageListener() {
             @Override
             public void receive(Message message) {
                 assertEquals(payload.toUpperCase(), message.getPayload());

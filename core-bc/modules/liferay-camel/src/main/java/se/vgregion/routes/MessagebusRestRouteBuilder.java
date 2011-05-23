@@ -53,7 +53,6 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
                     @Override
                     public void process(Exchange exchange) throws Exception {
                         //Handle REST connection error
-                        Exception routeException = new Exception();
                         Object exception = exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
                         if (exception instanceof Throwable) {
                             Throwable ex = (Throwable) exception;
