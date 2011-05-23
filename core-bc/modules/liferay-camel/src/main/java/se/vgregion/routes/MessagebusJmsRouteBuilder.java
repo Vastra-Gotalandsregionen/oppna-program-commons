@@ -5,6 +5,8 @@ import org.apache.camel.Processor;
 import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * User: pabe
@@ -14,14 +16,21 @@ import org.slf4j.LoggerFactory;
 public class MessagebusJmsRouteBuilder extends SpringRouteBuilder {
     private static Logger log = LoggerFactory.getLogger(MessagebusJmsRouteBuilder.class);
 
+    private String brokerUrl;
     private String messageBusDestination;
     private String activeMqDestination;
 
-    public MessagebusJmsRouteBuilder(String messageBusDestination, String activeMqDestination) {
+    public MessagebusJmsRouteBuilder(String messageBusDestination, String activeMqDestination, String brokerUrl) {
         this.messageBusDestination = messageBusDestination;
         this.activeMqDestination = activeMqDestination;
+        this.brokerUrl = brokerUrl;
 
-        log.info("MB: {} MQ: {}", messageBusDestination, activeMqDestination);
+        log.info("BrokerUrl: {}", brokerUrl);
+        log.info("MessageBus: {} MQ: {}", messageBusDestination, activeMqDestination);
+    }
+
+    public MessagebusJmsRouteBuilder(String messageBusDestination, String activeMqDestination) {
+        this(messageBusDestination, activeMqDestination, null);
     }
 
     @Override

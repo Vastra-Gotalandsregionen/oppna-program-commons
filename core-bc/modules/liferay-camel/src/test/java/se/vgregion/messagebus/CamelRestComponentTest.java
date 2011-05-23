@@ -8,6 +8,7 @@ import com.liferay.portal.kernel.uuid.PortalUUID;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.AbstractHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -30,9 +32,9 @@ import static org.junit.Assert.*;
  * Date: 2011-05-10
  * Time: 16:12
  */
-@ContextConfiguration(
-        locations = {"/META-INF/camelRestComponentTest.xml"})
-public class CamelRestComponentTest extends AbstractJUnit4SpringContextTests {
+@ContextConfiguration(locations = {"/META-INF/camelRestComponentTest.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+public class CamelRestComponentTest {
 
     @Autowired
     private MessageBus messageBus;

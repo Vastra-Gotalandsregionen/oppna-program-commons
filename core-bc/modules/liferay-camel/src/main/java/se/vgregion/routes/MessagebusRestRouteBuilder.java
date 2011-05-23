@@ -27,6 +27,8 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
     public MessagebusRestRouteBuilder(String messageBusDestination, String restDestination) {
         this.messageBusDestination = messageBusDestination;
         this.restDestination = restDestination;
+
+        log.info("MB: {} ReST: {}", messageBusDestination, restDestination);
     }
 
     @Override

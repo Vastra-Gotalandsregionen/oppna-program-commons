@@ -35,10 +35,15 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.converter.IOConverter;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit38.AbstractJUnit38SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Bruno Farache
@@ -47,9 +52,11 @@ import org.springframework.test.context.junit38.AbstractJUnit38SpringContextTest
 	locations={
 		"/META-INF/message-bus-spring-test.xml", "/META-INF/camel-spring-test.xml",
 		"/META-INF/test-routes.xml"})
-public class MessageBusComponentTest extends AbstractJUnit38SpringContextTests {
+@RunWith(SpringJUnit4ClassRunner.class)
+public class MessageBusComponentTest {
 	
 	@DirtiesContext
+    @Test
     public void testProducer() throws Exception {
     	messageBus.addDestination(new SerialDestination("destination"));
 

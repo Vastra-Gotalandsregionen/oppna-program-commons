@@ -6,6 +6,8 @@ import com.liferay.portal.kernel.messaging.MessageListener;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.log4j.Logger;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
@@ -13,6 +15,7 @@ import org.springframework.jms.core.MessageCreator;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit38.AbstractJUnit38SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import se.vgregion.messagebus.util.SimpleMessageListener;
 
 import javax.jms.*;
@@ -20,14 +23,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * @author Bruno Farache
  */
 @ContextConfiguration(
-        locations = {
-                "/META-INF/message-bus-spring-test.xml", "/META-INF/camel-spring-test.xml",
+        locations = {"/META-INF/message-bus-spring-test.xml",
+                "/META-INF/camel-spring-test.xml",
                 "/META-INF/test-routes.xml"})
-public class CamelJMSComponentTest extends AbstractJUnit38SpringContextTests {
+@RunWith(SpringJUnit4ClassRunner.class)
+public class CamelJMSComponentTest {
 
     private static final Logger log = Logger.getLogger(CamelJMSComponentTest.class);
 
@@ -36,6 +43,7 @@ public class CamelJMSComponentTest extends AbstractJUnit38SpringContextTests {
     @Value("${activemq.destination}")
     String activemqDestination;
 
+    @Test
     @DirtiesContext
     public void testJMSMessage() throws Exception {
         SimpleMessageListener.messageReceived = false;
@@ -55,6 +63,7 @@ public class CamelJMSComponentTest extends AbstractJUnit38SpringContextTests {
         assertEquals(msg, SimpleMessageListener.readMessage);
     }
 
+    @Test
     @DirtiesContext
     public void testMessageBusToJms() throws Exception {
         SimpleMessageListener.messageReceived = false;
@@ -68,6 +77,7 @@ public class CamelJMSComponentTest extends AbstractJUnit38SpringContextTests {
         assertEquals(payload, SimpleMessageListener.readMessage);
     }
 
+    @Test
     @DirtiesContext
     public void testMessageBus() throws Exception {
         String payload = "test payload";
@@ -78,6 +88,7 @@ public class CamelJMSComponentTest extends AbstractJUnit38SpringContextTests {
         assertEquals(1, list.size());
     }
 
+    @Test
     @DirtiesContext
     public void testCamelQueueReply() throws Exception {
         final String payload = "apa bepa";

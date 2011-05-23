@@ -28,16 +28,23 @@ import com.liferay.portal.kernel.messaging.MessageBusException;
 import com.liferay.portal.kernel.messaging.MessageListener;
 import com.liferay.portal.kernel.messaging.sender.SynchronousMessageSender;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit38.AbstractJUnit38SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Bruno Farache
  */
 @ContextConfiguration(locations={"/META-INF/message-bus-spring.xml"})
-public class MessageBusTest extends AbstractJUnit38SpringContextTests {
+@RunWith(SpringJUnit4ClassRunner.class)
+public class MessageBusTest {
 
+    @Test
     public void testSynchronousMessage() throws MessageBusException {   	
     	messageBus.registerMessageListener(
     		"liferay/message_bus/test", new PingPongMessageListener());

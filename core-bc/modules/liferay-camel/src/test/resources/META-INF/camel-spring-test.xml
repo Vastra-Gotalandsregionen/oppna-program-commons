@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
-        >
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
+  >
 
   <import resource="classpath*:META-INF/messagebus-routes-test.xml"/>
   <import resource="classpath*:META-INF/jms-messaging.xml"/>
@@ -16,7 +16,7 @@
 
   <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
     <property name="brokerURL" value="ssl://localhost:61617"/>
-    <property name="connectionFactory" ref="jmsFactory" />
+    <property name="connectionFactory" ref="jmsFactory"/>
   </bean>
 
   <!--<bean id="cxfrs" class="org.apache.camel.component.cxf.CxfComponent" >
