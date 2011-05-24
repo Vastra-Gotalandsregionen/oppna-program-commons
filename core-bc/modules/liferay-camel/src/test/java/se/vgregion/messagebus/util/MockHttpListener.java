@@ -24,13 +24,18 @@ public class MockHttpListener {
             @Override
             public void handle(String s, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, int i) throws IOException, ServletException {
                 System.out.println(httpServletRequest);
+                /*try {
+                    Thread.sleep(100000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }*/
                 PrintWriter writer = httpServletResponse.getWriter();
                 writer.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                "<createUserResponse xmlns=\"http://portal.vgregion.se/createuser\">" +
-                "<vgrId>ex_test</vgrId>" +
-                "<statusCode>NEW_USER</statusCode>" +
-                "<message>message</message>" +
-                "</createUserResponse>");
+                        "<createUserResponse xmlns=\"http://portal.vgregion.se/createuser\">" +
+                        "<vgrId>ex_test</vgrId>" +
+                        "<statusCode>NEW_USER</statusCode>" +
+                        "<message>message</message>" +
+                        "</createUserResponse>");
                 writer.close();
                 httpServletResponse.setStatus(HttpServletResponse.SC_OK);
             }
