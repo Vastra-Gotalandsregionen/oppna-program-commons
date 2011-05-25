@@ -13,31 +13,47 @@ import org.slf4j.LoggerFactory;
  * Time: 10:29
  */
 public class MessagebusJmsRouteBuilder extends SpringRouteBuilder {
-    private static Logger log = LoggerFactory.getLogger(MessagebusJmsRouteBuilder.class);
 
-    private String brokerUrl;
     private String messageBusDestination;
     private String activeMqDestination;
 
+    /**
+     * Constructor declaring messagebus destination and ActiveMq queue.
+     *
+     * @param messageBusDestination
+     * @param activeMqDestination
+     * @param brokerUrl
+     */
     public MessagebusJmsRouteBuilder(String messageBusDestination, String activeMqDestination, String brokerUrl) {
         this.messageBusDestination = messageBusDestination;
         this.activeMqDestination = activeMqDestination;
-        this.brokerUrl = brokerUrl;
 
         log.info("BrokerUrl: {}", brokerUrl);
         log.info("MessageBus: {} MQ: {}", messageBusDestination, activeMqDestination);
     }
 
+    /**
+     * Convenience constructor for tests
+     *
+     * @param messageBusDestination
+     * @param activeMqDestination
+     */
     public MessagebusJmsRouteBuilder(String messageBusDestination, String activeMqDestination) {
         this(messageBusDestination, activeMqDestination, null);
     }
 
+    /**
+     * Camel route definition.
+     *
+     * @throws Exception can fail.
+     */
     @Override
     public void configure() throws Exception {
         from("liferay:" + messageBusDestination)
                 .errorHandler(deadLetterChannel("direct:error_" + messageBusDestination))
                 .setHeader("JMSCorrelationID", header("responseId"))
-                .to("activemq:queue:" + activeMqDestination + "?preserveMessageQos=true&replyTo=" + activeMqDestination + ".REPLY");
+                .to("activemq:queue:" + activeMqDestination + "?preserveMessageQos=true&replyTo=" +
+                        activeMqDestination + ".REPLY");
 
         from("activemq:queue:" + activeMqDestination + ".REPLY?disableReplyTo=true")
                 .setHeader("responseId", header("JMSCorrelationID"))

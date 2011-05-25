@@ -19,8 +19,6 @@ import java.io.InputStream;
  */
 public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
 
-    private static Logger logger = LoggerFactory.getLogger(MessagebusRestRouteBuilder.class);
-
     private String messageBusDestination;
     private String restDestination;
 
