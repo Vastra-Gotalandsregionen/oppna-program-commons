@@ -48,7 +48,7 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
                 .setHeader("responseId", property("correlationId"))
                 .to("liferay:" + DestinationNames.MESSAGE_BUS_DEFAULT_RESPONSE);
 
-        from("direct:error_"+messageBusDestination)
+        from("direct:error_" + messageBusDestination)
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
@@ -75,14 +75,22 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
 
     private String extractResponseBody(Exchange exchange) throws IOException {
         Response response = (Response) exchange.getIn().getBody();
-        InputStream inputStream = (InputStream) (response).getEntity();
-        BufferedInputStream bis = new BufferedInputStream(inputStream);
-        byte[] buffer = new byte[1024];
-        int n;
-        StringBuilder sb = new StringBuilder();
-        while ((n = bis.read(buffer)) > 0) {
-            sb.append(new String(buffer, 0, n, "UTF-8"));
+
+        InputStream inputStream = null;
+        BufferedInputStream bis = null;
+        try {
+            inputStream = (InputStream) (response).getEntity();
+            bis = new BufferedInputStream(inputStream);
+            byte[] buffer = new byte[1024];
+            int n;
+            StringBuilder sb = new StringBuilder();
+            while ((n = bis.read(buffer)) > 0) {
+                sb.append(new String(buffer, 0, n, "UTF-8"));
+            }
+            return sb.toString();
+        } finally {
+            if (bis != null) bis.close();
+            if (inputStream != null) inputStream.close();
         }
-        return sb.toString();
     }
 }

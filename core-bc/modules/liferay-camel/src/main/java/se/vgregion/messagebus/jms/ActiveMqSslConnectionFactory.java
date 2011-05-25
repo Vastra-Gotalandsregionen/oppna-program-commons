@@ -17,8 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
 
-public class ActiveMqSslConnectionFactory extends
-        ActiveMQSslConnectionFactory {
+public final class ActiveMqSslConnectionFactory extends ActiveMQSslConnectionFactory {
     protected String trustStore;
     protected String trustStorePassword;
     protected String keyStore;
@@ -50,15 +49,21 @@ public class ActiveMqSslConnectionFactory extends
         TrustManager[] trustStoreManagers = null;
         KeyStore trustedCertStore = KeyStore.getInstance("jks");
 
-        InputStream tsStream = getClass().getResourceAsStream(trustStore);
+        InputStream tsStream = null;
+        try {
+            tsStream = getClass().getResourceAsStream(trustStore);
 
-        trustedCertStore.load(tsStream, trustStorePassword.toCharArray());
-        TrustManagerFactory tmf =
-                TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            trustedCertStore.load(tsStream, trustStorePassword.toCharArray());
 
-        tmf.init(trustedCertStore);
-        trustStoreManagers = tmf.getTrustManagers();
-        return trustStoreManagers;
+            TrustManagerFactory tmf =
+                    TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+
+            tmf.init(trustedCertStore);
+            trustStoreManagers = tmf.getTrustManagers();
+            return trustStoreManagers;
+        } finally {
+            if (tsStream != null) tsStream.close();
+        }
     }
 
     public KeyManager[] getKeyManager() throws Exception {
@@ -83,16 +88,21 @@ public class ActiveMqSslConnectionFactory extends
         if (fileName == null) {
             return null;
         }
-        InputStream in = getClass().getResourceAsStream(fileName);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] buf = new byte[512];
-        int i = in.read(buf);
-        while (i > 0) {
-            out.write(buf, 0, i);
-            i = in.read(buf);
+
+        InputStream in = null;
+        try {
+            in = getClass().getResourceAsStream(fileName);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            byte[] buf = new byte[512];
+            int i = in.read(buf);
+            while (i > 0) {
+                out.write(buf, 0, i);
+                i = in.read(buf);
+            }
+            return out.toByteArray();
+        } finally {
+            if (in != null) in.close();
         }
-        in.close();
-        return out.toByteArray();
     }
 
     public String getTrustStore() {

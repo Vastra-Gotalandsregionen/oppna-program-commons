@@ -45,8 +45,6 @@ import java.util.Properties;
 
 /**
  * This class implements the api method calls to send and retrieve the data objects.
- * 
- * 
  */
 public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 
@@ -79,14 +77,11 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 
     /**
      * Get a user token. Also assigns the token to the inner member (token) of this class.
-     * 
-     * @param username
-     *            the users username
-     * @param password
-     *            the users password
+     *
+     * @param username the users username
+     * @param password the users password
      * @return a populated TokenData object or null
-     * @throws Exception
-     *             when there is http problems
+     * @throws Exception when there is http problems
      */
     private String getUserToken(String username, String password) {
         DefaultHttpClient client = new DefaultHttpClient();
@@ -163,7 +158,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
             HttpResponse response = HTTPUtils.makeRequest(GET_PROJECT + "/" + projectId + "/stories", token,
                     client);
             HttpEntity entity = response.getEntity();
-            String xml = convertStreamToString(entity.getContent());
+//            String xml = convertStreamToString(entity.getContent());
             // System.out.println(xml);
 
             // Convert the xml response into an object
