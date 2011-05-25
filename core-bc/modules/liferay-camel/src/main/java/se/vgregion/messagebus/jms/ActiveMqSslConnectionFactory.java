@@ -18,10 +18,10 @@ import java.io.InputStream;
 import java.security.KeyStore;
 
 public final class ActiveMqSslConnectionFactory extends ActiveMQSslConnectionFactory {
-    protected String trustStore;
-    protected String trustStorePassword;
-    protected String keyStore;
-    protected String keyStorePassword;
+    private String trustStore;
+    private String trustStorePassword;
+    private String keyStore;
+    private String keyStorePassword;
 
     protected Transport createTransport() throws JMSException {
         // If the given URI is non-ssl, let superclass handle it.
@@ -86,7 +86,7 @@ public final class ActiveMqSslConnectionFactory extends ActiveMQSslConnectionFac
 
     private byte[] loadClientCredential(String fileName) throws IOException {
         if (fileName == null) {
-            return null;
+            return new byte[0];
         }
 
         InputStream in = null;

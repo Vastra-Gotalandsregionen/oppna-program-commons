@@ -35,21 +35,31 @@ import org.apache.camel.impl.DefaultMessage;
  */
 public class EndpointMessageListener implements MessageListener {
 
+    /**
+     * Constructor.
+     *
+     * @param endpoint endpoint.
+     * @param processor processor.
+     */
 	public EndpointMessageListener(Endpoint endpoint, Processor processor) {
 		_endpoint = endpoint;
 		_processor = processor;
 	}
-	
+
+    /**
+     * Outbound message.
+     *
+     * @param message message to send.
+     */
 	public void receive(Message message) {
 		try {
 			_processor.process(createExchange(message));
-		} 
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public Exchange createExchange(Message message) {
+
+	private Exchange createExchange(Message message) {
 		Exchange exchange = new DefaultExchange(_endpoint);
 		org.apache.camel.Message in = new DefaultMessage();
 		
