@@ -42,7 +42,7 @@ public class MessageBusEndpoint extends DefaultEndpoint {
 		MessageBus messageBus) {
 		
 		super(uri, component);
-		
+
 		_destination = remaining;
 		_messageBus = messageBus;
 	}
