@@ -19,6 +19,8 @@
     <property name="connectionFactory" ref="jmsFactory"/>
   </bean>
 
+  <bean id="log" class="org.apache.camel.component.log.LogComponent" />
+
   <!--<bean id="cxfrs" class="org.apache.camel.component.cxf.CxfComponent" >
   </bean>-->
 

@@ -57,6 +57,7 @@ public class MessagebusJmsRouteBuilder extends SpringRouteBuilder {
 
         from("activemq:queue:" + activeMqDestination + ".REPLY?disableReplyTo=true")
                 .setHeader("responseId", header("JMSCorrelationID"))
+                .to("log:se.vgregion.routes?level=INFO")
                 .to("liferay:" + DestinationNames.MESSAGE_BUS_DEFAULT_RESPONSE);
 
         from("direct:error_" + messageBusDestination)

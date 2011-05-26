@@ -25,4 +25,6 @@
     <!--<property name="keyStorePassword" value="password"/>-->
   </bean>
 
+  <bean id="log" class="org.apache.camel.component.log.LogComponent" />
+
 </beans>
