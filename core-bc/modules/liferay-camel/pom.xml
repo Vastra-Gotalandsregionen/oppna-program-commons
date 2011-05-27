@@ -10,7 +10,7 @@
     <version>3.6-SNAPSHOT</version>
   </parent>
   <artifactId>commons-util-core-bc-module-liferay-camel</artifactId>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
   <name>${project.artifactId}</name>
 
   <properties>
