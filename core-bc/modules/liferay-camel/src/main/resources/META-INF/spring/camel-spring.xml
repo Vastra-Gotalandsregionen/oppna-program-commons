@@ -18,11 +18,8 @@
 
   <bean id="activeMqConnectionFactory" class="se.vgregion.messagebus.jms.ActiveMqSslConnectionFactory">
     <property name="brokerURL" value="${brokerURL}"/>
-    <!--<property name="brokerURL" value="ssl://localhost:61617"/>-->
-    <!--<property name="trustStore" value="/client.ts"/>-->
-    <!--<property name="trustStorePassword" value="password"/>-->
-    <!--<property name="keyStore" value="/broker.ks"/>-->
-    <!--<property name="keyStorePassword" value="password"/>-->
+    <property name="trustStore" value="${trustStore}"/>
+    <property name="trustStorePassword" value="${trustStorePassword}"/>
   </bean>
 
   <bean id="log" class="org.apache.camel.component.log.LogComponent" />

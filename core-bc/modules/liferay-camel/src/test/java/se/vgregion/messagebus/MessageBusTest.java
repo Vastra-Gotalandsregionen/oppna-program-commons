@@ -32,7 +32,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit38.AbstractJUnit38SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertEquals;
@@ -40,7 +39,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author Bruno Farache
  */
-@ContextConfiguration(locations={"/META-INF/message-bus-spring.xml"})
+@ContextConfiguration(locations={"/META-INF/messageBusTest.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
 public class MessageBusTest {
 

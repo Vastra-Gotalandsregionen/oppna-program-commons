@@ -15,7 +15,7 @@
 
   </camelContext>
 
-  <context:property-placeholder location="classpath:META-INF/messaging.properties"/>
+  <context:property-placeholder location="classpath:META-INF/messaging.properties,classpath:security.properties"/>
 
   <bean id="activateRoutes" class="se.vgregion.routes.MessagebusJmsRouteBuilder">
     <constructor-arg index="0" value="${activate.messagebus.destination}"/>

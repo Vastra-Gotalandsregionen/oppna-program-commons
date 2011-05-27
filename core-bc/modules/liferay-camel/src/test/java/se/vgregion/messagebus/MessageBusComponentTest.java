@@ -50,8 +50,8 @@ import static org.junit.Assert.assertEquals;
  */
 @ContextConfiguration(
 	locations={
-		"/META-INF/message-bus-spring-test.xml", "/META-INF/camel-spring-test.xml",
-		"/META-INF/test-routes.xml"})
+		"/META-INF/messageBusComponentTest.xml"
+		/*"/META-INF/test-routes.xml"*/})
 @RunWith(SpringJUnit4ClassRunner.class)
 public class MessageBusComponentTest {
 	
