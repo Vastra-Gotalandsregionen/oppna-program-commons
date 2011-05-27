@@ -16,6 +16,7 @@ public class MockActiveMQListener {
                                 "http://portal.vgregion.se/activateuser\">" +
                                 "<userId>theuserid</userId><statusCode>SUCCESS</statusCode>" +
                                 "<message>The message</message></activateUserResponse>";
+        final String inviteUserReplyText = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><inviteUserResponse xmlns=\"http://portal.vgregion.se/inviteuser\"><userId>ex_apa</userId><statusCode>SUCCESS</statusCode><message>the reply message</message></inviteUserResponse>";
 
         ActiveMqSslConnectionFactory connectionFactory = new ActiveMqSslConnectionFactory();
         connectionFactory.setBrokerURL("ssl://localhost:61617");
@@ -31,7 +32,7 @@ public class MockActiveMQListener {
         String inviteUserQueue = "PORTAL.SE.INVITEUSER.QUEUE";
 
         startQueueListener(activateUserReplyText, session, activateUserQueue);
-        startQueueListener(activateUserReplyText, session, inviteUserQueue);
+        startQueueListener(inviteUserReplyText, session, inviteUserQueue);
 
         while (true)
             try {
