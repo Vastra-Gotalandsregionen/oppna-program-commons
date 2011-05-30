@@ -35,7 +35,7 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
                 .errorHandler(deadLetterChannel("direct:error_" + messageBusDestination))
                 .setHeader(Exchange.HTTP_METHOD, simple("POST"))
                 .setProperty("correlationId", header("responseId"))
-                .inOut("cxfrs://" + restDestination + "?synchronous=true")
+                .inOut("cxfrs://" + restDestination)
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {

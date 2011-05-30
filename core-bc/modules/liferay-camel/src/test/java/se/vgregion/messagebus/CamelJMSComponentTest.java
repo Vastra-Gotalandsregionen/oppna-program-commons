@@ -73,7 +73,7 @@ public class CamelJMSComponentTest {
 
         final List<Object> list = sendToMessageBus(payload);
 
-        Thread.sleep(100);
+        Thread.sleep(1000);
 
         assertEquals(true, SimpleMessageListener.messageReceived);
         assertEquals(payload, SimpleMessageListener.readMessage);
