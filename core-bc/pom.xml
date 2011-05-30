@@ -18,6 +18,6 @@
     <module>composites/svc-usd</module>
     <module>composites/webcomp-sitemap</module>
     <module>composites/types</module>
-    <module>modules/liferay-camel</module>
+    <module>composites/svc-camel</module>
   </modules>
 </project>
