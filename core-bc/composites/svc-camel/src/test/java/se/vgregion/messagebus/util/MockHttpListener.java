@@ -31,7 +31,7 @@ public class MockHttpListener {
                     try {
                         Thread.sleep(100000);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        e.printStackTrace();
                     }
                 }
                 PrintWriter writer = httpServletResponse.getWriter();

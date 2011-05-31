@@ -217,7 +217,7 @@ public class PivotalTrackerServiceImplTest {
             input.close();
 
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } finally {
             client.getConnectionManager().shutdown();
         }
@@ -260,7 +260,7 @@ public class PivotalTrackerServiceImplTest {
             input.close();
 
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } finally {
             if (is != null) is.close();
             client.getConnectionManager().shutdown();
