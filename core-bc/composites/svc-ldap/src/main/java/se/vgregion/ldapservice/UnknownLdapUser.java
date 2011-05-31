@@ -41,7 +41,7 @@ public class UnknownLdapUser implements LdapUser {
         return new String[] { "unknown" };
     }
 
-    public String getDN() {
+    public String getDn() {
         return "unknownDN";
     }
 

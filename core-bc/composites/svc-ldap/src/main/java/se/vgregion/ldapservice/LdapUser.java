@@ -24,7 +24,7 @@ import java.util.Map;
 
 public interface LdapUser {
 
-    String getDN();
+    String getDn();
 
     String getAttributeValue(String attrName);
 

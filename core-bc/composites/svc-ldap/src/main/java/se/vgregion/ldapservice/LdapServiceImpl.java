@@ -211,7 +211,7 @@ public class LdapServiceImpl implements LdapService {
             e.addAttributeValue("objectclass", "inetOrgPerson");
 
             Attributes attrs = ((LdapUserEntryImpl) e).getAttributes(addAttrs);
-            String dn = e.getDN();
+            String dn = e.getDn();
             getBaseContext().createSubcontext(dn, attrs);
             return true;
         }
@@ -240,7 +240,7 @@ public class LdapServiceImpl implements LdapService {
             }
 
             Attributes attrs = ((LdapUserEntryImpl) e).getAttributes(modifyAttrs);
-            getBaseContext().modifyAttributes(e.getDN(), InitialDirContext.REPLACE_ATTRIBUTE, attrs);
+            getBaseContext().modifyAttributes(e.getDn(), InitialDirContext.REPLACE_ATTRIBUTE, attrs);
             return true;
         }
         catch (Exception ex) {
@@ -255,7 +255,7 @@ public class LdapServiceImpl implements LdapService {
      */
     public boolean deleteLdapUser(LdapUser e) {
         try {
-            getBaseContext().destroySubcontext(e.getDN());
+            getBaseContext().destroySubcontext(e.getDn());
             return true;
         }
         catch (Exception ex) {

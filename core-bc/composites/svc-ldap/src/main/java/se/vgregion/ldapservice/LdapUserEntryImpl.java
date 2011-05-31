@@ -81,7 +81,7 @@ class LdapUserEntryImpl implements LdapUser {
     }
   }
 
-  public String getDN() {
+  public String getDn() {
     return _dn;
   }
 
