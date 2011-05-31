@@ -196,14 +196,13 @@ public class LdapServiceImpl implements LdapService {
 
             int x = 0;
             LdapUser e = this.newUser(context);
-            Iterator<String> it = attributes.keySet().iterator();
 
             String[] addAttrs = new String[attributes.size() + 1];
             addAttrs[x++] = "objectclass";
-            while (it.hasNext()) {
-                String attName = it.next();
+            for (Map.Entry<String, String> entry : attributes.entrySet()) {
+                String attName = entry.getKey();
                 addAttrs[x++] = attName;
-                String attValue = attributes.get(attName);
+                String attValue = entry.getValue();
                 e.setAttributeValue(attName, attValue);
             }
 
@@ -228,15 +227,12 @@ public class LdapServiceImpl implements LdapService {
      */
     public boolean modifyLdapUser(LdapUser e, HashMap<String, String> modifyAttributes) {
         try {
-            Iterator<String> it = modifyAttributes.keySet().iterator();
-
             int x = 0;
             String[] modifyAttrs = new String[modifyAttributes.size() + 1];
-
-            while (it.hasNext()) {
-                String attName = it.next();
+            for (Map.Entry<String, String> entry : modifyAttributes.entrySet()) {
+                String attName = entry.getKey();
                 modifyAttrs[x++] = attName;
-                e.setAttributeValue(attName, modifyAttributes.get(attName));
+                e.setAttributeValue(attName, entry.getValue());
             }
 
             Attributes attrs = ((LdapUserEntryImpl) e).getAttributes(modifyAttrs);
@@ -287,27 +283,6 @@ public class LdapServiceImpl implements LdapService {
 
         }
         return false;
-    }
-
-    private static Attributes mapToAttrs(String[] attrNames, Map m) {
-        BasicAttributes attrs = new BasicAttributes();
-        Iterator it = m.keySet().iterator();
-        while (it.hasNext()) {
-            String key = (String) it.next();
-            if (arrayContains(attrNames, key)) {
-                List values = (List) m.get(key);
-                BasicAttribute oneAttr = new BasicAttribute(key);
-                Iterator it2 = values.iterator();
-                while (it2.hasNext()) {
-
-                    Object oneVal = it2.next();
-                    oneAttr.add(oneVal);
-                }
-                attrs.put(oneAttr);
-            }
-        }
-
-        return attrs;
     }
 
     public static String dumpAttrMap(Map m) {
