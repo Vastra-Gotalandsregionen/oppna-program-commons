@@ -86,6 +86,9 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
                 sb.append(new String(buffer, 0, n, "UTF-8"));
             }
             return sb.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new IOException(e);
         } finally {
             if (bis != null) bis.close();
             if (inputStream != null) inputStream.close();
