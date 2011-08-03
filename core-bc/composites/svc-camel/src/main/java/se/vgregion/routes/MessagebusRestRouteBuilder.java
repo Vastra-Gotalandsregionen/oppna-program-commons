@@ -22,17 +22,20 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
     private String messageBusDestination;
     private String restDestination;
     private String restMethod;
+    private String restContentType;
 
-    public MessagebusRestRouteBuilder(String messageBusDestination, String restDestination, String restMethod) {
+    public MessagebusRestRouteBuilder(String messageBusDestination, String restDestination, String restMethod,
+            String restContentType) {
         this.messageBusDestination = messageBusDestination;
         this.restDestination = restDestination;
         this.restMethod = restMethod;
+        this.restContentType = restContentType;
 
         log.info("MB: {} ReST: {}", messageBusDestination, restDestination);
     }
 
     public MessagebusRestRouteBuilder(String messageBusDestination, String restDestination) {
-        this(messageBusDestination, restDestination, "POST");
+        this(messageBusDestination, restDestination, "POST", "*/*");
     }
 
     @Override
