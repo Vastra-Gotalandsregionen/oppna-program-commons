@@ -43,6 +43,7 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
         from("liferay:" + messageBusDestination)
                 .errorHandler(deadLetterChannel("direct:error_" + messageBusDestination))
                 .setHeader(Exchange.HTTP_METHOD, simple(restMethod))
+                .setHeader(Exchange.ACCEPT_CONTENT_TYPE, simple(restContentType))
                 .setProperty("correlationId", header("responseId"))
                 .inOut("cxfrs://" + restDestination)
                 .process(new Processor() {
