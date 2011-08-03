@@ -21,19 +21,25 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
 
     private String messageBusDestination;
     private String restDestination;
+    private String restMethod;
 
-    public MessagebusRestRouteBuilder(String messageBusDestination, String restDestination) {
+    public MessagebusRestRouteBuilder(String messageBusDestination, String restDestination, String restMethod) {
         this.messageBusDestination = messageBusDestination;
         this.restDestination = restDestination;
+        this.restMethod = restMethod;
 
         log.info("MB: {} ReST: {}", messageBusDestination, restDestination);
+    }
+
+    public MessagebusRestRouteBuilder(String messageBusDestination, String restDestination) {
+        this(messageBusDestination, restDestination, "POST");
     }
 
     @Override
     public void configure() throws Exception {
         from("liferay:" + messageBusDestination)
                 .errorHandler(deadLetterChannel("direct:error_" + messageBusDestination))
-                .setHeader(Exchange.HTTP_METHOD, simple("POST"))
+                .setHeader(Exchange.HTTP_METHOD, simple(restMethod))
                 .setProperty("correlationId", header("responseId"))
                 .inOut("cxfrs://" + restDestination)
                 .process(new Processor() {
