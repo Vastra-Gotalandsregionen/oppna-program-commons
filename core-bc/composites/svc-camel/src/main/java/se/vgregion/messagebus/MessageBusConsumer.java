@@ -48,7 +48,7 @@ public class MessageBusConsumer extends DefaultConsumer {
 
 		messageBus.registerMessageListener(
 			destination, 
-			new EndpointMessageListener(getEndpoint(), getProcessor()));
+			new EndpointMessageListener(endpoint, getProcessor()));
 	}
 
 }

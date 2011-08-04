@@ -1,8 +1,11 @@
 package se.vgregion.routes;
 
 import com.liferay.portal.kernel.messaging.DestinationNames;
+import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.apache.camel.model.ProcessorDefinition;
+import org.apache.camel.spi.InterceptStrategy;
 import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +43,8 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
 
     @Override
     public void configure() throws Exception {
+
+
         from("liferay:" + messageBusDestination)
                 .errorHandler(deadLetterChannel("direct:error_" + messageBusDestination))
                 .setHeader(Exchange.HTTP_METHOD, simple(restMethod))
@@ -56,6 +61,10 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
                 .setHeader("responseId", property("correlationId"))
                 .to("liferay:" + DestinationNames.MESSAGE_BUS_DEFAULT_RESPONSE);
 
+        errorHandler();
+    }
+
+    protected void errorHandler() {
         from("direct:error_" + messageBusDestination)
                 .process(new Processor() {
                     @Override

@@ -30,6 +30,8 @@ import org.apache.camel.Processor;
 import org.apache.camel.impl.DefaultExchange;
 import org.apache.camel.impl.DefaultMessage;
 
+import java.util.Map;
+
 /**
  * @author Bruno Farache
  */
@@ -41,7 +43,7 @@ public class EndpointMessageListener implements MessageListener {
      * @param endpoint endpoint.
      * @param processor processor.
      */
-	public EndpointMessageListener(Endpoint endpoint, Processor processor) {
+	public EndpointMessageListener(MessageBusEndpoint endpoint, Processor processor) {
 		_endpoint = endpoint;
 		_processor = processor;
 	}
@@ -66,12 +68,25 @@ public class EndpointMessageListener implements MessageListener {
 		in.setBody(message.getPayload());
         in.setHeader("responseId", message.getResponseId());
 
+        Map<String,Object> params = _endpoint.getParams();
+        if (params != null) {
+            String inHeaderKeys = (String)params.get("MessageInHeaders");
+            if (inHeaderKeys != null) {
+                for (String key : inHeaderKeys.split(",")) {
+                    Object value = message.get(key);
+                    if (value != null) {
+                        in.setHeader(key,value);
+                    }
+                }
+            }
+        }
+
 		exchange.setIn(in);
 
 		return exchange;
 	}
 	
-	private Endpoint _endpoint;
+	private MessageBusEndpoint _endpoint;
 	private Processor _processor;
-	
+
 }

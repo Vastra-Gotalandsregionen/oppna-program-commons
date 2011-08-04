@@ -37,37 +37,45 @@ import org.apache.camel.impl.DefaultEndpoint;
  */
 public class MessageBusEndpoint extends DefaultEndpoint {
 
-	public MessageBusEndpoint(
-		String uri, String remaining, Map params, Component component,
-		MessageBus messageBus) {
-		
-		super(uri, component);
+    public MessageBusEndpoint(
+            String uri, String remaining, Map<String, Object> params, Component component,
+            MessageBus messageBus) {
 
-		_destination = remaining;
-		_messageBus = messageBus;
-	}
+        super(uri, component);
 
-	public Consumer createConsumer(Processor processor) {
-		return new MessageBusConsumer(this, processor);
-	}
+        _destination = remaining;
+        _messageBus = messageBus;
+        _params = params;
 
-	public Producer createProducer() throws Exception {
-		return new MessageBusProducer(this);
-	}
-	
-	public boolean isSingleton() {
-		return false;
-	}
-	
-	public String getDestination() {
-		return _destination;
-	}
-	
-	public MessageBus getMessageBus() {
-		return _messageBus;
-	}
-	
-	private String _destination;
-	private MessageBus _messageBus;
+    }
+
+    public Consumer createConsumer(Processor processor) {
+        return new MessageBusConsumer(this, processor);
+    }
+
+    public Producer createProducer() throws Exception {
+        return new MessageBusProducer(this);
+    }
+
+    public boolean isSingleton() {
+        return false;
+    }
+
+    public String getDestination() {
+        return _destination;
+    }
+
+    public MessageBus getMessageBus() {
+        return _messageBus;
+    }
+
+    public Map<String,Object> getParams() {
+        return _params;
+    }
+
+    private String _destination;
+    private MessageBus _messageBus;
+    private Map<String, Object> _params;
+
 
 }

@@ -34,7 +34,7 @@ import org.apache.camel.impl.DefaultComponent;
  */
 public class MessageBusComponent extends DefaultComponent {
 
-	protected Endpoint createEndpoint(String uri, String remaining, Map params) 
+	protected Endpoint createEndpoint(String uri, String remaining, Map<String,Object> params)
 		throws Exception {
 
 		return new MessageBusEndpoint(
