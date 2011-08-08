@@ -73,6 +73,11 @@ public class MessageBusEndpoint extends DefaultEndpoint {
         return _params;
     }
 
+    @Override
+    public boolean isLenientProperties() {
+        return true;
+    }
+
     private String _destination;
     private MessageBus _messageBus;
     private Map<String, Object> _params;
