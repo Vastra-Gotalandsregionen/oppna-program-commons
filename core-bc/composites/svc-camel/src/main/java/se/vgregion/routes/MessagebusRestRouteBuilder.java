@@ -79,7 +79,7 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
                             if (ex.getClass().getPackage().getName().startsWith("java.net")) {
                                 exchange.getOut().setBody(ex);
                             } else {
-                                exchange.getOut().setBody(new Exception(((Throwable) exception).getMessage()));
+                                exchange.getOut().setBody(new Exception(((Throwable) exception).getMessage(), ex));
                             }
                         } else {
                             exchange.getOut().setBody(new Exception("Unknown error"));
