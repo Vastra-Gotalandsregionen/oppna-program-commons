@@ -79,7 +79,7 @@ public class RestTest extends CamelTestSupport {
                 inMessage.setHeader(Exchange.ACCEPT_CONTENT_TYPE,"*/*");
 
                 inMessage.setHeader(RestletConstants.RESTLET_LOGIN, "susro3");
-                inMessage.setHeader(RestletConstants.RESTLET_PASSWORD, "1qasw2");
+                inMessage.setHeader(RestletConstants.RESTLET_PASSWORD, "");
                 inMessage.setBody(" ");
             }
         });
