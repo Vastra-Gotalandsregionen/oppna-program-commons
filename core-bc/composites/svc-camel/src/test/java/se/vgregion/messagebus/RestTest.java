@@ -9,6 +9,9 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by IntelliJ IDEA.
  * User: david
@@ -23,20 +26,20 @@ public class RestTest extends CamelTestSupport {
 
         Exchange exchange = template.send("cxfrs://http://www.google.com",
                 new Processor() {
-            @Override
-            public void process(Exchange exchange) throws Exception {
-                exchange.setPattern(ExchangePattern.InOut);
-                Message inMessage = exchange.getIn();
-                inMessage.setHeader(CxfConstants.CAMEL_CXF_RS_USING_HTTP_API, Boolean.TRUE);
-                inMessage.setHeader(Exchange.HTTP_METHOD, "GET");
+                    @Override
+                    public void process(Exchange exchange) throws Exception {
+                        exchange.setPattern(ExchangePattern.InOut);
+                        Message inMessage = exchange.getIn();
+                        inMessage.setHeader(CxfConstants.CAMEL_CXF_RS_USING_HTTP_API, Boolean.TRUE);
+                        inMessage.setHeader(Exchange.HTTP_METHOD, "GET");
 //                inMessage.setHeader(Exchange.HTTP_METHOD, "POST");
 //                inMessage.setHeader(Exchange.HTTP_PATH,"/");
-                inMessage.setHeader(Exchange.ACCEPT_CONTENT_TYPE,"application/json");
+                        inMessage.setHeader(Exchange.ACCEPT_CONTENT_TYPE, "application/json");
 
-                inMessage.setHeader(CxfConstants.CAMEL_CXF_RS_RESPONSE_CLASS, String.class);
-                inMessage.setBody(" ");
-            }
-        });
+                        inMessage.setHeader(CxfConstants.CAMEL_CXF_RS_RESPONSE_CLASS, String.class);
+                        inMessage.setBody(" ");
+                    }
+                });
 
         Assert.assertNotNull(exchange.getOut());
     }
@@ -44,9 +47,9 @@ public class RestTest extends CamelTestSupport {
     @Ignore
     @Test
     public void callNotesCalendar() {
-        RestletEndpoint ep = context.getEndpoint("restlet://http://aida.vgregion.se",RestletEndpoint.class);
-        ep.setUriPattern("/calendar.nsf/getinfo?openagent&userid=susro3&year=2011&month=6&day=1&period=30");
-        System.out.println("EP: "+ep.getEndpointUri());
+        RestletEndpoint ep = context.getEndpoint("restlet://http://aida.vgregion.se", RestletEndpoint.class);
+        ep.setUriPattern("/calendar.nsf/getinfo?openagent&userid=susro3&year=2011&month=6&day=1&period=3");
+        System.out.println("EP: " + ep.getEndpointUri());
 
         Exchange exchange = template.send(ep, new Processor() {
             @Override
@@ -55,7 +58,7 @@ public class RestTest extends CamelTestSupport {
                 Message inMessage = exchange.getIn();
 //                inMessage.setHeader(CxfConstants.CAMEL_CXF_RS_USING_HTTP_API, Boolean.TRUE);
                 inMessage.setHeader(Exchange.HTTP_METHOD, "GET");
-                inMessage.setHeader(Exchange.ACCEPT_CONTENT_TYPE,"*/*");
+                inMessage.setHeader(Exchange.ACCEPT_CONTENT_TYPE, "*/*");
 
 //                inMessage.setHeader(CxfConstants.CAMEL_CXF_RS_RESPONSE_CLASS, String.class);
                 inMessage.setBody(" ");
@@ -69,14 +72,17 @@ public class RestTest extends CamelTestSupport {
     @Ignore
     @Test
     public void restletCallNotes() {
-        Exchange exchange = template.send("restlet://http://aida.vgregion.se/calendar.nsf/unreadcount?openagent&userid=susro3",
-                new Processor() {
-            @Override
-            public void process(Exchange exchange) throws Exception {
-                exchange.setPattern(ExchangePattern.InOut);
-                Message inMessage = exchange.getIn();
-                inMessage.setHeader(Exchange.HTTP_METHOD, "GET");
-                inMessage.setHeader(Exchange.ACCEPT_CONTENT_TYPE,"*/*");
+        List results = new ArrayList();
+        for (int i = 0; i < 100; i++) {
+            long start = System.currentTimeMillis();
+            Exchange exchange1 = template.request("restlet://http://aida.vgregion.se/calendar.nsf/unreadcount?openagent&userid=susro3",
+                    new Processor() {
+                        @Override
+                        public void process(Exchange exchange) throws Exception {
+                            exchange.setPattern(ExchangePattern.InOut);
+                            Message inMessage = exchange.getIn();
+                            inMessage.setHeader(Exchange.HTTP_METHOD, "GET");
+                            inMessage.setHeader(Exchange.ACCEPT_CONTENT_TYPE, "*/*");
 
                 inMessage.setHeader(RestletConstants.RESTLET_LOGIN, "susro3");
                 inMessage.setHeader(RestletConstants.RESTLET_PASSWORD, "");
@@ -84,7 +90,23 @@ public class RestTest extends CamelTestSupport {
             }
         });
 
-        Assert.assertNotNull(exchange.getOut());
-        System.out.println(exchange.getOut());
+
+
+            Exchange exchange = template.request("restlet://http://localhost:8080/mobile-icon-core-bc-module-intsvc/test-counter", new Processor() {
+                @Override
+                public void process(Exchange exchange) throws Exception {
+                    exchange.setPattern(ExchangePattern.InOut);
+                    Message inMessage = exchange.getIn();
+                    inMessage.setHeader(Exchange.HTTP_METHOD, "GET");
+                    inMessage.setHeader(Exchange.ACCEPT_CONTENT_TYPE, "*/*");
+                }
+            });
+
+            Assert.assertNotNull(exchange.getOut());
+            System.out.println(i + ": " + exchange.getOut().toString() + " " + (System.currentTimeMillis()
+                    - start));
+        }
+        System.out.println(results);
+
     }
 }

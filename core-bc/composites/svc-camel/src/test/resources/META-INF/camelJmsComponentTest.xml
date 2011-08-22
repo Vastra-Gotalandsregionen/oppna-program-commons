@@ -29,6 +29,7 @@
 
   <bean id="jmsFactory" class="se.vgregion.messagebus.jms.ActiveMqSslConnectionFactory">
     <property name="brokerURL" value="ssl://localhost:61617"/>
+    <!--<property name="brokerURL" value="failover://(tcp://sure.got.vgregion.se:61616,tcp://140.166.208.215:61616)?initialReconnectDelay=100"/>-->
     <property name="trustStore" value="/client.ts"/>
     <property name="trustStorePassword" value="password"/>
   </bean>
