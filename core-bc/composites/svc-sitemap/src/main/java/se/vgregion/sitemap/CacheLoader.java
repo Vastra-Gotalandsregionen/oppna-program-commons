@@ -45,7 +45,7 @@ public interface CacheLoader<T> {
     /**
      * Populate cache with sitemap entries.
      * 
-     * @param cache
+     * @param cache cache
      */
     void populateSitemapEntryCache(SitemapCache cache);
 }

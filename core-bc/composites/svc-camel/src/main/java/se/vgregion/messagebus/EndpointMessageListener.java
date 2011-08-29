@@ -24,7 +24,6 @@ package se.vgregion.messagebus;
 
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.MessageListener;
-import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.impl.DefaultExchange;
@@ -33,6 +32,8 @@ import org.apache.camel.impl.DefaultMessage;
 import java.util.Map;
 
 /**
+ * Endpoint message listener.
+ * <p/>
  * @author Bruno Farache
  */
 public class EndpointMessageListener implements MessageListener {
@@ -40,53 +41,53 @@ public class EndpointMessageListener implements MessageListener {
     /**
      * Constructor.
      *
-     * @param endpoint endpoint.
+     * @param endpoint  endpoint.
      * @param processor processor.
      */
-	public EndpointMessageListener(MessageBusEndpoint endpoint, Processor processor) {
-		_endpoint = endpoint;
-		_processor = processor;
-	}
+    public EndpointMessageListener(MessageBusEndpoint endpoint, Processor processor) {
+        this.endpoint = endpoint;
+        this.processor = processor;
+    }
 
     /**
      * Outbound message.
      *
      * @param message message to send.
      */
-	public void receive(Message message) {
-		try {
-			_processor.process(createExchange(message));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    public void receive(Message message) {
+        try {
+            processor.process(createExchange(message));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	private Exchange createExchange(Message message) {
-		Exchange exchange = new DefaultExchange(_endpoint);
-		org.apache.camel.Message in = new DefaultMessage();
-		
-		in.setBody(message.getPayload());
+    private Exchange createExchange(Message message) {
+        Exchange exchange = new DefaultExchange(endpoint);
+        org.apache.camel.Message in = new DefaultMessage();
+
+        in.setBody(message.getPayload());
         in.setHeader("responseId", message.getResponseId());
 
-        Map<String,Object> params = _endpoint.getParams();
+        Map<String, Object> params = endpoint.getParams();
         if (params != null) {
-            String inHeaderKeys = (String)params.get("MessageInHeaders");
+            String inHeaderKeys = (String) params.get("MessageInHeaders");
             if (inHeaderKeys != null) {
                 for (String key : inHeaderKeys.split(",")) {
                     Object value = message.get(key);
                     if (value != null) {
-                        in.setHeader(key,value);
+                        in.setHeader(key, value);
                     }
                 }
             }
         }
 
-		exchange.setIn(in);
+        exchange.setIn(in);
 
-		return exchange;
-	}
-	
-	private MessageBusEndpoint _endpoint;
-	private Processor _processor;
+        return exchange;
+    }
+
+    private MessageBusEndpoint endpoint;
+    private Processor processor;
 
 }

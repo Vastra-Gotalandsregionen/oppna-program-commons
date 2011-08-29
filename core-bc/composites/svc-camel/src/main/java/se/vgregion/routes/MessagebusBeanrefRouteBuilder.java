@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Created by IntelliJ IDEA.
+ * Implementation of Camel {@link org.apache.camel.builder.RouteBuilder} inheriting from
+ * {@link SpringRouteBuilder} which targets an arbitrary bean and method.
+ * <p/>
  * User: david
  * Date: 8/8-11
  * Time: 16:10
@@ -21,6 +23,13 @@ public class MessagebusBeanrefRouteBuilder extends SpringRouteBuilder {
     private String beanRef;
     private String methodCall;
 
+    /**
+     * Constructor.
+     *
+     * @param messageBusDestination messageBusDestination
+     * @param beanRef               beanRef
+     * @param methodCall            methodCall
+     */
     public MessagebusBeanrefRouteBuilder(String messageBusDestination, String beanRef, String methodCall) {
         this.messageBusDestination = messageBusDestination;
         this.beanRef = beanRef;
@@ -69,7 +78,8 @@ public class MessagebusBeanrefRouteBuilder extends SpringRouteBuilder {
         try {
             inputStream = (InputStream) (response).getEntity();
             bis = new BufferedInputStream(inputStream);
-            byte[] buffer = new byte[1024];
+            final int i = 1024;
+            byte[] buffer = new byte[i];
             int n;
             StringBuilder sb = new StringBuilder();
             while ((n = bis.read(buffer)) > 0) {
@@ -80,8 +90,12 @@ public class MessagebusBeanrefRouteBuilder extends SpringRouteBuilder {
             e.printStackTrace();
             throw new IOException(e);
         } finally {
-            if (bis != null) bis.close();
-            if (inputStream != null) inputStream.close();
+            if (bis != null) {
+                bis.close();
+            }
+            if (inputStream != null) {
+                inputStream.close();
+            }
         }
     }
 }

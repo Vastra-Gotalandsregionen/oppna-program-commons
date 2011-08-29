@@ -29,24 +29,38 @@ import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultProducer;
 
 /**
+ * A {@link org.apache.camel.Producer} implementation for use with Liferay's
+ * {@link com.liferay.portal.kernel.messaging.MessageBus}.
+ *
  * @author Bruno Farache
  */
 public class MessageBusProducer extends DefaultProducer {
 
-	public MessageBusProducer(MessageBusEndpoint endpoint) {
-		super(endpoint);
-	}
+    /**
+     * Constructor.
+     *
+     * @param endpoint endpoint
+     */
+    public MessageBusProducer(MessageBusEndpoint endpoint) {
+        super(endpoint);
+    }
 
-	public void process(Exchange exchange) throws Exception {
-		se.vgregion.messagebus.MessageBusEndpoint endpoint = (MessageBusEndpoint)getEndpoint();
-		MessageBus messageBus = endpoint.getMessageBus();
-		
-		String destination = endpoint.getDestination();
+    /**
+     * Process the <code>Exchange</code>.
+     *
+     * @param exchange exchange
+     * @throws Exception Exception
+     */
+    public void process(Exchange exchange) throws Exception {
+        se.vgregion.messagebus.MessageBusEndpoint endpoint = (MessageBusEndpoint) getEndpoint();
+        MessageBus messageBus = endpoint.getMessageBus();
 
-		Message body = exchange.getIn().getBody(Message.class);
+        String destination = endpoint.getDestination();
+
+        Message body = exchange.getIn().getBody(Message.class);
         body.setResponseId((String) exchange.getIn().getHeader("responseId"));
 
-		messageBus.sendMessage(destination, body);
-	}
+        messageBus.sendMessage(destination, body);
+    }
 
 }

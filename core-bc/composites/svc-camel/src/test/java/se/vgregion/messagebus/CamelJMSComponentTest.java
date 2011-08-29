@@ -27,14 +27,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @author Bruno Farache
- */
-@ContextConfiguration(
-/*        locations = {"/META-INF/message-bus-spring-test.xml",
-                "/META-INF/camel-spring-test.xml",
-                "/META-INF/test-routes.xml"})*/
-        locations = {"/META-INF/camelJmsComponentTest.xml"})
+@ContextConfiguration(locations = {"/META-INF/camelJmsComponentTest.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
 public class CamelJMSComponentTest {
 

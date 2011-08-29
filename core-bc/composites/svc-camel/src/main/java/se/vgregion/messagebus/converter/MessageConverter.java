@@ -27,27 +27,45 @@ import com.liferay.portal.kernel.messaging.Message;
 import org.apache.camel.Converter;
 
 /**
+ * Class for converting to {@link Message}. Used by Camel.
+ * <p/>
  * @author Bruno Farache
  */
 @Converter
-public class MessageConverter {
+public final class MessageConverter {
 
-	@Converter
-	public static Message toMessage(String string) {
-		Message message = new Message();
+    private MessageConverter() {
 
-		message.setPayload(string);
+    }
 
-		return message;
-	}
+    /**
+     * Converts a <code>String</code> to a {@link Message}.
+     *
+     * @param string string
+     * @return A <code>Message</code>.
+     */
+    @Converter
+    public static Message toMessage(String string) {
+        Message message = new Message();
 
-	@Converter
-	public static Message toMessage(Exception ex) {
-		Message message = new Message();
+        message.setPayload(string);
 
-		message.setPayload(ex);
+        return message;
+    }
 
-		return message;
-	}
+    /**
+     * Converts an <code>Exception</code> to a {@link Message}.
+     *
+     * @param ex ex
+     * @return <code>Message</code>
+     */
+    @Converter
+    public static Message toMessage(Exception ex) {
+        Message message = new Message();
+
+        message.setPayload(ex);
+
+        return message;
+    }
 
 }

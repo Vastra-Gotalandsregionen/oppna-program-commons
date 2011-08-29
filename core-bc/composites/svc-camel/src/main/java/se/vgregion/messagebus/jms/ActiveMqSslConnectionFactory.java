@@ -44,7 +44,11 @@ public final class ActiveMqSslConnectionFactory extends ActiveMQSslConnectionFac
         }
     }
 
-
+    /**
+     * Get {@link TrustManager} array.
+     * @return Array of {@link TrustManager}s.
+     * @throws Exception Exception
+     */
     public TrustManager[] getTrustManager() throws Exception {
         TrustManager[] trustStoreManagers = null;
         KeyStore trustedCertStore = KeyStore.getInstance("jks");
@@ -62,10 +66,17 @@ public final class ActiveMqSslConnectionFactory extends ActiveMQSslConnectionFac
             trustStoreManagers = tmf.getTrustManagers();
             return trustStoreManagers;
         } finally {
-            if (tsStream != null) tsStream.close();
+            if (tsStream != null) {
+                tsStream.close();
+            }
         }
     }
 
+    /**
+     * Get {@link KeyManager} array.
+     * @return Array of {@link KeyManager}s.
+     * @throws Exception Exception
+     */
     public KeyManager[] getKeyManager() throws Exception {
         KeyManagerFactory kmf =
                 KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
@@ -73,7 +84,6 @@ public final class ActiveMqSslConnectionFactory extends ActiveMQSslConnectionFac
         KeyManager[] keystoreManagers = null;
 
         byte[] sslCert = loadClientCredential(keyStore);
-
 
         if (sslCert != null && sslCert.length > 0) {
             ByteArrayInputStream bin = new ByteArrayInputStream(sslCert);
@@ -93,7 +103,8 @@ public final class ActiveMqSslConnectionFactory extends ActiveMQSslConnectionFac
         try {
             in = getClass().getResourceAsStream(fileName);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            byte[] buf = new byte[512];
+            final int i1 = 512;
+            byte[] buf = new byte[i1];
             int i = in.read(buf);
             while (i > 0) {
                 out.write(buf, 0, i);
@@ -101,7 +112,9 @@ public final class ActiveMqSslConnectionFactory extends ActiveMQSslConnectionFac
             }
             return out.toByteArray();
         } finally {
-            if (in != null) in.close();
+            if (in != null) {
+                in.close();
+            }
         }
     }
 

@@ -4,10 +4,10 @@ import com.liferay.portal.kernel.messaging.DestinationNames;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.spring.SpringRouteBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
+ * Class for building camel routes with JMS.
+ * <p/>
  * User: pabe
  * Date: 2011-04-27
  * Time: 10:29
@@ -20,9 +20,9 @@ public class MessagebusJmsRouteBuilder extends SpringRouteBuilder {
     /**
      * Constructor declaring messagebus destination and ActiveMq queue.
      *
-     * @param messageBusDestination
-     * @param activeMqDestination
-     * @param brokerUrl
+     * @param messageBusDestination messageBusDestination
+     * @param activeMqDestination activeMqDestination
+     * @param brokerUrl brokerUrl
      */
     public MessagebusJmsRouteBuilder(String messageBusDestination, String activeMqDestination, String brokerUrl) {
         this.messageBusDestination = messageBusDestination;
@@ -33,10 +33,10 @@ public class MessagebusJmsRouteBuilder extends SpringRouteBuilder {
     }
 
     /**
-     * Convenience constructor for tests
+     * Convenience constructor for tests.
      *
-     * @param messageBusDestination
-     * @param activeMqDestination
+     * @param messageBusDestination messageBusDestination
+     * @param activeMqDestination activeMqDestination
      */
     public MessagebusJmsRouteBuilder(String messageBusDestination, String activeMqDestination) {
         this(messageBusDestination, activeMqDestination, null);
@@ -52,8 +52,8 @@ public class MessagebusJmsRouteBuilder extends SpringRouteBuilder {
         from("liferay:" + messageBusDestination)
                 .errorHandler(deadLetterChannel("direct:error_" + messageBusDestination))
                 .setHeader("JMSCorrelationID", header("responseId"))
-                .to("activemq:queue:" + activeMqDestination + "?preserveMessageQos=true&replyTo=" +
-                        activeMqDestination + ".REPLY");
+                .to("activemq:queue:" + activeMqDestination + "?preserveMessageQos=true&replyTo="
+                        + activeMqDestination + ".REPLY");
 
         from("activemq:queue:" + activeMqDestination + ".REPLY?disableReplyTo=true")
                 .setHeader("responseId", header("JMSCorrelationID"))

@@ -33,26 +33,50 @@ import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultEndpoint;
 
 /**
+ * An implementation of {@link org.apache.camel.Endpoint} based on {@link DefaultEndpoint} for use with Liferay's
+ * {@link MessageBus}.
+ * <p/>
  * @author Bruno Farache
  */
 public class MessageBusEndpoint extends DefaultEndpoint {
 
+    /**
+     * Constructor.
+     *
+     * @param uri        uri
+     * @param remaining  remaining
+     * @param params     params
+     * @param component  component
+     * @param messageBus messageBus
+     */
     public MessageBusEndpoint(
             String uri, String remaining, Map<String, Object> params, Component component,
             MessageBus messageBus) {
 
         super(uri, component);
 
-        _destination = remaining;
-        _messageBus = messageBus;
-        _params = params;
+        destination = remaining;
+        this.messageBus = messageBus;
+        this.params = params;
 
     }
 
+    /**
+     * Creates a <code>Consumer</code>.
+     *
+     * @param processor processor
+     * @return The created <code>Consumer</code>.
+     */
     public Consumer createConsumer(Processor processor) {
         return new MessageBusConsumer(this, processor);
     }
 
+    /**
+     * Creates a <code>Producer</code>.
+     *
+     * @return The created <code>Producer</code>.
+     * @throws Exception Exception
+     */
     public Producer createProducer() throws Exception {
         return new MessageBusProducer(this);
     }
@@ -62,15 +86,15 @@ public class MessageBusEndpoint extends DefaultEndpoint {
     }
 
     public String getDestination() {
-        return _destination;
+        return destination;
     }
 
     public MessageBus getMessageBus() {
-        return _messageBus;
+        return messageBus;
     }
 
-    public Map<String,Object> getParams() {
-        return _params;
+    public Map<String, Object> getParams() {
+        return params;
     }
 
     @Override
@@ -78,9 +102,9 @@ public class MessageBusEndpoint extends DefaultEndpoint {
         return true;
     }
 
-    private String _destination;
-    private MessageBus _messageBus;
-    private Map<String, Object> _params;
+    private String destination;
+    private MessageBus messageBus;
+    private Map<String, Object> params;
 
 
 }

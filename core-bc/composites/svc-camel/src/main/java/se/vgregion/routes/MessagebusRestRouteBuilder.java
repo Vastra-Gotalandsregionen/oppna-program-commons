@@ -1,14 +1,9 @@
 package se.vgregion.routes;
 
 import com.liferay.portal.kernel.messaging.DestinationNames;
-import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.apache.camel.model.ProcessorDefinition;
-import org.apache.camel.spi.InterceptStrategy;
 import org.apache.camel.spring.SpringRouteBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
 import java.io.BufferedInputStream;
@@ -16,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
+ * Class for building camel routes with REST.
+ * <p/>
  * User: pabe
  * Date: 2011-05-10
  * Time: 15:56
@@ -27,8 +24,16 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
     private String restMethod;
     private String restContentType;
 
+    /**
+     * Constructor.
+     *
+     * @param messageBusDestination messageBusDestination
+     * @param restDestination restDestination
+     * @param restMethod restMethod
+     * @param restContentType restContentType
+     */
     public MessagebusRestRouteBuilder(String messageBusDestination, String restDestination, String restMethod,
-            String restContentType) {
+                                      String restContentType) {
         this.messageBusDestination = messageBusDestination;
         this.restDestination = restDestination;
         this.restMethod = restMethod;
@@ -37,13 +42,18 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
         log.info("MB: {} ReST: {}", messageBusDestination, restDestination);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param messageBusDestination messageBusDestination
+     * @param restDestination restDestination
+     */
     public MessagebusRestRouteBuilder(String messageBusDestination, String restDestination) {
         this(messageBusDestination, restDestination, "POST", "*/*");
     }
 
     @Override
     public void configure() throws Exception {
-
 
         from("liferay:" + messageBusDestination)
                 .errorHandler(deadLetterChannel("direct:error_" + messageBusDestination))
@@ -98,7 +108,8 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
         try {
             inputStream = (InputStream) (response).getEntity();
             bis = new BufferedInputStream(inputStream);
-            byte[] buffer = new byte[1024];
+            final int i = 1024;
+            byte[] buffer = new byte[i];
             int n;
             StringBuilder sb = new StringBuilder();
             while ((n = bis.read(buffer)) > 0) {
@@ -109,8 +120,12 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
             e.printStackTrace();
             throw new IOException(e);
         } finally {
-            if (bis != null) bis.close();
-            if (inputStream != null) inputStream.close();
+            if (bis != null) {
+                bis.close();
+            }
+            if (inputStream != null) {
+                inputStream.close();
+            }
         }
     }
 }

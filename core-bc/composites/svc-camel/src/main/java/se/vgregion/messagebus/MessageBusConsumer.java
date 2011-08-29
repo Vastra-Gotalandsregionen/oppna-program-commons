@@ -24,31 +24,38 @@ package se.vgregion.messagebus;
 
 import com.liferay.portal.kernel.messaging.MessageBus;
 import com.liferay.portal.kernel.messaging.ParallelDestination;
-
 import org.apache.camel.Endpoint;
 import org.apache.camel.Processor;
 import org.apache.camel.impl.DefaultConsumer;
 
 /**
+ * Message bus consumer.
+ * <p/>
  * @author Bruno Farache
  */
 public class MessageBusConsumer extends DefaultConsumer {
 
-	public MessageBusConsumer(Endpoint endpoint, Processor processor) {
-		super(endpoint, processor);
-	}
+    /**
+     * Constructor.
+     *
+     * @param endpoint  endpoint
+     * @param processor processor
+     */
+    public MessageBusConsumer(Endpoint endpoint, Processor processor) {
+        super(endpoint, processor);
+    }
 
-	protected void doStart() throws Exception {
-		MessageBusEndpoint endpoint = (MessageBusEndpoint)getEndpoint();
-		MessageBus messageBus = endpoint.getMessageBus();
+    protected void doStart() throws Exception {
+        MessageBusEndpoint endpoint = (MessageBusEndpoint) getEndpoint();
+        MessageBus messageBus = endpoint.getMessageBus();
 
-		String destination = endpoint.getDestination();
-		
-		messageBus.addDestination(new ParallelDestination(destination));
+        String destination = endpoint.getDestination();
 
-		messageBus.registerMessageListener(
-			destination, 
-			new EndpointMessageListener(endpoint, getProcessor()));
-	}
+        messageBus.addDestination(new ParallelDestination(destination));
+
+        messageBus.registerMessageListener(
+                destination,
+                new EndpointMessageListener(endpoint, getProcessor()));
+    }
 
 }

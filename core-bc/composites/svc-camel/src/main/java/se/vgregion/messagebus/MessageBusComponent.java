@@ -23,28 +23,29 @@
 package se.vgregion.messagebus;
 
 import com.liferay.portal.kernel.messaging.MessageBus;
-
-import java.util.Map;
-
 import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
 
+import java.util.Map;
+
 /**
+ * Message bus component.
+ * <p/>
  * @author Bruno Farache
  */
 public class MessageBusComponent extends DefaultComponent {
 
-	protected Endpoint createEndpoint(String uri, String remaining, Map<String,Object> params)
-		throws Exception {
+    protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> params)
+            throws Exception {
 
-		return new MessageBusEndpoint(
-			uri, remaining, params, this, _messageBus);
-	}
+        return new MessageBusEndpoint(
+                uri, remaining, params, this, messageBus);
+    }
 
-	public void setMessageBus(MessageBus messageBus) {
-		_messageBus = messageBus;
-	}
-	
-	private MessageBus _messageBus;
+    public void setMessageBus(MessageBus messageBus) {
+        this.messageBus = messageBus;
+    }
+
+    private MessageBus messageBus;
 
 }
