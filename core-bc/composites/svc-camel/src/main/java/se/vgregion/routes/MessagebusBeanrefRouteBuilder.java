@@ -69,33 +69,4 @@ public class MessagebusBeanrefRouteBuilder extends SpringRouteBuilder {
                 .setHeader("responseId", property("correlationId"))
                 .to("liferay:" + DestinationNames.MESSAGE_BUS_DEFAULT_RESPONSE);
     }
-
-    private String extractResponseBody(Exchange exchange) throws IOException {
-        Response response = (Response) exchange.getIn().getBody();
-
-        InputStream inputStream = null;
-        BufferedInputStream bis = null;
-        try {
-            inputStream = (InputStream) (response).getEntity();
-            bis = new BufferedInputStream(inputStream);
-            final int i = 1024;
-            byte[] buffer = new byte[i];
-            int n;
-            StringBuilder sb = new StringBuilder();
-            while ((n = bis.read(buffer)) > 0) {
-                sb.append(new String(buffer, 0, n, "UTF-8"));
-            }
-            return sb.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new IOException(e);
-        } finally {
-            if (bis != null) {
-                bis.close();
-            }
-            if (inputStream != null) {
-                inputStream.close();
-            }
-        }
-    }
 }
