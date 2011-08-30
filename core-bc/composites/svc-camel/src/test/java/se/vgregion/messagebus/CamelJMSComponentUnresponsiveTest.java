@@ -56,7 +56,7 @@ public class CamelJMSComponentUnresponsiveTest {
         messageBus.registerMessageListener(DestinationNames.MESSAGE_BUS_DEFAULT_RESPONSE, new MessageListener() {
             @Override
             public void receive(Message message) {
-                assertTrue(message.getPayload() instanceof UnknownHostException);
+                assertTrue(message.getPayload() instanceof Exception);
                 list.add(message);
             }
         });
