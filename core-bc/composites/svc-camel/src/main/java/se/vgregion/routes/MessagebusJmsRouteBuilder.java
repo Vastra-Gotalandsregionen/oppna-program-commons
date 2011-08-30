@@ -21,8 +21,8 @@ public class MessagebusJmsRouteBuilder extends SpringRouteBuilder {
      * Constructor declaring messagebus destination and ActiveMq queue.
      *
      * @param messageBusDestination messageBusDestination
-     * @param activeMqDestination activeMqDestination
-     * @param brokerUrl brokerUrl
+     * @param activeMqDestination   activeMqDestination
+     * @param brokerUrl             brokerUrl
      */
     public MessagebusJmsRouteBuilder(String messageBusDestination, String activeMqDestination, String brokerUrl) {
         this.messageBusDestination = messageBusDestination;
@@ -36,7 +36,7 @@ public class MessagebusJmsRouteBuilder extends SpringRouteBuilder {
      * Convenience constructor for tests.
      *
      * @param messageBusDestination messageBusDestination
-     * @param activeMqDestination activeMqDestination
+     * @param activeMqDestination   activeMqDestination
      */
     public MessagebusJmsRouteBuilder(String messageBusDestination, String activeMqDestination) {
         this(messageBusDestination, activeMqDestination, null);
@@ -61,28 +61,21 @@ public class MessagebusJmsRouteBuilder extends SpringRouteBuilder {
                 .to("liferay:" + DestinationNames.MESSAGE_BUS_DEFAULT_RESPONSE);
 
         from("direct:error_" + messageBusDestination)
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        //Handle connection error
-                        Object exception = exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
-                        if (exception instanceof Throwable) {
-                            Throwable ex = (Throwable) exception;
-                            while (ex.getCause() != null) {
-                                ex = ex.getCause();
-                            }
-                            if (ex.getClass().getPackage().getName().startsWith("java.net")) {
-                                exchange.getOut().setBody(ex);
-                            } else {
-                                exchange.getOut().setBody(new Exception(((Throwable) exception).getMessage()));
-                            }
-                        } else {
-                            exchange.getOut().setBody(new Exception("Unknown error"));
-                        }
-                        String responseId = (String) exchange.getIn().getHeader("JMSCorrelationID");
-                        exchange.getOut().setHeader("responseId", responseId);
-                    }
-                })
+                .process(new CustomErrorProcessor())
                 .to("liferay:" + DestinationNames.MESSAGE_BUS_DEFAULT_RESPONSE);
+    }
+
+    //It is more efficient to have this as a static inner class instead of an anonymous class according to
+    //FindBugs.
+    private static class CustomErrorProcessor implements Processor {
+
+        @Override
+        public void process(Exchange exchange) throws Exception {
+            //First delegate to the common ErrorProcessor
+            new ErrorProcessor().process(exchange);
+            //Then add customized behaviour
+            String responseId = (String) exchange.getIn().getHeader("JMSCorrelationID");
+            exchange.getOut().setHeader("responseId", responseId);
+        }
     }
 }

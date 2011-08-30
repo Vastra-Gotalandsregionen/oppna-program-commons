@@ -28,9 +28,9 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
      * Constructor.
      *
      * @param messageBusDestination messageBusDestination
-     * @param restDestination restDestination
-     * @param restMethod restMethod
-     * @param restContentType restContentType
+     * @param restDestination       restDestination
+     * @param restMethod            restMethod
+     * @param restContentType       restContentType
      */
     public MessagebusRestRouteBuilder(String messageBusDestination, String restDestination, String restMethod,
                                       String restContentType) {
@@ -46,7 +46,7 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
      * Constructor.
      *
      * @param messageBusDestination messageBusDestination
-     * @param restDestination restDestination
+     * @param restDestination       restDestination
      */
     public MessagebusRestRouteBuilder(String messageBusDestination, String restDestination) {
         this(messageBusDestination, restDestination, "POST", "*/*");
@@ -76,26 +76,7 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
 
     protected void errorHandler() {
         from("direct:error_" + messageBusDestination)
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        //Handle REST connection error
-                        Object exception = exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
-                        if (exception instanceof Throwable) {
-                            Throwable ex = (Throwable) exception;
-                            while (ex.getCause() != null) {
-                                ex = ex.getCause();
-                            }
-                            if (ex.getClass().getPackage().getName().startsWith("java.net")) {
-                                exchange.getOut().setBody(ex);
-                            } else {
-                                exchange.getOut().setBody(new Exception(((Throwable) exception).getMessage(), ex));
-                            }
-                        } else {
-                            exchange.getOut().setBody(new Exception("Unknown error"));
-                        }
-                    }
-                })
+                .process(new ErrorProcessor())
                 .setHeader("responseId", property("correlationId"))
                 .to("liferay:" + DestinationNames.MESSAGE_BUS_DEFAULT_RESPONSE);
     }
@@ -116,9 +97,6 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
                 sb.append(new String(buffer, 0, n, "UTF-8"));
             }
             return sb.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new IOException(e);
         } finally {
             if (bis != null) {
                 bis.close();

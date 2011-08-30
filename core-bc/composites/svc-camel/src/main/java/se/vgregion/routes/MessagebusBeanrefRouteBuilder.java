@@ -46,26 +46,7 @@ public class MessagebusBeanrefRouteBuilder extends SpringRouteBuilder {
                 .to("liferay:" + DestinationNames.MESSAGE_BUS_DEFAULT_RESPONSE);
 
         from("direct:error_" + messageBusDestination)
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        //Handle REST connection error
-                        java.lang.Object exception = exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
-                        if (exception instanceof Throwable) {
-                            Throwable ex = (Throwable) exception;
-                            while (ex.getCause() != null) {
-                                ex = ex.getCause();
-                            }
-                            if (ex.getClass().getPackage().getName().startsWith("java.net")) {
-                                exchange.getOut().setBody(ex);
-                            } else {
-                                exchange.getOut().setBody(new Exception(((Throwable) exception).getMessage(), ex));
-                            }
-                        } else {
-                            exchange.getOut().setBody(new Exception("Unknown error"));
-                        }
-                    }
-                })
+                .process(new ErrorProcessor())
                 .setHeader("responseId", property("correlationId"))
                 .to("liferay:" + DestinationNames.MESSAGE_BUS_DEFAULT_RESPONSE);
     }
