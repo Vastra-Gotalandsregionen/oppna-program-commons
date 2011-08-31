@@ -22,10 +22,9 @@ public class ErrorProcessor implements Processor {
                 ex = ex.getCause();
             }
             if (ex.getClass().getPackage().getName().startsWith("java.net")) {
-                exchange.getOut().setBody(exception);
+                exchange.getOut().setBody(ex);
             } else {
-                exchange.getOut().setBody(new Exception(((Throwable) exception).getMessage(),
-                        (Throwable) exception));
+                exchange.getOut().setBody(new Exception(((Throwable) exception).getMessage(), ex));
             }
         } else {
             exchange.getOut().setBody(new Exception("Unknown error"));

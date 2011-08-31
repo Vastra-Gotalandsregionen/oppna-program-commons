@@ -1,14 +1,7 @@
 package se.vgregion.routes;
 
 import com.liferay.portal.kernel.messaging.DestinationNames;
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.apache.camel.spring.SpringRouteBuilder;
-
-import javax.ws.rs.core.Response;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Implementation of Camel {@link org.apache.camel.builder.RouteBuilder} inheriting from
