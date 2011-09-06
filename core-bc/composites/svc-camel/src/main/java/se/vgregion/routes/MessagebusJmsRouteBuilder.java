@@ -5,6 +5,8 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.spring.SpringRouteBuilder;
 
+import java.net.InetAddress;
+
 /**
  * Class for building camel routes with JMS.
  * <p/>
@@ -49,13 +51,14 @@ public class MessagebusJmsRouteBuilder extends SpringRouteBuilder {
      */
     @Override
     public void configure() throws Exception {
+        String replyTo = activeMqDestination + ".REPLY." + InetAddress.getLocalHost().getHostName();
         from("liferay:" + messageBusDestination)
                 .errorHandler(deadLetterChannel("direct:error_" + messageBusDestination))
                 .setHeader("JMSCorrelationID", header("responseId"))
                 .to("activemq:queue:" + activeMqDestination + "?preserveMessageQos=true&replyTo="
-                        + activeMqDestination + ".REPLY");
+                        + replyTo);
 
-        from("activemq:queue:" + activeMqDestination + ".REPLY?disableReplyTo=true")
+        from("activemq:queue:" + replyTo + "?disableReplyTo=true")
                 .setHeader("responseId", header("JMSCorrelationID"))
                 .to("log:se.vgregion.routes?level=INFO")
                 .to("liferay:" + DestinationNames.MESSAGE_BUS_DEFAULT_RESPONSE);
