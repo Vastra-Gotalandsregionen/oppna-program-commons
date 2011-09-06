@@ -51,6 +51,8 @@ public class MessagebusJmsRouteBuilder extends SpringRouteBuilder {
      */
     @Override
     public void configure() throws Exception {
+        //Put the hostname at the end since problems occur if there are several consumers on the same queue
+        //(as would be in a cluster).
         String replyTo = activeMqDestination + ".REPLY." + InetAddress.getLocalHost().getHostName();
         from("liferay:" + messageBusDestination)
                 .errorHandler(deadLetterChannel("direct:error_" + messageBusDestination))
