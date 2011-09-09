@@ -1,0 +1,30 @@
+#All commands used to generate the files in this directory.
+
+#Generate keypair and store into "clientkeystore.jks".
+keytool -genkey -keystore clientkeystore.jks -keyalg rsa -alias client -storepass clientpass
+    -keypass clientpass -validity 36500
+
+#Export the client cert.
+keytool -exportcert -alias client -keystore clientkeystore.jks -v -file client.cer
+Ange keystore-lösenord:
+Certifikatet har lagrats i filen <client.cer>
+
+#Import certificate into new server truststore. Truststore password: "serverpass"
+keytool -importcert -file client.cer -keystore servertruststore.jks
+Ange keystore-lösenord:
+Ange det nya lösenordet igen:
+
+#Generate keypair and store into "serverkeystore.jks".
+keytool -genkey -keystore serverkeystore.jks -keyalg rsa -alias server -storepass serverpass
+    -keypass serverpass -validity 36500
+
+#Export the cert. Using "serverpass" as password.
+C:\>keytool -exportcert -alias server -keystore serverkeystore.jks -v -file server.cer
+Ange keystore-lösenord:
+
+#Import certificate into new client truststore. Truststore password: "clientpass"
+C:\>keytool -importcert -file server.cer -keystore clienttruststore.jks
+Ange keystore-lösenord:
+Ange det nya lösenordet igen:
+
+

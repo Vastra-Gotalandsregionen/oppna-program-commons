@@ -5,17 +5,19 @@ import com.liferay.portal.kernel.messaging.MessageBus;
 import com.liferay.portal.kernel.messaging.MessageBusException;
 import com.liferay.portal.kernel.messaging.sender.DefaultSynchronousMessageSender;
 import com.liferay.portal.kernel.uuid.PortalUUID;
+import org.apache.cxf.Bus;
+import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.AbstractHandler;
+import org.mortbay.jetty.security.SslSocketConnector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.servlet.ServletException;
@@ -44,12 +46,19 @@ public class CamelRestComponentTest {
     @Value("${messagebus.unresponsive.rest.destination}")
     String messagebusUnresponsiveDestination;
 
-    private Server server = new Server(8008);
+    private Server server = new Server();
 
     private StringBuilder expected;
 
     @Before
     public void setUp() throws Exception {
+        //Pick up the <http:conduit> configuration
+        SpringBusFactory bf = new SpringBusFactory();
+        Bus bus = bf.createBus("META-INF/camelRestComponentTest.xml");
+        bf.setDefaultBus(bus);
+
+        configureSslSocketConnector();
+
         server.addHandler(new AbstractHandler() {
             @Override
             public void handle(String s, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, int i) throws IOException, ServletException {
@@ -72,6 +81,20 @@ public class CamelRestComponentTest {
         server.start();
     }
 
+    private void configureSslSocketConnector() {
+        SslSocketConnector sslSocketConnector = new SslSocketConnector();
+        sslSocketConnector.setPort(8008);
+        sslSocketConnector.setNeedClientAuth(true);
+
+        String serverKeystore = this.getClass().getClassLoader().getResource("cert/serverkeystore.jks").getPath();
+        sslSocketConnector.setKeystore(serverKeystore);
+        sslSocketConnector.setKeyPassword("serverpass");
+        String serverTruststore = this.getClass().getClassLoader().getResource("cert/servertruststore.jks").getPath();
+        sslSocketConnector.setTruststore(serverTruststore);
+        sslSocketConnector.setTrustPassword("serverpass");
+        server.addConnector(sslSocketConnector);
+    }
+
     @After
     public void tearDown() throws Exception {
         server.stop();
@@ -83,7 +106,7 @@ public class CamelRestComponentTest {
         Message message = new Message();
         message.setPayload("test");
 
-       DefaultSynchronousMessageSender sender = new DefaultSynchronousMessageSender();
+        DefaultSynchronousMessageSender sender = new DefaultSynchronousMessageSender();
         sender.setPortalUUID(new PortalUUID() {
             @Override
             public String generate() {
@@ -102,7 +125,7 @@ public class CamelRestComponentTest {
         Message message = new Message();
         message.setPayload("test");
 
-       DefaultSynchronousMessageSender sender = new DefaultSynchronousMessageSender();
+        DefaultSynchronousMessageSender sender = new DefaultSynchronousMessageSender();
         sender.setPortalUUID(new PortalUUID() {
             @Override
             public String generate() {
@@ -125,7 +148,7 @@ public class CamelRestComponentTest {
         Message message = new Message();
         message.setPayload("test");
 
-       DefaultSynchronousMessageSender sender = new DefaultSynchronousMessageSender();
+        DefaultSynchronousMessageSender sender = new DefaultSynchronousMessageSender();
         sender.setPortalUUID(new PortalUUID() {
             @Override
             public String generate() {

@@ -2,12 +2,20 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xmlns:http="http://cxf.apache.org/transports/http/configuration"
+       xmlns:sec="http://cxf.apache.org/configuration/security"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context.xsd
        http://camel.apache.org/schema/spring
-       http://camel.apache.org/schema/spring/camel-spring.xsd">
+       http://camel.apache.org/schema/spring/camel-spring.xsd
+       http://cxf.apache.org/configuration/security
+       http://cxf.apache.org/schemas/configuration/security.xsd
+       http://cxf.apache.org/transports/http/configuration
+       http://cxf.apache.org/schemas/configuration/http-conf.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
   <context:property-placeholder location="classpath*:META-INF/messaging.properties"/>
 
@@ -25,7 +33,8 @@
     <constructor-arg index="0" type="java.lang.String" value="vgr/messagebus_unresponsive_rest_test_destination"/>
   </bean>
 
-  <bean id="destination.message_bus_default_response" class="com.liferay.portal.kernel.messaging.ParallelDestination">
+  <bean id="destination.message_bus_default_response"
+        class="com.liferay.portal.kernel.messaging.ParallelDestination">
     <constructor-arg index="0" type="java.lang.String" value="liferay/message_bus/default_response"/>
   </bean>
 
@@ -33,7 +42,8 @@
     <constructor-arg index="0" type="java.lang.String" value="vgr/messagebus_rest_test_destination.REPLY"/>
   </bean>
 
-  <bean id="messagingConfigurator.core" class="com.liferay.portal.kernel.messaging.config.DefaultMessagingConfigurator"
+  <bean id="messagingConfigurator.core"
+        class="com.liferay.portal.kernel.messaging.config.DefaultMessagingConfigurator"
         init-method="init" destroy-method="destroy">
     <property name="destinations">
       <list>
@@ -50,7 +60,7 @@
 
   <bean id="messagebusRestRoutes" class="se.vgregion.routes.MessagebusRestRouteBuilder">
     <constructor-arg index="0" value="vgr/messagebus_rest_test_destination"/>
-    <constructor-arg index="1" value="http://localhost:8008/testrest"/>
+    <constructor-arg index="1" value="https://localhost:8008/testrest"/>
   </bean>
 
   <bean id="messagebusUnresponsiveRestRoutes" class="se.vgregion.routes.MessagebusRestRouteBuilder">
@@ -65,4 +75,15 @@
 
   </camelContext>
 
+  <http:conduit name="https://localhost:8008/testrest">
+  <!--<http:conduit name="https://localhost:8008/.*">-->
+    <http:tlsClientParameters disableCNCheck="true">
+      <sec:trustManagers>
+        <sec:keyStore type="jks" password="clientpass" resource="cert/clienttruststore.jks"/>
+      </sec:trustManagers>
+      <sec:keyManagers keyPassword="clientpass">
+        <sec:keyStore type="jks" password="clientpass" resource="cert/clientkeystore.jks"/>
+      </sec:keyManagers>
+    </http:tlsClientParameters>
+  </http:conduit>
 </beans>
