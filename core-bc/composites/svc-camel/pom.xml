@@ -136,9 +136,18 @@
         <artifactId>maven-license-plugin</artifactId>
         <version>1.8.0</version>
         <configuration>
+          <header>http://oppna-program.googlecode.com/files/header.txt</header>
+          <skipExistingHeaders>true</skipExistingHeaders>
           <excludes>
             <exclude>src/main/java/se/vgregion/messagebus</exclude>
             <exclude>src/main/java/se/vgregion/messagebus/converter</exclude>
+            <exclude>target/**</exclude>
+            <exclude>**/NOTICES.txt</exclude>
+            <exclude>thirdpartylicenses/**</exclude>
+            <exclude>**/LICENSE.rtf</exclude>
+            <exclude>**/context.xml</exclude>
+            <exclude>**/*.properties</exclude>
+            <exclude>**/*.sql</exclude>
           </excludes>
         </configuration>
       </plugin>
