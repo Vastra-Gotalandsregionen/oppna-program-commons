@@ -35,13 +35,12 @@ import java.util.Properties;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.mail.util.ByteArrayDataSource;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.holders.StringHolder;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.*;
 
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
@@ -52,6 +51,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import org.xml.sax.SAXException;
 import se.vgregion.usdservice.domain.Issue;
 import se.vgregion.util.Attachment;
 
@@ -59,9 +59,8 @@ import com.ca.www.UnicenterServicePlus.ServiceDesk.USD_WebServiceSoap;
 import com.ca.www.UnicenterServicePlus.ServiceDesk.USD_WebServiceSoapSoapBindingStub;
 
 /**
+ * @author David Rosell - Redpill-Linpro
  * @author Andrew Culbert
- * @author Ulf Carlsson
- * 
  */
 public class USDServiceImpl implements USDService {
 
@@ -75,10 +74,10 @@ public class USDServiceImpl implements USDService {
     private Properties usdAppToGroupMappings;
 
     // Define which attributes to fetch when retrieving contact's issue list
-    private static final String[] attributeNamesMultiTypeList = new String[] { "description", "summary",
-            "status.sym", "ref_num", "web_url", "type" };
-    private static final String[] attributeNamesChangeOrderList = new String[] { "description", "summary",
-            "status.sym", "chg_ref_num", "web_url" };
+    private static final String[] ATTRIBUTE_NAMES = new String[]{"description", "summary",
+            "status.sym", "ref_num", "web_url", "type"};
+    private static final String[] ATTRIBUTE_NAMES_CHG = new String[]{"description", "summary",
+            "status.sym", "chg_ref_num", "web_url"};
 
     private static final String TYPE_ISSUE = "IS";
     private static final String TYPE_CHANGE_ORDER = "C";
@@ -86,7 +85,7 @@ public class USDServiceImpl implements USDService {
     public USDServiceImpl(Properties p) {
         String sEndPoint = p.getProperty("endpoint");
         try {
-            endPoint = new URL(sEndPoint);
+            this.endPoint = new URL(sEndPoint);
         } catch (MalformedURLException e) {
             throw new RuntimeException("URL not found:" + sEndPoint, e);
         }
@@ -101,91 +100,63 @@ public class USDServiceImpl implements USDService {
 
     public void setUsdAppToGroupMappings(Properties appToGroupMappings) {
         this.usdAppToGroupMappings = appToGroupMappings;
-
-        // System.out.println("USDMappings:" + usdAppToGroupMappings);
-
     }
 
-    private void createAttachment(USD_WebServiceSoap service, int sid, String repHandle, String objectHandle,
-            String description, se.vgregion.util.Attachment attachment) throws Exception {
-
-        DataSource source;
-        try {
-            source = new ByteArrayDataSource(attachment.getData(), "application/octet-stream");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        DataHandler dhandler = new DataHandler(source);
-
-        // Affix DIME type header to attachment before sending
-        ((javax.xml.rpc.Stub) service)._setProperty(org.apache.axis.client.Call.ATTACHMENT_ENCAPSULATION_FORMAT,
-                Call.ATTACHMENT_ENCAPSULATION_FORMAT_DIME);
-        ((org.apache.axis.client.Stub) service).addAttachment(dhandler);
-        // Create attachment
-        service.createAttachment(sid, repHandle, objectHandle, description, attachment.getFilename());
-        // System.out.println("Creating attachment...SUCCESS");
-
-    }
-
-    protected String getHandleFromResponse(InputStream xml) throws Exception {
-
-        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-        Document doc = docBuilder.parse(xml);
-
-        NodeList handles = doc.getElementsByTagName("Handle");
-        int i = handles.getLength();
-
-        for (int s = 0; s < handles.getLength(); s++) {
-            Node handleNode = handles.item(s);
-            return handleNode.getFirstChild().getNodeValue();
-        }
-
-        return "";
-    }
-
-    private String getGroupHandle(String groupName) {
-
+    /*
+     * (non-Javadoc)
+     *
+     * @see se.vgregion.usdservice.USDService#lookupRecords(java.lang.String, java.lang.Integer)
+     */
+    @Override
+    public List<Issue> lookupRecords(String userId, Integer maxRows) {
         int sessionID = 0;
-        String sql = "type = 2308 and delete_flag = 0 and last_name = '" + groupName + "'";
-
         try {
             sessionID = getWebService().login(wsUser, wsPassword);
-            String result = getWebService().doSelect(sessionID, "cnt", sql, -1, new String[] { "last_name" });
-            ByteArrayInputStream s = new ByteArrayInputStream(result.getBytes());
-            return getHandleFromResponse(s);
-        } catch (RemoteException e) {
-            throw new RuntimeException("Error when getting group handle", e);
-        } catch (Exception e) {
-            throw new RuntimeException("Error when parsing xml response when searching for a group", e);
-        }
 
+            String contactHandle = lookupContactHandle(userId, sessionID);
+            if (contactHandle == null) {
+                // User not registered in USD, return null
+                return null;
+            }
+
+            List<Issue> records = new ArrayList<Issue>();
+            // Incidents, Problems and Change Orders
+            records.addAll(getChangeOrdersForContact(sessionID, contactHandle, maxRows));
+            // Requests
+            records.addAll(getRequestForContact(sessionID, contactHandle, maxRows));
+            // Issues
+            records.addAll(getIssuesForContact(sessionID, contactHandle, maxRows));
+
+            return records;
+        } catch (RemoteException e) {
+            log.error("Failed to get issue list from USD Service for user=" + userId, e);
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                getWebService().logout(sessionID);
+            } catch (RemoteException e) {
+                log.warn(e);
+            }
+        }
     }
 
     @Override
     public String createRequest(Properties requestParameters, String userId, Collection<Attachment> attachments) {
-
-        String result = null;
         int sessionID = 0;
         try {
-
-            String contactHandle;
             sessionID = getWebService().login(wsUser, wsPassword);
-            try {
-                contactHandle = getHandleForUserid(sessionID, userId);
-            } catch (Throwable e) {
-                log.debug("Trying default contactHandle:" + e.getMessage());
+            String contactHandle = lookupContactHandle(userId, sessionID);
+            if (contactHandle == null) {
                 // Use the wsUser if the user is unknown
-                contactHandle = getHandleForUserid(sessionID, wsUser);
-
-                // contactHandle = wsUser;
-
+                contactHandle = lookupContactHandle(wsUser, sessionID);
             }
+
             requestParameters.setProperty("customer", contactHandle);
+
             List<String> lAttributes = new ArrayList<String>();
             List<String> lAttributeValues = new ArrayList<String>();
 
-            for (Enumeration<Object> e = requestParameters.keys(); e.hasMoreElements();) {
+            for (Enumeration<Object> e = requestParameters.keys(); e.hasMoreElements(); ) {
                 String key = (String) e.nextElement();
                 lAttributes.add(key);
                 lAttributeValues.add(key);
@@ -201,33 +172,30 @@ public class USDServiceImpl implements USDService {
 
             String template = "";
 
-            result = getWebService().createRequest(sessionID, contactHandle, attrVals, propertyValues, template,
+            String result = getWebService().createRequest(sessionID, contactHandle, attrVals, propertyValues, template,
                     attributes, newRequestHandle, newRequestNumber);
-            byte[] bytes = result.getBytes("utf-8");
-            ByteArrayInputStream s = new ByteArrayInputStream(bytes);
-            // System.out.println("USDResponse=" + new String(bytes));
-            String handle;
+
+            String handle = null;
             try {
-                handle = getHandleFromResponse(s);
+                handle = getHandleFromResponse(result);
             } catch (Exception e) {
-                throw new RuntimeException("Error parsing handle to USD incident from xml response...\n" + result,
-                        e);
+                throw new RuntimeException("Error parsing handle to USD incident from xml response...\n" + result, e);
             }
 
-            if (handle != "") {
-                for (se.vgregion.util.Attachment attachment : attachments) {
+            if (!StringUtils.isEmpty(handle)) {
+                for (Attachment attachment : attachments) {
                     int i = 0;
                     try {
-                        this.createAttachment(getWebService(), sessionID, wsAttachmentRepHandle, handle,
-                                "Attachment " + i, attachment);
+                        createAttachment(sessionID, wsAttachmentRepHandle, handle, "Attachment " + i, attachment);
                     } catch (Exception e) {
-                        throw new RuntimeException("Error creating attchment in USD", e);
+                        log.error("Failed to create attachment in USD ["+attachment.getFilename()+"]");
                     }
                     i++;
                 }
 
             }
 
+            return result;
         } catch (RemoteException e) {
             log.error("Failed to create request to USD Service", e);
             try {
@@ -236,20 +204,252 @@ public class USDServiceImpl implements USDService {
                 // No action
             }
             throw new RuntimeException(e);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("TODO: Handle this exception better", e);
         } finally {
-
             try {
-
                 getWebService().logout(sessionID);
-
             } catch (RemoteException e) {
                 log.warn(e);
             }
         }
+    }
 
+    /**
+     * USD-WS lookup.
+     */
+    private List<Issue> getIssuesForContact(int sessionID, String contactHandle, Integer maxRows)
+            throws RemoteException {
+
+        // Build where clause
+        String whereClause = String.format("affected_contact.id = U'%s' AND active = 1", contactHandle);
+
+        // Get list xml
+        int endIndex = lookupEndIndex(maxRows);
+        String listXml = getWebService().doSelect(sessionID, "iss", whereClause, endIndex, ATTRIBUTE_NAMES);
+
+        // Parse xml to list
+        return getIssuesFromList(listXml, TYPE_ISSUE);
+    }
+
+    /**
+     * USD-WS lookup.
+     */
+    private List<Issue> getRequestForContact(int sessionID, String contactHandle, Integer maxRows)
+            throws RemoteException {
+
+        // Build where clause
+        String whereClause = String.format("customer.id = U'%s' AND active = 1", contactHandle);
+
+        // Get list xml
+        int endIndex = lookupEndIndex(maxRows);
+        String listXml = getWebService().doSelect(sessionID, "cr", whereClause, endIndex, ATTRIBUTE_NAMES);
+
+        // Parse xml to list
+        return getIssuesFromList(listXml, null);
+    }
+
+    /**
+     * USD-WS lookup.
+     */
+    private List<Issue> getChangeOrdersForContact(int sessionID, String contactHandle, Integer maxRows)
+            throws RemoteException {
+
+        // Build where clause
+        String whereClause = String.format("affected_contact.id = U'%s' AND active = 1", contactHandle);
+
+        // Get list xml
+        int endIndex = lookupEndIndex(maxRows);
+        String listXml = getWebService().doSelect(sessionID, "chg", whereClause, endIndex, ATTRIBUTE_NAMES_CHG);
+
+        // Parse xml to list
+        return getIssuesFromList(listXml, TYPE_CHANGE_ORDER);
+    }
+
+    protected List<Issue> getIssuesFromList(String xml, String fallbackType) throws RuntimeException {
+        List<Issue> issueList = new ArrayList<Issue>();
+
+        try {
+            // Parse the XML to get a DOM to query
+            Document doc = parseXml(new ByteArrayInputStream(xml.getBytes()));
+
+            // Get an XPath processor
+            XPath xpathprocessor = XPathFactory.newInstance().newXPath();
+
+            // Extract USDObject's
+            XPathExpression udsObjectXPath = xpathprocessor.compile("/UDSObjectList/UDSObject");
+            NodeList udsObjects = (NodeList) udsObjectXPath.evaluate(doc, XPathConstants.NODESET);
+
+            // Iterate over USDObject's to create Issue's
+            for (int i = 1; i < udsObjects.getLength() + 1; i++) {
+                // Get ref_num
+                String refNum = null;
+                if (TYPE_CHANGE_ORDER.equals(fallbackType)) {
+                    refNum = extractAttribute(i, "chg_ref_num", XPathConstants.STRING, doc, xpathprocessor);
+                } else {
+                    refNum = extractAttribute(i, "ref_num", XPathConstants.STRING, doc, xpathprocessor);
+                }
+
+                // A Issue has to have refNum to be valid
+                if (StringUtils.isEmpty(refNum)) {
+                    continue;
+                }
+
+                Issue issue = resolveIssue(refNum, i, fallbackType, doc, xpathprocessor);
+
+                // Add Issue object to list
+                issueList.add(issue);
+            }
+
+            return issueList;
+        } catch (Exception e) {
+            log.error("Error when trying to parse issue list from XML", e);
+            throw new RuntimeException("Error when trying to parse issue list from XML", e);
+        }
+    }
+
+    private Document parseXml(InputStream xml) throws ParserConfigurationException, SAXException, IOException {
+        DocumentBuilderFactory dbfactory = DocumentBuilderFactory.newInstance();
+        dbfactory.setNamespaceAware(true);
+        dbfactory.setXIncludeAware(true);
+
+        DocumentBuilder parser = dbfactory.newDocumentBuilder();
+
+        return parser.parse(xml);
+    }
+
+    private Issue resolveIssue(String refNum, int i, String fallbackType, Document doc, XPath xpathprocessor) throws XPathExpressionException {
+        Issue issue = new Issue();
+        issue.setRefNum(refNum);
+
+        // Get summary
+        String summary = extractAttribute(i, "summary", XPathConstants.STRING, doc, xpathprocessor);
+        issue.setSummary(summary);
+
+        // Get description
+        String description = extractAttribute(i, "description", XPathConstants.STRING, doc, xpathprocessor);
+        issue.setDescription(description);
+
+        // Get status
+        String statusSym = extractAttribute(i, "status.sym", XPathConstants.STRING, doc, xpathprocessor);
+        issue.setStatus(statusSym);
+
+        // Get web_url
+        String webUrl = extractAttribute(i, "web_url", XPathConstants.STRING, doc, xpathprocessor);
+        issue.setUrl(webUrl);
+
+        // Get type
+        String type = extractAttribute(i, "type", XPathConstants.STRING, doc, xpathprocessor);
+        if (StringUtils.isEmpty(type)) {
+            type = fallbackType;
+        }
+        issue.setType(type);
+        return issue;
+    }
+
+    private String extractAttribute(int cnt, String attrName, QName attrType, Document source, XPath processor)
+            throws XPathExpressionException {
+
+        String exprTemplate = "/UDSObjectList/UDSObject[%s]/Attributes/Attribute[AttrName='%s']/AttrValue";
+        String xPath = String.format(exprTemplate, cnt, attrName);
+
+        XPathExpression attributeValueXPath = processor.compile(xPath);
+
+        return (String) attributeValueXPath.evaluate(source, XPathConstants.STRING);
+    }
+
+    private int lookupEndIndex(Integer maxRows) {
+        int endIndex = -1; // To fetch max number of rows, which according to - spec is 250 per call
+        if (maxRows != null && maxRows >= -1) {
+            endIndex = maxRows.intValue();
+        }
+        return endIndex;
+    }
+
+    /**
+     * USD-WS lookup.
+     */
+    private String lookupContactHandle(String userId, int sessionID) {
+        String contactHandle = null;
+        try {
+            contactHandle = getWebService().getHandleForUserid(sessionID, userId);
+            // Rid object type from handle
+            contactHandle = contactHandle.replace("cnt:", "");
+        } catch (Throwable e) {
+            log.error("Could not get handle for user with userId " + userId);
+        }
+        return contactHandle;
+    }
+
+    /**
+     * USD-WS lookup.
+     */
+    private String getGroupHandle(String groupName) {
+
+        int sessionID = 0;
+        String whereClause = String.format("type = 2308 and delete_flag = 0 and last_name = '%s'", groupName);
+
+        try {
+            sessionID = getWebService().login(wsUser, wsPassword);
+            String resultXml = getWebService().doSelect(sessionID, "cnt", whereClause, -1, new String[]{"last_name"});
+
+            return getHandleFromResponse(resultXml);
+        } catch (RemoteException e) {
+            throw new RuntimeException("Error when getting group handle", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error when parsing xml response when searching for a group", e);
+        }
+
+    }
+
+    /**
+     * USD-WS lookup.
+     */
+    private void createAttachment(int sid, String repHandle, String objectHandle, String description,
+            Attachment attachment) throws Exception {
+
+        DataHandler dhandler = createDataHandler(attachment);
+
+        // Affix DIME type header to attachment before sending
+        ((javax.xml.rpc.Stub) getWebService())._setProperty(org.apache.axis.client.Call.ATTACHMENT_ENCAPSULATION_FORMAT,
+                Call.ATTACHMENT_ENCAPSULATION_FORMAT_DIME);
+        ((org.apache.axis.client.Stub) getWebService()).addAttachment(dhandler);
+        // Create attachment
+        getWebService().createAttachment(sid, repHandle, objectHandle, description, attachment.getFilename());
+
+    }
+
+    @Override
+    public String getUSDGroupHandleForApplicationName(String appName) {
+        String usdGroupName = usdAppToGroupMappings.getProperty(appName);
+
+        String result = getGroupHandle(usdGroupName);
+        if (result == null || result.length() == 0) {
+            throw new RuntimeException("No group handle found for application name=" + appName);
+        }
         return result;
+    }
+
+    private DataHandler createDataHandler(Attachment attachment) {DataSource source;
+        try {
+            source = new ByteArrayDataSource(attachment.getData(), "application/octet-stream");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return new DataHandler(source);
+    }
+
+    protected String getHandleFromResponse(String xml) throws Exception {
+        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+        Document doc = docBuilder.parse(new ByteArrayInputStream(xml.getBytes()));
+
+        NodeList handles = doc.getElementsByTagName("Handle");
+
+        for (int s = 0; s < handles.getLength(); s++) {
+            Node handleNode = handles.item(s);
+            return handleNode.getFirstChild().getNodeValue();
+        }
+
+        return "";
     }
 
     protected USD_WebServiceSoapSoapBindingStub getWebService() {
@@ -263,278 +463,4 @@ public class USDServiceImpl implements USDService {
         }
         return webService;
     }
-
-    @Override
-    public String getUSDGroupHandleForApplicationName(String appName) {
-        String usdGroupName = usdAppToGroupMappings.getProperty(appName);
-        // System.out.println("usdAppToGroupMappings=" + usdAppToGroupMappings);
-        String result = getGroupHandle(usdGroupName);
-        if (result == null || result.length() == 0) {
-
-            throw new RuntimeException("No group handle found for application name=" + appName);
-        }
-        return result;
-    }
-
-    private List<Issue> getIssuesForContact(String userId, int sessionID, String contactHandle, Integer maxRows)
-            throws RemoteException {
-        List<Issue> taskList = new ArrayList<Issue>();
-
-        StringBuilder whereClause = new StringBuilder();
-        int endIndex = -1; // To fetch max number of rows, which according to
-        // spec is 250 per call
-
-        // Handle end index input
-        if (maxRows != null && maxRows >= -1) {
-            endIndex = maxRows.intValue();
-        }
-
-        // Build where clause
-        whereClause.append("affected_contact.id = U'"); // requestor.id
-        whereClause.append(contactHandle);
-        whereClause.append("' AND active = 1");
-
-        // Get list xml
-        String listXml = getWebService().doSelect(sessionID, "iss", whereClause.toString(), endIndex,
-                attributeNamesMultiTypeList);
-
-        // Get input stream for xml data
-        ByteArrayInputStream bais = new ByteArrayInputStream(listXml.getBytes());
-
-        // Parse xml to list
-        taskList = getIssuesFromList(bais, TYPE_ISSUE);
-
-        return taskList;
-    }
-
-    private List<Issue> getRequestForContact(String userId, int sessionID, String contactHandle, Integer maxRows)
-            throws RemoteException {
-        List<Issue> taskList = new ArrayList<Issue>();
-
-        StringBuilder whereClause = new StringBuilder();
-        int endIndex = -1; // To fetch max number of rows, which according to
-        // spec is 250 per call
-
-        // Handle end index input
-        if (maxRows != null && maxRows >= -1) {
-            endIndex = maxRows.intValue();
-        }
-
-        // Build where clause
-        whereClause.append("customer.id = U'");
-        whereClause.append(contactHandle);
-        whereClause.append("' AND active = 1");
-
-        // Get list xml
-        String listXml = getWebService().doSelect(sessionID, "cr", whereClause.toString(), endIndex,
-                attributeNamesMultiTypeList);
-
-        // Get input stream for xml data
-        ByteArrayInputStream bais = new ByteArrayInputStream(listXml.getBytes());
-
-        // Parse xml to list
-        taskList = getIssuesFromList(bais, null);
-
-        return taskList;
-    }
-
-    private List<Issue> getChangeOrdersForContact(String userId, int sessionID, String contactHandle,
-            Integer maxRows) throws RemoteException {
-        List<Issue> taskList = new ArrayList<Issue>();
-
-        StringBuilder whereClause = new StringBuilder();
-        int endIndex = -1; // To fetch max number of rows, which according to
-        // spec is 250 per call
-
-        // Handle end index input
-        if (maxRows != null && maxRows >= -1) {
-            endIndex = maxRows.intValue();
-        }
-
-        // Build where clause
-        whereClause.append("affected_contact.id = U'");
-        whereClause.append(contactHandle);
-        whereClause.append("' AND active = 1");
-
-        // Get list xml
-        String listXml = getWebService().doSelect(sessionID, "chg", whereClause.toString(), endIndex,
-                attributeNamesChangeOrderList);
-
-        // Get input stream for xml data
-        ByteArrayInputStream bais = new ByteArrayInputStream(listXml.getBytes());
-
-        // Parse xml to list
-        taskList = getIssuesFromList(bais, TYPE_CHANGE_ORDER);
-
-        return taskList;
-    }
-
-    protected List<Issue> getIssuesFromList(InputStream xml, String defaultType) throws RuntimeException {
-        List<Issue> issueList = new ArrayList<Issue>();
-
-        try {
-            // Parse the XML to get a DOM to query
-            DocumentBuilderFactory dbfactory = DocumentBuilderFactory.newInstance();
-            dbfactory.setNamespaceAware(true);
-            dbfactory.setXIncludeAware(true);
-
-            DocumentBuilder parser = dbfactory.newDocumentBuilder();
-            Document doc = parser.parse(xml);
-
-            // Get an XPath processor
-            XPathFactory xpfactory = XPathFactory.newInstance();
-            XPath xpathprocessor = xpfactory.newXPath();
-
-            // Create XPath expressions
-            String xpathUDSObject = "/UDSObjectList/UDSObject";
-            XPathExpression udsObjectXPath = xpathprocessor.compile(xpathUDSObject);
-
-            // Execute the XPath expressions
-            NodeList udsObjects = (NodeList) udsObjectXPath.evaluate(doc, XPathConstants.NODESET);
-            for (int i = 1; i < udsObjects.getLength() + 1; i++) {
-                Issue issue = new Issue();
-
-                // Get summary
-                StringBuilder xPath = new StringBuilder();
-                xPath.append("/UDSObjectList/UDSObject[");
-                xPath.append(i);
-                xPath.append("]/Attributes/Attribute[AttrName='summary']/AttrValue");
-
-                XPathExpression attributeValueXPath = xpathprocessor.compile(xPath.toString());
-                String value = (String) attributeValueXPath.evaluate(doc, XPathConstants.STRING);
-                issue.setSummary(value);
-
-                // Get description
-                xPath = new StringBuilder();
-                xPath.append("/UDSObjectList/UDSObject[");
-                xPath.append(i);
-                xPath.append("]/Attributes/Attribute[AttrName='description']/AttrValue");
-
-                attributeValueXPath = xpathprocessor.compile(xPath.toString());
-                value = (String) attributeValueXPath.evaluate(doc, XPathConstants.STRING);
-                issue.setDescription(value);
-
-                // Get status
-                xPath = new StringBuilder();
-                xPath.append("/UDSObjectList/UDSObject[");
-                xPath.append(i);
-                xPath.append("]/Attributes/Attribute[AttrName='status.sym']/AttrValue");
-
-                attributeValueXPath = xpathprocessor.compile(xPath.toString());
-                value = (String) attributeValueXPath.evaluate(doc, XPathConstants.STRING);
-                issue.setStatus(value);
-
-                // Get ref_num
-                xPath = new StringBuilder();
-                xPath.append("/UDSObjectList/UDSObject[");
-                xPath.append(i);
-                if (TYPE_CHANGE_ORDER.equals(defaultType)) {
-                    xPath.append("]/Attributes/Attribute[AttrName='chg_ref_num']/AttrValue");
-                } else {
-                    xPath.append("]/Attributes/Attribute[AttrName='ref_num']/AttrValue");
-                }
-                attributeValueXPath = xpathprocessor.compile(xPath.toString());
-                value = (String) attributeValueXPath.evaluate(doc, XPathConstants.STRING);
-                // No "dead" issues...
-                if (StringUtils.isEmpty(value)) {
-                    continue;
-                }
-                issue.setRefNum(value);
-
-                // Get web_url
-                xPath = new StringBuilder();
-                xPath.append("/UDSObjectList/UDSObject[");
-                xPath.append(i);
-                xPath.append("]/Attributes/Attribute[AttrName='web_url']/AttrValue");
-
-                attributeValueXPath = xpathprocessor.compile(xPath.toString());
-                value = (String) attributeValueXPath.evaluate(doc, XPathConstants.STRING);
-                issue.setUrl(value);
-
-                // Get type
-                xPath = new StringBuilder();
-                xPath.append("/UDSObjectList/UDSObject[");
-                xPath.append(i);
-                xPath.append("]/Attributes/Attribute[AttrName='type']/AttrValue");
-
-                attributeValueXPath = xpathprocessor.compile(xPath.toString());
-                value = (String) attributeValueXPath.evaluate(doc, XPathConstants.STRING);
-                if (StringUtils.isEmpty(value)) {
-                    value = defaultType;
-                }
-                issue.setType(value);
-
-                // Add Issue object to list
-                issueList.add(issue);
-            }
-
-            return issueList;
-        } catch (Exception e) {
-            log.error("Error when trying to parse issue list from XML", e);
-            throw new RuntimeException("Error when trying to parse issue list from XML", e);
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see se.vgregion.usdservice.USDService#getRecordsForContact(java.lang.String, java.lang.Integer)
-     */
-    @Override
-    public List<Issue> getRecordsForContact(String userId, Integer maxRows) {
-        List<Issue> records = new ArrayList<Issue>();
-
-        int sessionID = 0;
-        try {
-            // Login and get session
-            sessionID = getWebService().login(wsUser, wsPassword);
-
-            String contactHandle;
-            try {
-                contactHandle = getHandleForUserid(sessionID, userId);
-            } catch (Throwable e) {
-                log.error("Could not get handle for user with userId " + userId);
-                // TODO: User not registered in USD? Should we inform the user?
-                return records;
-            }
-
-            // Rid object type from handle
-            if (contactHandle != null) {
-                contactHandle = contactHandle.replace("cnt:", "");
-            }
-
-            // Incidents, Problems and Change Orders
-            List<Issue> changeOrdersForContact = getChangeOrdersForContact(userId, sessionID, contactHandle,
-                    maxRows);
-            // Requests
-            List<Issue> requestForContact = getRequestForContact(userId, sessionID, contactHandle, maxRows);
-            // Issues
-            List<Issue> issuesForContact = getIssuesForContact(userId, sessionID, contactHandle, maxRows);
-            records.addAll(changeOrdersForContact);
-            records.addAll(requestForContact);
-            records.addAll(issuesForContact);
-
-        } catch (RemoteException e) {
-            log.error("Failed to get issue list from USD Service for user=" + userId, e);
-            try {
-                getWebService().logout(sessionID);
-            } catch (RemoteException e1) {
-                // No action
-            }
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                getWebService().logout(sessionID);
-            } catch (RemoteException e) {
-                log.warn(e);
-            }
-        }
-
-        return records;
-    }
-
-    private String getHandleForUserid(int sessionID, String userId) throws RemoteException {
-        return new StringBuffer(getWebService().getHandleForUserid(sessionID, userId)).toString();
-    }
-
 }

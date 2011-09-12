@@ -19,18 +19,19 @@
 
 package se.vgregion.usdservice;
 
+import se.vgregion.usdservice.domain.Issue;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
-import se.vgregion.usdservice.domain.Issue;
 import se.vgregion.util.Attachment;
 
 /**
  * 
+ * @author David Rosell - Redpill-Linpro
  * @author Andrew Culbert
- * @author Ulf Carlsson
- * 
+ *
  */
 public interface USDService {
 
@@ -38,6 +39,6 @@ public interface USDService {
 
     String getUSDGroupHandleForApplicationName(String appName);
 
-    List<Issue> getRecordsForContact(String userId, Integer maxRows);
+    List<Issue> lookupRecords(String userId, Integer maxRows);
 
 }

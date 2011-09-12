@@ -44,6 +44,31 @@ public class RestTest extends CamelTestSupport {
         Assert.assertNotNull(exchange.getOut());
     }
 
+    @Test
+    @Ignore
+    public void callCreateExternal() {
+
+        Exchange exchange = template.send("cxfrs://https://esb.vgregion.se:9443/portal/services/users/create",
+                new Processor() {
+                    @Override
+                    public void process(Exchange exchange) throws Exception {
+                        exchange.setPattern(ExchangePattern.InOut);
+                        Message inMessage = exchange.getIn();
+                        inMessage.setHeader(CxfConstants.CAMEL_CXF_RS_USING_HTTP_API, Boolean.TRUE);
+                        inMessage.setHeader(Exchange.HTTP_METHOD, "POST");
+                        inMessage.setBody("apap");
+//                inMessage.setHeader(Exchange.HTTP_METHOD, "POST");
+//                inMessage.setHeader(Exchange.HTTP_PATH,"/");
+                        inMessage.setHeader(Exchange.ACCEPT_CONTENT_TYPE, "application/xml");
+
+                        inMessage.setHeader(CxfConstants.CAMEL_CXF_RS_RESPONSE_CLASS, String.class);
+                        inMessage.setBody(" ");
+                    }
+                });
+
+        Assert.assertNotNull(exchange.getOut());
+    }
+
     @Ignore
     @Test
     public void callNotesCalendar() {

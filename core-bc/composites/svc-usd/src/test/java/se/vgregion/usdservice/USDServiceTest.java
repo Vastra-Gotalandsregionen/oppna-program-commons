@@ -67,7 +67,7 @@ public class USDServiceTest extends TestCase {
                 }
 
                 @Override
-                protected String getHandleFromResponse(InputStream xml) throws Exception {
+                protected String getHandleFromResponse(String xml) throws Exception {
                     return "";
                 }
 
