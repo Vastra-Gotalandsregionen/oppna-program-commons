@@ -130,44 +130,49 @@
   <build>
     <finalName>liferay-camel</finalName>
     <!-- maven-license-plugin helps you managing license headers in source files. -->
-    <plugins>
-      <plugin>
-        <groupId>com.mycila.maven-license-plugin</groupId>
-        <artifactId>maven-license-plugin</artifactId>
-        <version>1.8.0</version>
-        <configuration>
-          <header>http://oppna-program.googlecode.com/files/header.txt</header>
-          <skipExistingHeaders>true</skipExistingHeaders>
-          <excludes>
-            <exclude>src/main/java/se/vgregion/messagebus</exclude>
-            <exclude>src/main/java/se/vgregion/messagebus/converter</exclude>
-            <exclude>target/**</exclude>
-            <exclude>**/NOTICES.txt</exclude>
-            <exclude>thirdpartylicenses/**</exclude>
-            <exclude>**/LICENSE.rtf</exclude>
-            <exclude>**/context.xml</exclude>
-            <exclude>**/*.properties</exclude>
-            <exclude>**/*.sql</exclude>
-          </excludes>
-        </configuration>
-        <executions>
-          <execution>
-            <id>format</id>
-            <phase>process-sources</phase>
-            <goals>
-              <goal>format</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>check</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
+    <pluginManagement>
+      <plugins>
+        <!-- We override the configuration from profile-open-2.12.pom here because
+         we need the validHeaders tag. -->
+        <plugin>
+          <groupId>com.mycila.maven-license-plugin</groupId>
+          <artifactId>maven-license-plugin</artifactId>
+          <version>1.8.0</version>
+          <configuration>
+            <header>http://oppna-program.googlecode.com/files/header.txt</header>
+            <skipExistingHeaders>true</skipExistingHeaders>
+            <validHeaders>
+              <validHeader>/liferayLicense.txt</validHeader>
+            </validHeaders>
+            <excludes>
+              <exclude>target/**</exclude>
+              <exclude>**/NOTICES.txt</exclude>
+              <exclude>thirdpartylicenses/**</exclude>
+              <exclude>**/LICENSE.rtf</exclude>
+              <exclude>**/context.xml</exclude>
+              <exclude>**/*.properties</exclude>
+              <exclude>**/*.sql</exclude>
+            </excludes>
+          </configuration>
+          <executions>
+            <execution>
+              <id>format</id>
+              <phase>process-sources</phase>
+              <goals>
+                <goal>format</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>check</id>
+              <phase>compile</phase>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
 </project>
