@@ -129,6 +129,20 @@
 
   <build>
     <finalName>liferay-camel</finalName>
+    <!-- maven-license-plugin helps you managing license headers in source files. -->
+    <plugins>
+      <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <version>1.8.0</version>
+        <configuration>
+          <excludes>
+            <exclude>src/main/java/se/vgregion/messagebus</exclude>
+            <exclude>src/main/java/se/vgregion/messagebus/converter</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 
 </project>
