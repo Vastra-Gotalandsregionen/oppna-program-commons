@@ -150,6 +150,22 @@
             <exclude>**/*.sql</exclude>
           </excludes>
         </configuration>
+        <executions>
+          <execution>
+            <id>format</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>format</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>check</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
