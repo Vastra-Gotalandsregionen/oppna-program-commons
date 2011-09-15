@@ -39,6 +39,8 @@ public interface USDService {
 
     String getUSDGroupHandleForApplicationName(String appName);
 
-    List<Issue> lookupRecords(String userId, Integer maxRows);
+    List<Issue> lookupIssues(String userId, int maxRows, boolean includeGroups);
+
+    String getBopsId(String userId);
 
 }

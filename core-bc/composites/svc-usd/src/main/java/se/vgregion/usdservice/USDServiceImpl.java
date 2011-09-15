@@ -68,10 +68,8 @@ public class USDServiceImpl implements USDService {
     private static final List<String> ATTRIBUTE_NAMES_CHG = Arrays.asList("description", "summary", "status.sym",
             "chg_ref_num", "web_url");
 
-    private static final String TYPE_ISSUE = "IS";
     private static final String TYPE_CHANGE_ORDER = "C";
 
-    private static String BOPSID = "";
 
     public USDServiceImpl(Properties p) {
         String sEndPoint = p.getProperty("endpoint");
@@ -96,10 +94,10 @@ public class USDServiceImpl implements USDService {
     /*
      * (non-Javadoc)
      *
-     * @see se.vgregion.usdservice.USDService#lookupRecords(java.lang.String, java.lang.Integer)
+     * @see se.vgregion.usdservice.USDService#lookupIssues(java.lang.String, java.lang.Integer)
      */
     @Override
-    public List<Issue> lookupRecords(String userId, Integer maxRows) {
+    public List<Issue> lookupIssues(String userId, int maxRows, boolean includeGroups) {
         int sessionID = 0;
         try {
             sessionID = getUSDWebService().login(wsUser, wsPassword);
@@ -110,16 +108,18 @@ public class USDServiceImpl implements USDService {
                 return null;
             }
 
-
             List<Issue> records = new ArrayList<Issue>();
-            // Incidents, Problems and Change Orders
+            // Change Orders
             records.addAll(getChangeOrdersForContact(sessionID, contactHandle, maxRows));
-            // Requests
+            // Incidents, Problems, Requests
             records.addAll(getRequestForContact(sessionID, contactHandle, maxRows));
-            // Issues
-//            records.addAll(getIssuesForContact(sessionID, contactHandle, maxRows));
 
-            records.addAll(getRequestForContactByGroup(sessionID, contactHandle, -1));
+            // Group issues - not assigen to user
+            if (includeGroups) {
+                String groups = lookupUserGroups(sessionID, contactHandle);
+                records.addAll(getChangeOrdersForContactByGroup(sessionID, contactHandle, groups, maxRows));
+                records.addAll(getRequestForContactByGroup(sessionID, contactHandle, groups, maxRows));
+            }
 
             return records;
         } catch (RemoteException e) {
@@ -195,6 +195,15 @@ public class USDServiceImpl implements USDService {
         }
     }
 
+    /**
+     * BOPSID is a temporary single signon id.
+     * <p/>
+     * This has to be used rather quickly before it is invalidated.
+     *
+     * @param userId, the login name of the user to be signed in.
+     * @return BOPSID.
+     */
+    @Override
     public String getBopsId(String userId) {
         int sessionID = 0;
         try {
@@ -220,94 +229,95 @@ public class USDServiceImpl implements USDService {
     /**
      * USD-WS lookup.
      */
-//    private List<Issue> getIssuesForContact(int sessionID, String contactHandle, Integer maxRows)
-//            throws RemoteException {
-//        // Build where clause
-//        String whereClause = String.format("affected_contact.id = U'%s' AND active = 1", contactHandle);
-//
-//        // Get list xml
-//        int endIndex = lookupEndIndex(maxRows);
-//        String listXml = getUSDWebService().doSelect(sessionID, "iss", whereClause, endIndex,
-//                toArrayOfString(ATTRIBUTE_NAMES));
-//
-//        // Parse xml to list
-//        return getIssuesFromList(listXml, TYPE_ISSUE);
-//    }
-
-    /**
-     * USD-WS lookup.
-     */
-    private List<Issue> getRequestForContact(int sessionID, String contactHandle, Integer maxRows)
+    private List<Issue> getRequestForContact(int sessionID, String contactHandle, int maxRows)
             throws RemoteException {
         // Build where clause
         String whereClause = String.format("customer = U'%s' AND active = 1", contactHandle);
 
         // Get list xml
-        int endIndex = lookupEndIndex(maxRows);
-        String listXml = getUSDWebService().doSelect(sessionID, "cr", whereClause, endIndex,
+        String listXml = getUSDWebService().doSelect(sessionID, "cr", whereClause, maxRows,
                 toArrayOfString(ATTRIBUTE_NAMES));
 
         // Parse xml to list
-        return getIssuesFromList(listXml, null);
+        return parseIssues(listXml, null, false);
     }
 
     /**
      * USD-WS lookup.
      */
-    private List<Issue> getRequestForContactByGroup(int sessionID, String contactHandle, Integer maxRows)
+    private List<Issue> getRequestForContactByGroup(int sessionID, String contactHandle, String groups, int maxRows)
             throws RemoteException {
-
-        List<String> groupIds = lookupUserGroups(sessionID, contactHandle);
-
-        String groups = "";
-        for (String group : groupIds) {
-            if (groups.length() > 0) groups += ",";
-            groups += "U'"+group+"'";
-        }
 
         // Build where clause
         String whereClause = String.format("group in (%s) AND customer <> U'%s' AND active = 1", groups, contactHandle);
 
         // Get list xml
-        String listXml = getUSDWebService().doSelect(sessionID, "cr", whereClause, -1,
+        String listXml = getUSDWebService().doSelect(sessionID, "cr", whereClause, maxRows,
                 toArrayOfString(ATTRIBUTE_NAMES));
 
         // Parse xml to list
-        return getIssuesFromList(listXml, null);
+        return parseIssues(listXml, null, true);
     }
 
     /**
      * USD-WS lookup.
      */
-    private List<Issue> getChangeOrdersForContact(int sessionID, String contactHandle, Integer maxRows)
+    private List<Issue> getChangeOrdersForContact(int sessionID, String contactHandle, int maxRows)
             throws RemoteException {
         // Build where clause
         String whereClause = String.format("affected_contact = U'%s' AND active = 1", contactHandle);
 
         // Get list xml
-        int endIndex = lookupEndIndex(maxRows);
-        String listXml = getUSDWebService().doSelect(sessionID, "chg", whereClause, endIndex,
+        String listXml = getUSDWebService().doSelect(sessionID, "chg", whereClause, maxRows,
                 toArrayOfString(ATTRIBUTE_NAMES_CHG));
 
         // Parse xml to list
-        return getIssuesFromList(listXml, TYPE_CHANGE_ORDER);
+        return parseIssues(listXml, TYPE_CHANGE_ORDER, false);
     }
 
-    private List<String> lookupUserGroups(int sessionID, String contactHandle) {
+    /**
+     * USD-WS lookup.
+     */
+    private List<Issue> getChangeOrdersForContactByGroup(int sessionID, String contactHandle, String groups, int maxRows)
+            throws RemoteException {
+
+        // Build where clause
+        String whereClause = String.format("group in (%s) AND affected_contact <> U'%s' AND active = 1", groups, contactHandle);
+
+        // Get list xml
+        String listXml = getUSDWebService().doSelect(sessionID, "chg", whereClause, maxRows,
+                toArrayOfString(ATTRIBUTE_NAMES_CHG));
+
+        // Parse xml to list
+        return parseIssues(listXml, TYPE_CHANGE_ORDER, true);
+    }
+
+    /**
+     * Lookup the groups the user is member of.
+     *
+     * @param sessionID     - USD session id.
+     * @param contactHandle - handle to the user.
+     * @return - a comma separated string of group handles.
+     */
+    private String lookupUserGroups(int sessionID, String contactHandle) {
         // Build where clause
         String whereClause = String.format("member = U'%s'", contactHandle);
 
-        List<String> attrs = Arrays.asList("group");
-
         // Get list xml
         String listXml = getUSDWebService().doSelect(sessionID, "grpmem", whereClause, -1,
-                toArrayOfString(attrs));
+                toArrayOfString(Arrays.asList("group")));
 
         return parseUserGroups(listXml);
     }
 
-    private List<String> parseUserGroups(String xml) {
-        List<String> groupIds = new ArrayList<String>();
+    /**
+     * Parse group id's from from a USD-query.
+     *
+     * @param xml - standard USD query response.
+     * @return - a formated (comma separated) string of group handles.
+     */
+    private String parseUserGroups(String xml) {
+        String groups = "";
         try {
             // Parse the XML to get a DOM to query
             Document doc = parseXml(new ByteArrayInputStream(xml.getBytes()));
@@ -318,17 +328,19 @@ public class USDServiceImpl implements USDService {
 
             // Iterate over USDObject's to create Issue's
             for (int i = 1; i < udsObjects.getLength() + 1; i++) {
-                groupIds.add(extractAttribute(i, "group", XPathConstants.STRING, doc));
+                if (groups.length() > 0) groups += ",";
+                groups += "U'" + extractAttribute(i, "group", XPathConstants.STRING, doc) + "'";
             }
 
-            return groupIds;
+            return groups;
         } catch (Exception e) {
-            log.error("Error when trying to parse issue list from XML", e);
-            throw new RuntimeException("Error when trying to parse issue list from XML", e);
+            String msg = "Error when parsing group handles from XML";
+            log.error(msg);
+            throw new RuntimeException(msg, e);
         }
     }
 
-    protected List<Issue> getIssuesFromList(String xml, String fallbackType) throws RuntimeException {
+    protected List<Issue> parseIssues(String xml, String fallbackType, boolean onGroup) throws RuntimeException {
         List<Issue> issueList = new ArrayList<Issue>();
         try {
             // Parse the XML to get a DOM to query
@@ -353,7 +365,7 @@ public class USDServiceImpl implements USDService {
                     continue;
                 }
 
-                Issue issue = resolveIssue(refNum, i, fallbackType, doc);
+                Issue issue = resolveIssue(refNum, i, fallbackType, onGroup, doc);
 
                 // Add Issue object to list
                 issueList.add(issue);
@@ -366,7 +378,7 @@ public class USDServiceImpl implements USDService {
         }
     }
 
-    private Issue resolveIssue(String refNum, int i, String fallbackType, Document doc)
+    private Issue resolveIssue(String refNum, int i, String fallbackType, boolean onGroup, Document doc)
             throws XPathExpressionException {
         Issue issue = new Issue();
         issue.setRefNum(refNum);
@@ -395,6 +407,12 @@ public class USDServiceImpl implements USDService {
         }
         issue.setType(type);
 
+        if (onGroup) {
+            issue.setAssociated("G");
+        } else {
+            issue.setAssociated("U");
+        }
+
         return issue;
     }
 
@@ -406,24 +424,15 @@ public class USDServiceImpl implements USDService {
         return evaluate(xPath, source, XPathConstants.STRING);
     }
 
-    private int lookupEndIndex(Integer maxRows) {
-        int endIndex = -1; // To fetch max number of rows, which according to - spec is 250 per call
-        if (maxRows != null && maxRows >= -1) {
-            endIndex = maxRows.intValue();
-        }
-        return endIndex;
-    }
-
     /**
      * USD-WS lookup.
      */
     private String lookupContactHandle(String userId, int sessionID) {
         String contactHandle = null;
         try {
-//            contactHandle = getWebService().getHandleForUserid(sessionID, userId);
             contactHandle = getUSDWebService().getHandleForUserid(sessionID, userId);
             // Rid object type from handle
-            contactHandle = contactHandle.replace("cnt:", "");
+            contactHandle = contactHandle.replaceFirst("cnt:", "");
         } catch (Throwable e) {
             log.error("Could not get handle for user with userId " + userId);
         }
@@ -439,9 +448,7 @@ public class USDServiceImpl implements USDService {
         String whereClause = String.format("type = 2308 and delete_flag = 0 and last_name = '%s'", groupName);
 
         try {
-//            sessionID = getWebService().login(wsUser, wsPassword);
             sessionID = getUSDWebService().login(wsUser, wsPassword);
-//            String resultXml = getWebService().doSelect(sessionID, "cnt", whereClause, -1, new String[]{"last_name"});
             String resultXml = getUSDWebService().doSelect(sessionID, "cnt", whereClause, -1,
                     toArrayOfString(Arrays.<String>asList("last_name")));
 
@@ -513,22 +520,22 @@ public class USDServiceImpl implements USDService {
 
     /**
      * Convenience method.
-     *
-     * Neither XPathFactory nor XPath is thread safe. Further more XPath is not re-entrant,
+     * <p/>
+     * Neither XPathFactory nor XPath are thread safe. Further more XPath is not re-entrant,
      * so a new instance has to be created for every evaluation.
      * The generic marker make this more convenient to use - however QName has to match the expected return type.
      *
-     * @param xPath, the xPath to be evaluated.
+     * @param xPath,  the xPath to be evaluated.
      * @param source, the source document to evaluate on.
-     * @param qName, the node type the evaluation returns.
-     * @param <T>, matching return type.
+     * @param qName,  the node type the evaluation returns.
+     * @param <T>,    matching return type.
      * @return the evaluated result.
      * @throws XPathExpressionException
      */
     private <T> T evaluate(String xPath, Document source, QName qName) throws XPathExpressionException {
         XPathFactory factory = XPathFactory.newInstance();
         XPath processor = factory.newXPath();
-        return (T)processor.evaluate(xPath, source, qName);
+        return (T) processor.evaluate(xPath, source, qName);
     }
 
     private ArrayOfString toArrayOfString(List<String> source) {

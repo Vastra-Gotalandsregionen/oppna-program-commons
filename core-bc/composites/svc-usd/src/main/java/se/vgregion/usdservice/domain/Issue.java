@@ -33,6 +33,7 @@ public class Issue {
     private String type;
     private String url;
     private String status;
+    private String associated;
 
     public String getDescription() {
         return description;
@@ -80,5 +81,13 @@ public class Issue {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getAssociated() {
+        return associated;
+    }
+
+    public void setAssociated(String associated) {
+        this.associated = associated;
     }
 }
