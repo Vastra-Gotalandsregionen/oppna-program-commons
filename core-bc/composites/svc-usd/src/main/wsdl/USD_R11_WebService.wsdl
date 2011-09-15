@@ -1,0 +1,1875 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://www.ca.com/UnicenterServicePlus/ServiceDesk" xmlns:intf="http://www.ca.com/UnicenterServicePlus/ServiceDesk" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><wsdl:types><schema targetNamespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" xmlns="http://www.w3.org/2001/XMLSchema"><complexType name="ListResult"><sequence><element name="listHandle" type="xsd:int"/><element name="listLength" type="xsd:int"/></sequence></complexType><complexType name="ArrayOfString"><sequence><element maxOccurs="unbounded" name="string" nillable="true" type="xsd:string"/></sequence></complexType><complexType name="ArrayOfInt"><sequence><element maxOccurs="unbounded" name="integer" nillable="true" type="xsd:int"/></sequence></complexType><element name="transfer"><complexType><sequence><element name="sid" type="xsd:int"/><element name="creator" type="xsd:string"/><element name="objectHandle" type="xsd:string"/><element name="description" type="xsd:string"/><element name="setAssignee" type="xsd:boolean"/><element name="newAssigneeHandle" type="xsd:string"/><element name="setGroup" type="xsd:boolean"/><element name="newGroupHandle" type="xsd:string"/><element name="setOrganization" type="xsd:boolean"/><element name="newOrganizationHandle" type="xsd:string"/></sequence></complexType></element><element name="transferResponse"><complexType><sequence><element name="transferReturn" type="xsd:string"/></sequence></complexType></element><element name="search"><complexType><sequence><element name="sid" type="xsd:int"/><element name="problem" type="xsd:string"/><element name="resultSize" type="xsd:int"/><element name="properties" type="xsd:string"/><element name="sortBy" type="xsd:string"/><element name="descending" type="xsd:boolean"/><element name="relatedCategories" type="xsd:boolean"/><element name="searchType" type="xsd:int"/><element name="matchType" type="xsd:int"/><element name="searchField" type="xsd:int"/><element name="categoryPath" type="xsd:string"/><element name="whereClause" type="xsd:string"/><element name="maxDocIDs" type="xsd:int"/></sequence></complexType></element><element name="searchResponse"><complexType><sequence><element name="searchReturn" type="xsd:string"/></sequence></complexType></element><element name="getDocument"><complexType><sequence><element name="sid" type="xsd:int"/><element name="docId" type="xsd:int"/><element name="propertyList" type="xsd:string"/><element name="relatedDoc" type="xsd:boolean"/><element name="getAttmnt" type="xsd:boolean"/><element name="getHistory" type="xsd:boolean"/><element name="getComments" type="xsd:boolean"/><element name="getNotiList" type="xsd:boolean"/></sequence></complexType></element><element name="getDocumentResponse"><complexType><sequence><element name="getDocumentReturn" type="xsd:string"/></sequence></complexType></element><element name="getObjectValues"><complexType><sequence><element name="sid" type="xsd:int"/><element name="objectHandle" type="xsd:string"/><element name="attributes" type="impl:ArrayOfString"/></sequence></complexType></element><element name="getObjectValuesResponse"><complexType><sequence><element name="getObjectValuesReturn" type="xsd:string"/></sequence></complexType></element><element name="getLrelValues"><complexType><sequence><element name="sid" type="xsd:int"/><element name="contextObject" type="xsd:string"/><element name="lrelName" type="xsd:string"/><element name="startIndex" type="xsd:int"/><element name="endIndex" type="xsd:int"/><element name="attributes" type="impl:ArrayOfString"/></sequence></complexType></element><element name="getLrelValuesResponse"><complexType><sequence><element name="getLrelValuesReturn" type="xsd:string"/></sequence></complexType></element><element name="addAssetLog"><complexType><sequence><element name="sid" type="xsd:int"/><element name="assetHandle" type="xsd:string"/><element name="contactHandle" type="xsd:string"/><element name="logText" type="xsd:string"/></sequence></complexType></element><element name="addAssetLogResponse"><complexType/></element><element name="createLrelRelationships"><complexType><sequence><element name="sid" type="xsd:int"/><element name="contextObject" type="xsd:string"/><element name="lrelName" type="xsd:string"/><element name="addObjectHandles" type="impl:ArrayOfString"/></sequence></complexType></element><element name="createLrelRelationshipsResponse"><complexType/></element><element name="addMemberToGroup"><complexType><sequence><element name="sid" type="xsd:int"/><element name="contactHandle" type="xsd:string"/><element name="groupHandle" type="xsd:string"/></sequence></complexType></element><element name="addMemberToGroupResponse"><complexType/></element><element name="attachChangeToRequest"><complexType><sequence><element name="sid" type="xsd:int"/><element name="creator" type="xsd:string"/><element name="requestHandle" type="xsd:string"/><element name="changeHandle" type="xsd:string"/><element name="changeAttrVals" type="impl:ArrayOfString"/><element name="description" type="xsd:string"/></sequence></complexType></element><element name="attachChangeToRequestResponse"><complexType><sequence><element name="attachChangeToRequestReturn" type="xsd:string"/></sequence></complexType></element><element name="callServerMethod"><complexType><sequence><element name="sid" type="xsd:int"/><element name="methodName" type="xsd:string"/><element name="factoryName" type="xsd:string"/><element name="formatList" type="xsd:string"/><element name="parameters" type="impl:ArrayOfString"/></sequence></complexType></element><element name="callServerMethodResponse"><complexType><sequence><element name="callServerMethodReturn" type="xsd:string"/></sequence></complexType></element><element name="changeStatus"><complexType><sequence><element name="sid" type="xsd:int"/><element name="creator" type="xsd:string"/><element name="objectHandle" type="xsd:string"/><element name="description" type="xsd:string"/><element name="newStatusHandle" type="xsd:string"/></sequence></complexType></element><element name="changeStatusResponse"><complexType><sequence><element name="changeStatusReturn" type="xsd:string"/></sequence></complexType></element><element name="clearNotification"><complexType><sequence><element name="sid" type="xsd:int"/><element name="lrObject" type="xsd:string"/><element name="clearBy" type="xsd:string"/></sequence></complexType></element><element name="clearNotificationResponse"><complexType><sequence><element name="clearNotificationReturn" type="xsd:int"/></sequence></complexType></element><element name="createActivityLog"><complexType><sequence><element name="sid" type="xsd:int"/><element name="creator" type="xsd:string"/><element name="objectHandle" type="xsd:string"/><element name="description" type="xsd:string"/><element name="logType" type="xsd:string"/><element name="timeSpent" type="xsd:int"/><element name="internal" type="xsd:boolean"/></sequence></complexType></element><element name="createActivityLogResponse"><complexType><sequence><element name="createActivityLogReturn" type="xsd:string"/></sequence></complexType></element><element name="createAsset"><complexType><sequence><element name="sid" type="xsd:int"/><element name="attrVals" type="impl:ArrayOfString"/><element name="attributes" type="impl:ArrayOfString"/><element name="createAssetResult" type="xsd:string"/><element name="newAssetHandle" type="xsd:string"/><element name="newExtensionHandle" type="xsd:string"/><element name="newExtensionName" type="xsd:string"/></sequence></complexType></element><element name="createAssetResponse"><complexType><sequence><element name="createAssetResult" type="xsd:string"/><element name="newAssetHandle" type="xsd:string"/><element name="newExtensionHandle" type="xsd:string"/><element name="newExtensionName" type="xsd:string"/></sequence></complexType></element><element name="createAssetParentChildRelationship"><complexType><sequence><element name="sid" type="xsd:int"/><element name="parentHandle" type="xsd:string"/><element name="childHandle" type="xsd:string"/></sequence></complexType></element><element name="createAssetParentChildRelationshipResponse"><complexType><sequence><element name="createAssetParentChildRelationshipReturn" type="xsd:string"/></sequence></complexType></element><element name="createAttachment"><complexType><sequence><element name="sid" type="xsd:int"/><element name="repositoryHandle" type="xsd:string"/><element name="objectHandle" type="xsd:string"/><element name="description" type="xsd:string"/><element name="fileName" type="xsd:string"/></sequence></complexType></element><element name="createAttachmentResponse"><complexType><sequence><element name="createAttachmentReturn" type="xsd:string"/></sequence></complexType></element><element name="removeAttachment"><complexType><sequence><element name="sid" type="xsd:int"/><element name="attHandle" type="xsd:string"/></sequence></complexType></element><element name="removeAttachmentResponse"><complexType><sequence><element name="removeAttachmentReturn" type="xsd:int"/></sequence></complexType></element><element name="createChangeOrder"><complexType><sequence><element name="sid" type="xsd:int"/><element name="creatorHandle" type="xsd:string"/><element name="attrVals" type="impl:ArrayOfString"/><element name="propertyValues" type="impl:ArrayOfString"/><element name="template" type="xsd:string"/><element name="attributes" type="impl:ArrayOfString"/><element name="newChangeHandle" type="xsd:string"/><element name="newChangeNumber" type="xsd:string"/></sequence></complexType></element><element name="createChangeOrderResponse"><complexType><sequence><element name="createChangeOrderReturn" type="xsd:string"/><element name="newChangeHandle" type="xsd:string"/><element name="newChangeNumber" type="xsd:string"/></sequence></complexType></element><element name="createIssue"><complexType><sequence><element name="sid" type="xsd:int"/><element name="creatorHandle" type="xsd:string"/><element name="attrVals" type="impl:ArrayOfString"/><element name="propertyValues" type="impl:ArrayOfString"/><element name="template" type="xsd:string"/><element name="attributes" type="impl:ArrayOfString"/><element name="newIssueHandle" type="xsd:string"/><element name="newIssueNumber" type="xsd:string"/></sequence></complexType></element><element name="createIssueResponse"><complexType><sequence><element name="createIssueReturn" type="xsd:string"/><element name="newIssueHandle" type="xsd:string"/><element name="newIssueNumber" type="xsd:string"/></sequence></complexType></element><element name="createWorkFlowTask"><complexType><sequence><element name="sid" type="xsd:int"/><element name="attrVals" type="impl:ArrayOfString"/><element name="objectHandle" type="xsd:string"/><element name="creatorHandle" type="xsd:string"/><element name="selectedWorkFlow" type="xsd:string"/><element name="taskType" type="xsd:string"/><element name="attributes" type="impl:ArrayOfString"/><element name="createWorkFlowTaskResult" type="xsd:string"/><element name="newHandle" type="xsd:string"/></sequence></complexType></element><element name="createWorkFlowTaskResponse"><complexType><sequence><element name="createWorkFlowTaskResult" type="xsd:string"/><element name="newHandle" type="xsd:string"/></sequence></complexType></element><element name="deleteWorkFlowTask"><complexType><sequence><element name="sid" type="xsd:int"/><element name="workFlowHandle" type="xsd:string"/><element name="objectHandle" type="xsd:string"/></sequence></complexType></element><element name="deleteWorkFlowTaskResponse"><complexType/></element><element name="createObject"><complexType><sequence><element name="sid" type="xsd:int"/><element name="objectType" type="xsd:string"/><element name="attrVals" type="impl:ArrayOfString"/><element name="attributes" type="impl:ArrayOfString"/><element name="createObjectResult" type="xsd:string"/><element name="newHandle" type="xsd:string"/></sequence></complexType></element><element name="createObjectResponse"><complexType><sequence><element name="createObjectResult" type="xsd:string"/><element name="newHandle" type="xsd:string"/></sequence></complexType></element><element name="createRequest"><complexType><sequence><element name="sid" type="xsd:int"/><element name="creatorHandle" type="xsd:string"/><element name="attrVals" type="impl:ArrayOfString"/><element name="propertyValues" type="impl:ArrayOfString"/><element name="template" type="xsd:string"/><element name="attributes" type="impl:ArrayOfString"/><element name="newRequestHandle" type="xsd:string"/><element name="newRequestNumber" type="xsd:string"/></sequence></complexType></element><element name="createRequestResponse"><complexType><sequence><element name="createRequestReturn" type="xsd:string"/><element name="newRequestHandle" type="xsd:string"/><element name="newRequestNumber" type="xsd:string"/></sequence></complexType></element><element name="createTicket"><complexType><sequence><element name="sid" type="xsd:int"/><element name="description" type="xsd:string"/><element name="problem_type" type="xsd:string"/><element name="userid" type="xsd:string"/><element name="asset" type="xsd:string"/><element name="duplication_id" type="xsd:string"/><element name="newTicketHandle" type="xsd:string"/><element name="newTicketNumber" type="xsd:string"/><element name="returnUserData" type="xsd:string"/><element name="returnApplicationData" type="xsd:string"/></sequence></complexType></element><element name="createTicketResponse"><complexType><sequence><element name="createTicketReturn" type="xsd:string"/><element name="newTicketHandle" type="xsd:string"/><element name="newTicketNumber" type="xsd:string"/><element name="returnUserData" type="xsd:string"/><element name="returnApplicationData" type="xsd:string"/></sequence></complexType></element><element name="createQuickTicket"><complexType><sequence><element name="sid" type="xsd:int"/><element name="customerHandle" type="xsd:string"/><element name="description" type="xsd:string"/><element name="newTicketHandle" type="xsd:string"/><element name="newTicketNumber" type="xsd:string"/></sequence></complexType></element><element name="createQuickTicketResponse"><complexType><sequence><element name="createQuickTicketReturn" type="xsd:string"/><element name="newTicketHandle" type="xsd:string"/><element name="newTicketNumber" type="xsd:string"/></sequence></complexType></element><element name="closeTicket"><complexType><sequence><element name="sid" type="xsd:int"/><element name="description" type="xsd:string"/><element name="ticketHandle" type="xsd:string"/></sequence></complexType></element><element name="closeTicketResponse"><complexType><sequence><element name="closeTicketReturn" type="xsd:string"/></sequence></complexType></element><element name="logComment"><complexType><sequence><element name="sid" type="xsd:int"/><element name="ticketHandle" type="xsd:string"/><element name="comment" type="xsd:string"/><element name="internalFlag" type="xsd:int"/></sequence></complexType></element><element name="logCommentResponse"><complexType/></element><element name="getPolicyInfo"><complexType><sequence><element name="sid" type="xsd:int"/></sequence></complexType></element><element name="getPolicyInfoResponse"><complexType><sequence><element name="getPolicyInfoReturn" type="xsd:string"/></sequence></complexType></element><element name="detachChangeFromRequest"><complexType><sequence><element name="sid" type="xsd:int"/><element name="creator" type="xsd:string"/><element name="requestHandle" type="xsd:string"/><element name="description" type="xsd:string"/></sequence></complexType></element><element name="detachChangeFromRequestResponse"><complexType><sequence><element name="detachChangeFromRequestReturn" type="xsd:string"/></sequence></complexType></element><element name="doSelect"><complexType><sequence><element name="sid" type="xsd:int"/><element name="objectType" type="xsd:string"/><element name="whereClause" type="xsd:string"/><element name="maxRows" type="xsd:int"/><element name="attributes" type="impl:ArrayOfString"/></sequence></complexType></element><element name="doSelectResponse"><complexType><sequence><element name="doSelectReturn" type="xsd:string"/></sequence></complexType></element><element name="doQuery"><complexType><sequence><element name="sid" type="xsd:int"/><element name="objectType" type="xsd:string"/><element name="whereClause" type="xsd:string"/></sequence></complexType></element><element name="doQueryResponse"><complexType><sequence><element name="doQueryReturn" type="impl:ListResult"/></sequence></complexType></element><element name="escalate"><complexType><sequence><element name="sid" type="xsd:int"/><element name="creator" type="xsd:string"/><element name="objectHandle" type="xsd:string"/><element name="description" type="xsd:string"/><element name="setAssignee" type="xsd:boolean"/><element name="newAssigneeHandle" type="xsd:string"/><element name="setGroup" type="xsd:boolean"/><element name="newGroupHandle" type="xsd:string"/><element name="setOrganization" type="xsd:boolean"/><element name="newOrganizationHandle" type="xsd:string"/><element name="setPriority" type="xsd:boolean"/><element name="newPriorityHandle" type="xsd:string"/></sequence></complexType></element><element name="escalateResponse"><complexType><sequence><element name="escalateReturn" type="xsd:string"/></sequence></complexType></element><element name="freeListHandles"><complexType><sequence><element name="sid" type="xsd:int"/><element name="handles" type="impl:ArrayOfInt"/></sequence></complexType></element><element name="freeListHandlesResponse"><complexType/></element><element name="getAssetExtensionInformation"><complexType><sequence><element name="sid" type="xsd:int"/><element name="assetHandle" type="xsd:string"/><element name="attributes" type="impl:ArrayOfString"/><element name="getAssetExtInfoResult" type="xsd:string"/><element name="extensionHandle" type="xsd:string"/><element name="extensionName" type="xsd:string"/></sequence></complexType></element><element name="getAssetExtensionInformationResponse"><complexType><sequence><element name="getAssetExtInfoResult" type="xsd:string"/><element name="extensionHandle" type="xsd:string"/><element name="extensionName" type="xsd:string"/></sequence></complexType></element><element name="getConfigurationMode"><complexType><sequence><element name="sid" type="xsd:int"/></sequence></complexType></element><element name="getConfigurationModeResponse"><complexType><sequence><element name="getConfigurationModeReturn" type="xsd:string"/></sequence></complexType></element><element name="getGroupMemberListValues"><complexType><sequence><element name="sid" type="xsd:int"/><element name="whereClause" type="xsd:string"/><element name="numToFetch" type="xsd:int"/><element name="attributes" type="impl:ArrayOfString"/></sequence></complexType></element><element name="getGroupMemberListValuesResponse"><complexType><sequence><element name="getGroupMemberListValuesReturn" type="xsd:string"/></sequence></complexType></element><element name="getObjectTypeInformation"><complexType><sequence><element name="sid" type="xsd:int"/><element name="factory" type="xsd:string"/></sequence></complexType></element><element name="getObjectTypeInformationResponse"><complexType><sequence><element name="getObjectTypeInformationReturn" type="xsd:string"/></sequence></complexType></element><element name="getHandleForUserid"><complexType><sequence><element name="sid" type="xsd:int"/><element name="userID" type="xsd:string"/></sequence></complexType></element><element name="getHandleForUseridResponse"><complexType><sequence><element name="getHandleForUseridReturn" type="xsd:string"/></sequence></complexType></element><element name="getAccessTypeForContact"><complexType><sequence><element name="sid" type="xsd:int"/><element name="contactHandle" type="xsd:string"/></sequence></complexType></element><element name="getAccessTypeForContactResponse"><complexType><sequence><element name="getAccessTypeForContactReturn" type="xsd:string"/></sequence></complexType></element><element name="getListValues"><complexType><sequence><element name="sid" type="xsd:int"/><element name="listHandle" type="xsd:int"/><element name="startIndex" type="xsd:int"/><element name="endIndex" type="xsd:int"/><element name="attributeNames" type="impl:ArrayOfString"/></sequence></complexType></element><element name="getListValuesResponse"><complexType><sequence><element name="getListValuesReturn" type="xsd:string"/></sequence></complexType></element><element name="getLrelLength"><complexType><sequence><element name="sid" type="xsd:int"/><element name="contextObject" type="xsd:string"/><element name="lrelName" type="xsd:string"/></sequence></complexType></element><element name="getLrelLengthResponse"><complexType><sequence><element name="getLrelLengthReturn" type="xsd:int"/></sequence></complexType></element><element name="getNotificationsForContact"><complexType><sequence><element name="sid" type="xsd:int"/><element name="contactHandle" type="xsd:string"/><element name="queryStatus" type="xsd:int"/></sequence></complexType></element><element name="getNotificationsForContactResponse"><complexType><sequence><element name="getNotificationsForContactReturn" type="impl:ListResult"/></sequence></complexType></element><element name="getPendingChangeTaskListForContact"><complexType><sequence><element name="sid" type="xsd:int"/><element name="contactHandle" type="xsd:string"/></sequence></complexType></element><element name="getPendingChangeTaskListForContactResponse"><complexType><sequence><element name="getPendingChangeTaskListForContactReturn" type="impl:ListResult"/></sequence></complexType></element><element name="getPendingIssueTaskListForContact"><complexType><sequence><element name="sid" type="xsd:int"/><element name="contactHandle" type="xsd:string"/></sequence></complexType></element><element name="getPendingIssueTaskListForContactResponse"><complexType><sequence><element name="getPendingIssueTaskListForContactReturn" type="impl:ListResult"/></sequence></complexType></element><element name="getPropertyInfoForCategory"><complexType><sequence><element name="sid" type="xsd:int"/><element name="categoryHandle" type="xsd:string"/><element name="attributes" type="impl:ArrayOfString"/></sequence></complexType></element><element name="getPropertyInfoForCategoryResponse"><complexType><sequence><element name="getPropertyInfoForCategoryReturn" type="xsd:string"/></sequence></complexType></element><element name="getRelatedList"><complexType><sequence><element name="sid" type="xsd:int"/><element name="objectHandle" type="xsd:string"/><element name="listName" type="xsd:string"/></sequence></complexType></element><element name="getRelatedListResponse"><complexType><sequence><element name="getRelatedListReturn" type="impl:ListResult"/></sequence></complexType></element><element name="getRelatedListValues"><complexType><sequence><element name="sid" type="xsd:int"/><element name="objectHandle" type="xsd:string"/><element name="listName" type="xsd:string"/><element name="numToFetch" type="xsd:int"/><element name="attributes" type="impl:ArrayOfString"/><element name="getRelatedListValuesResult" type="xsd:string"/><element name="numRowsFound" type="xsd:int"/></sequence></complexType></element><element name="getRelatedListValuesResponse"><complexType><sequence><element name="getRelatedListValuesResult" type="xsd:string"/><element name="numRowsFound" type="xsd:int"/></sequence></complexType></element><element name="getWorkFlowTemplates"><complexType><sequence><element name="sid" type="xsd:int"/><element name="objectHandle" type="xsd:string"/><element name="attributes" type="impl:ArrayOfString"/></sequence></complexType></element><element name="getWorkFlowTemplatesResponse"><complexType><sequence><element name="getWorkFlowTemplatesReturn" type="xsd:string"/></sequence></complexType></element><element name="getTaskListValues"><complexType><sequence><element name="sid" type="xsd:int"/><element name="objectHandle" type="xsd:string"/><element name="attributes" type="impl:ArrayOfString"/></sequence></complexType></element><element name="getTaskListValuesResponse"><complexType><sequence><element name="getTaskListValuesReturn" type="xsd:string"/></sequence></complexType></element><element name="getValidTaskTransitions"><complexType><sequence><element name="sid" type="xsd:int"/><element name="taskHandle" type="xsd:string"/><element name="attributes" type="impl:ArrayOfString"/></sequence></complexType></element><element name="getValidTaskTransitionsResponse"><complexType><sequence><element name="getValidTaskTransitionsReturn" type="xsd:string"/></sequence></complexType></element><element name="login"><complexType><sequence><element name="username" type="xsd:string"/><element name="password" type="xsd:string"/></sequence></complexType></element><element name="loginResponse"><complexType><sequence><element name="loginReturn" type="xsd:int"/></sequence></complexType></element><element name="loginService"><complexType><sequence><element name="username" type="xsd:string"/><element name="password" type="xsd:string"/><element name="policy" type="xsd:string"/></sequence></complexType></element><element name="loginServiceResponse"><complexType><sequence><element name="loginServiceReturn" type="xsd:int"/></sequence></complexType></element><element name="loginServiceManaged"><complexType><sequence><element name="policy" type="xsd:string"/><element name="encrypted_policy" type="xsd:string"/></sequence></complexType></element><element name="loginServiceManagedResponse"><complexType><sequence><element name="loginServiceManagedReturn" type="xsd:string"/></sequence></complexType></element><element name="impersonate"><complexType><sequence><element name="sid" type="xsd:int"/><element name="userid" type="xsd:string"/></sequence></complexType></element><element name="impersonateResponse"><complexType><sequence><element name="impersonateReturn" type="xsd:int"/></sequence></complexType></element><element name="logout"><complexType><sequence><element name="sid" type="xsd:int"/></sequence></complexType></element><element name="logoutResponse"><complexType/></element><element name="notifyContacts"><complexType><sequence><element name="sid" type="xsd:int"/><element name="creator" type="xsd:string"/><element name="contextObject" type="xsd:string"/><element name="messageTitle" type="xsd:string"/><element name="messageBody" type="xsd:string"/><element name="notifyLevel" type="xsd:int"/><element name="notifyees" type="impl:ArrayOfString"/><element name="internal" type="xsd:boolean"/></sequence></complexType></element><element name="notifyContactsResponse"><complexType><sequence><element name="notifyContactsReturn" type="xsd:string"/></sequence></complexType></element><element name="removeLrelRelationships"><complexType><sequence><element name="sid" type="xsd:int"/><element name="contextObject" type="xsd:string"/><element name="lrelName" type="xsd:string"/><element name="removeObjectHandles" type="impl:ArrayOfString"/></sequence></complexType></element><element name="removeLrelRelationshipsResponse"><complexType/></element><element name="removeMemberFromGroup"><complexType><sequence><element name="sid" type="xsd:int"/><element name="contactHandle" type="xsd:string"/><element name="groupHandle" type="xsd:string"/></sequence></complexType></element><element name="removeMemberFromGroupResponse"><complexType/></element><element name="serverStatus"><complexType><sequence><element name="sid" type="xsd:int"/></sequence></complexType></element><element name="serverStatusResponse"><complexType><sequence><element name="serverStatusReturn" type="xsd:int"/></sequence></complexType></element><element name="updateObject"><complexType><sequence><element name="sid" type="xsd:int"/><element name="objectHandle" type="xsd:string"/><element name="attrVals" type="impl:ArrayOfString"/><element name="attributes" type="impl:ArrayOfString"/></sequence></complexType></element><element name="updateObjectResponse"><complexType><sequence><element name="updateObjectReturn" type="xsd:string"/></sequence></complexType></element><element name="getBopsid"><complexType><sequence><element name="sid" type="xsd:int"/><element name="contact" type="xsd:string"/></sequence></complexType></element><element name="getBopsidResponse"><complexType><sequence><element name="getBopsidReturn" type="xsd:string"/></sequence></complexType></element><element name="createAttmnt"><complexType><sequence><element name="sid" type="xsd:int"/><element name="repositoryHandle" type="xsd:string"/><element name="folderId" type="xsd:int"/><element name="objectHandle" type="xsd:int"/><element name="description" type="xsd:string"/><element name="fileName" type="xsd:string"/></sequence></complexType></element><element name="createAttmntResponse"><complexType><sequence><element name="createAttmntReturn" type="xsd:string"/></sequence></complexType></element><element name="getDocumentsByIDs"><complexType><sequence><element name="sid" type="xsd:int"/><element name="docIds" type="xsd:string"/><element name="propertyList" type="xsd:string"/><element name="sortBy" type="xsd:string"/><element name="descending" type="xsd:boolean"/></sequence></complexType></element><element name="getDocumentsByIDsResponse"><complexType><sequence><element name="getDocumentsByIDsReturn" type="xsd:string"/></sequence></complexType></element><element name="doSelectKD"><complexType><sequence><element name="sid" type="xsd:int"/><element name="whereClause" type="xsd:string"/><element name="sortBy" type="xsd:string"/><element name="desc" type="xsd:boolean"/><element name="maxRows" type="xsd:int"/><element name="attributes" type="impl:ArrayOfString"/><element name="skip" type="xsd:int"/></sequence></complexType></element><element name="doSelectKDResponse"><complexType><sequence><element name="doSelectKDReturn" type="xsd:string"/></sequence></complexType></element><element name="getDecisionTrees"><complexType><sequence><element name="sid" type="xsd:int"/><element name="propertyList" type="xsd:string"/><element name="sortBy" type="xsd:string"/><element name="descending" type="xsd:boolean"/></sequence></complexType></element><element name="getDecisionTreesResponse"><complexType><sequence><element name="getDecisionTreesReturn" type="xsd:string"/></sequence></complexType></element><element name="getComments"><complexType><sequence><element name="sid" type="xsd:int"/><element name="docIds" type="xsd:string"/></sequence></complexType></element><element name="getCommentsResponse"><complexType><sequence><element name="getCommentsReturn" type="xsd:string"/></sequence></complexType></element><element name="deleteDocument"><complexType><sequence><element name="sid" type="xsd:int"/><element name="docId" type="xsd:int"/></sequence></complexType></element><element name="deleteDocumentResponse"><complexType><sequence><element name="deleteDocumentReturn" type="xsd:int"/></sequence></complexType></element><element name="getCategory"><complexType><sequence><element name="sid" type="xsd:int"/><element name="catId" type="xsd:int"/><element name="getCategoryPaths" type="xsd:boolean"/></sequence></complexType></element><element name="getCategoryResponse"><complexType><sequence><element name="getCategoryReturn" type="xsd:string"/></sequence></complexType></element><element name="getStatuses"><complexType><sequence><element name="sid" type="xsd:int"/></sequence></complexType></element><element name="getStatusesResponse"><complexType><sequence><element name="getStatusesReturn" type="xsd:string"/></sequence></complexType></element><element name="getBookmarks"><complexType><sequence><element name="sid" type="xsd:int"/><element name="contactId" type="xsd:string"/></sequence></complexType></element><element name="getBookmarksResponse"><complexType><sequence><element name="getBookmarksReturn" type="xsd:string"/></sequence></complexType></element><element name="getQuestionsAsked"><complexType><sequence><element name="sid" type="xsd:int"/><element name="resultSize" type="xsd:int"/><element name="descending" type="xsd:boolean"/></sequence></complexType></element><element name="getQuestionsAskedResponse"><complexType><sequence><element name="getQuestionsAskedReturn" type="xsd:string"/></sequence></complexType></element><element name="getPriorities"><complexType><sequence><element name="sid" type="xsd:int"/></sequence></complexType></element><element name="getPrioritiesResponse"><complexType><sequence><element name="getPrioritiesReturn" type="xsd:string"/></sequence></complexType></element><element name="getDocumentTypes"><complexType><sequence><element name="sid" type="xsd:int"/></sequence></complexType></element><element name="getDocumentTypesResponse"><complexType><sequence><element name="getDocumentTypesReturn" type="xsd:string"/></sequence></complexType></element><element name="getTemplateList"><complexType><sequence><element name="sid" type="xsd:int"/></sequence></complexType></element><element name="getTemplateListResponse"><complexType><sequence><element name="getTemplateListReturn" type="xsd:string"/></sequence></complexType></element><element name="getWorkflowTemplateList"><complexType><sequence><element name="sid" type="xsd:int"/></sequence></complexType></element><element name="getWorkflowTemplateListResponse"><complexType><sequence><element name="getWorkflowTemplateListReturn" type="xsd:string"/></sequence></complexType></element><element name="addComment"><complexType><sequence><element name="sid" type="xsd:int"/><element name="comment" type="xsd:string"/><element name="docId" type="xsd:int"/><element name="email" type="xsd:string"/><element name="username" type="xsd:string"/><element name="contactId" type="xsd:string"/></sequence></complexType></element><element name="addCommentResponse"><complexType><sequence><element name="addCommentReturn" type="xsd:string"/></sequence></complexType></element><element name="deleteComment"><complexType><sequence><element name="sid" type="xsd:int"/><element name="commentId" type="xsd:int"/></sequence></complexType></element><element name="deleteCommentResponse"><complexType><sequence><element name="deleteCommentReturn" type="xsd:int"/></sequence></complexType></element><element name="createDocument"><complexType><sequence><element name="sid" type="xsd:int"/><element name="kdAttributes" type="impl:ArrayOfString"/></sequence></complexType></element><element name="createDocumentResponse"><complexType><sequence><element name="createDocumentReturn" type="xsd:string"/></sequence></complexType></element><element name="modifyDocument"><complexType><sequence><element name="sid" type="xsd:int"/><element name="docId" type="xsd:int"/><element name="kdAttributes" type="impl:ArrayOfString"/></sequence></complexType></element><element name="modifyDocumentResponse"><complexType><sequence><element name="modifyDocumentReturn" type="xsd:string"/></sequence></complexType></element><element name="rateDocument"><complexType><sequence><element name="sid" type="xsd:int"/><element name="docId" type="xsd:int"/><element name="rating" type="xsd:int"/><element name="multiplier" type="xsd:int"/><element name="ticketPerId" type="xsd:string"/><element name="onTicketAccept" type="xsd:boolean"/><element name="solveUserProblem" type="xsd:boolean"/><element name="isDefault" type="xsd:boolean"/></sequence></complexType></element><element name="rateDocumentResponse"><complexType><sequence><element name="rateDocumentReturn" type="xsd:string"/></sequence></complexType></element><element name="findContacts"><complexType><sequence><element name="sid" type="xsd:int"/><element name="userName" type="xsd:string"/><element name="lastName" type="xsd:string"/><element name="firstName" type="xsd:string"/><element name="email" type="xsd:string"/><element name="accessType" type="xsd:string"/><element name="inactiveFlag" type="xsd:int"/></sequence></complexType></element><element name="findContactsResponse"><complexType><sequence><element name="findContactsReturn" type="xsd:string"/></sequence></complexType></element><element name="getPermissionGroups"><complexType><sequence><element name="sid" type="xsd:int"/><element name="groupId" type="xsd:int"/></sequence></complexType></element><element name="getPermissionGroupsResponse"><complexType><sequence><element name="getPermissionGroupsReturn" type="xsd:string"/></sequence></complexType></element><element name="getContact"><complexType><sequence><element name="sid" type="xsd:int"/><element name="contactId" type="xsd:string"/></sequence></complexType></element><element name="getContactResponse"><complexType><sequence><element name="getContactReturn" type="xsd:string"/></sequence></complexType></element><element name="addBookmark"><complexType><sequence><element name="sid" type="xsd:int"/><element name="contactId" type="xsd:string"/><element name="docId" type="xsd:int"/></sequence></complexType></element><element name="addBookmarkResponse"><complexType><sequence><element name="addBookmarkReturn" type="xsd:string"/></sequence></complexType></element><element name="updateRating"><complexType><sequence><element name="sid" type="xsd:int"/><element name="buId" type="xsd:int"/><element name="rate" type="xsd:int"/></sequence></complexType></element><element name="updateRatingResponse"><complexType><sequence><element name="updateRatingReturn" type="xsd:string"/></sequence></complexType></element><element name="getFolderList"><complexType><sequence><element name="sid" type="xsd:int"/><element name="parentFolderId" type="xsd:int"/><element name="repId" type="xsd:int"/></sequence></complexType></element><element name="getFolderListResponse"><complexType><sequence><element name="getFolderListReturn" type="xsd:string"/></sequence></complexType></element><element name="getFolderInfo"><complexType><sequence><element name="sid" type="xsd:int"/><element name="folderId" type="xsd:int"/></sequence></complexType></element><element name="getFolderInfoResponse"><complexType><sequence><element name="getFolderInfoReturn" type="xsd:string"/></sequence></complexType></element><element name="getAttmntList"><complexType><sequence><element name="sid" type="xsd:int"/><element name="folderId" type="xsd:int"/><element name="repId" type="xsd:int"/></sequence></complexType></element><element name="getAttmntListResponse"><complexType><sequence><element name="getAttmntListReturn" type="xsd:string"/></sequence></complexType></element><element name="getAttmntInfo"><complexType><sequence><element name="sid" type="xsd:int"/><element name="attmntId" type="xsd:int"/></sequence></complexType></element><element name="getAttmntInfoResponse"><complexType><sequence><element name="getAttmntInfoReturn" type="xsd:string"/></sequence></complexType></element><element name="getRepositoryInfo"><complexType><sequence><element name="sid" type="xsd:int"/><element name="repositoryId" type="xsd:int"/></sequence></complexType></element><element name="getRepositoryInfoResponse"><complexType><sequence><element name="getRepositoryInfoReturn" type="xsd:string"/></sequence></complexType></element><element name="createFolder"><complexType><sequence><element name="sid" type="xsd:int"/><element name="parentFolderId" type="xsd:int"/><element name="repId" type="xsd:int"/><element name="folderType" type="xsd:int"/><element name="description" type="xsd:string"/><element name="folderName" type="xsd:string"/></sequence></complexType></element><element name="createFolderResponse"><complexType><sequence><element name="createFolderReturn" type="xsd:string"/></sequence></complexType></element><element name="faq"><complexType><sequence><element name="sid" type="xsd:int"/><element name="categoryIds" type="xsd:string"/><element name="resultSize" type="xsd:int"/><element name="propertyList" type="xsd:string"/><element name="sortBy" type="xsd:string"/><element name="descending" type="xsd:boolean"/><element name="whereClause" type="xsd:string"/><element name="maxDocIDs" type="xsd:int"/></sequence></complexType></element><element name="faqResponse"><complexType><sequence><element name="faqReturn" type="xsd:string"/></sequence></complexType></element><element name="attmntFolderLinkCount"><complexType><sequence><element name="sid" type="xsd:int"/><element name="folderId" type="xsd:int"/></sequence></complexType></element><element name="attmntFolderLinkCountResponse"><complexType><sequence><element name="attmntFolderLinkCountReturn" type="xsd:int"/></sequence></complexType></element><element name="attachURLLink"><complexType><sequence><element name="sid" type="xsd:int"/><element name="docId" type="xsd:int"/><element name="url" type="xsd:string"/><element name="attmntName" type="xsd:string"/><element name="description" type="xsd:string"/></sequence></complexType></element><element name="attachURLLinkResponse"><complexType><sequence><element name="attachURLLinkReturn" type="xsd:int"/></sequence></complexType></element><element name="deleteBookmark"><complexType><sequence><element name="sid" type="xsd:int"/><element name="contactId" type="xsd:string"/><element name="docId" type="xsd:int"/></sequence></complexType></element><element name="deleteBookmarkResponse"><complexType><sequence><element name="deleteBookmarkReturn" type="xsd:int"/></sequence></complexType></element><element name="getKDListPerAttmnt"><complexType><sequence><element name="sid" type="xsd:int"/><element name="attmntId" type="xsd:int"/></sequence></complexType></element><element name="getKDListPerAttmntResponse"><complexType><sequence><element name="getKDListPerAttmntReturn" type="xsd:string"/></sequence></complexType></element><element name="getAttmntListPerKD"><complexType><sequence><element name="sid" type="xsd:int"/><element name="docId" type="xsd:int"/></sequence></complexType></element><element name="getAttmntListPerKDResponse"><complexType><sequence><element name="getAttmntListPerKDReturn" type="xsd:string"/></sequence></complexType></element><element name="isAttmntLinkedKD"><complexType><sequence><element name="sid" type="xsd:int"/><element name="attmntId" type="xsd:int"/></sequence></complexType></element><element name="isAttmntLinkedKDResponse"><complexType><sequence><element name="isAttmntLinkedKDReturn" type="xsd:int"/></sequence></complexType></element></schema></wsdl:types>
+  <wsdl:message name="createAssetRequest">
+    <wsdl:part element="impl:createAsset" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getDecisionTreesRequest">
+    <wsdl:part element="impl:getDecisionTrees" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="callServerMethodResponse">
+    <wsdl:part element="impl:callServerMethodResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="escalateResponse">
+    <wsdl:part element="impl:escalateResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getDocumentRequest">
+    <wsdl:part element="impl:getDocument" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createActivityLogResponse">
+    <wsdl:part element="impl:createActivityLogResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="loginResponse">
+    <wsdl:part element="impl:loginResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="rateDocumentRequest">
+    <wsdl:part element="impl:rateDocument" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="findContactsRequest">
+    <wsdl:part element="impl:findContacts" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="freeListHandlesRequest">
+    <wsdl:part element="impl:freeListHandles" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="doQueryResponse">
+    <wsdl:part element="impl:doQueryResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="clearNotificationResponse">
+    <wsdl:part element="impl:clearNotificationResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="transferRequest">
+    <wsdl:part element="impl:transfer" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getContactResponse">
+    <wsdl:part element="impl:getContactResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="deleteBookmarkResponse">
+    <wsdl:part element="impl:deleteBookmarkResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getRelatedListRequest">
+    <wsdl:part element="impl:getRelatedList" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getAttmntInfoResponse">
+    <wsdl:part element="impl:getAttmntInfoResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="updateObjectRequest">
+    <wsdl:part element="impl:updateObject" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getNotificationsForContactResponse">
+    <wsdl:part element="impl:getNotificationsForContactResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="removeLrelRelationshipsResponse">
+    <wsdl:part element="impl:removeLrelRelationshipsResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="removeAttachmentRequest">
+    <wsdl:part element="impl:removeAttachment" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="impersonateResponse">
+    <wsdl:part element="impl:impersonateResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createTicketRequest">
+    <wsdl:part element="impl:createTicket" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="notifyContactsResponse">
+    <wsdl:part element="impl:notifyContactsResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getValidTaskTransitionsResponse">
+    <wsdl:part element="impl:getValidTaskTransitionsResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="loginServiceManagedResponse">
+    <wsdl:part element="impl:loginServiceManagedResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="addAssetLogResponse">
+    <wsdl:part element="impl:addAssetLogResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getBookmarksResponse">
+    <wsdl:part element="impl:getBookmarksResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="escalateRequest">
+    <wsdl:part element="impl:escalate" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="attachChangeToRequestResponse">
+    <wsdl:part element="impl:attachChangeToRequestResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="deleteDocumentRequest">
+    <wsdl:part element="impl:deleteDocument" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="doSelectKDResponse">
+    <wsdl:part element="impl:doSelectKDResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getValidTaskTransitionsRequest">
+    <wsdl:part element="impl:getValidTaskTransitions" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="addCommentRequest">
+    <wsdl:part element="impl:addComment" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getObjectValuesRequest">
+    <wsdl:part element="impl:getObjectValues" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="deleteWorkFlowTaskRequest">
+    <wsdl:part element="impl:deleteWorkFlowTask" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="logoutRequest">
+    <wsdl:part element="impl:logout" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createObjectResponse">
+    <wsdl:part element="impl:createObjectResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getAttmntInfoRequest">
+    <wsdl:part element="impl:getAttmntInfo" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createTicketResponse">
+    <wsdl:part element="impl:createTicketResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getStatusesResponse">
+    <wsdl:part element="impl:getStatusesResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="doQueryRequest">
+    <wsdl:part element="impl:doQuery" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="searchResponse">
+    <wsdl:part element="impl:searchResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createQuickTicketRequest">
+    <wsdl:part element="impl:createQuickTicket" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="changeStatusRequest">
+    <wsdl:part element="impl:changeStatus" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="faqResponse">
+    <wsdl:part element="impl:faqResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getPropertyInfoForCategoryRequest">
+    <wsdl:part element="impl:getPropertyInfoForCategory" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createIssueRequest">
+    <wsdl:part element="impl:createIssue" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="faqRequest">
+    <wsdl:part element="impl:faq" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getRelatedListValuesRequest">
+    <wsdl:part element="impl:getRelatedListValues" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getAssetExtensionInformationResponse">
+    <wsdl:part element="impl:getAssetExtensionInformationResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="deleteCommentResponse">
+    <wsdl:part element="impl:deleteCommentResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="closeTicketResponse">
+    <wsdl:part element="impl:closeTicketResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getPropertyInfoForCategoryResponse">
+    <wsdl:part element="impl:getPropertyInfoForCategoryResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="updateObjectResponse">
+    <wsdl:part element="impl:updateObjectResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="addBookmarkRequest">
+    <wsdl:part element="impl:addBookmark" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="serverStatusRequest">
+    <wsdl:part element="impl:serverStatus" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="closeTicketRequest">
+    <wsdl:part element="impl:closeTicket" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getLrelValuesResponse">
+    <wsdl:part element="impl:getLrelValuesResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="isAttmntLinkedKDRequest">
+    <wsdl:part element="impl:isAttmntLinkedKD" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getObjectTypeInformationRequest">
+    <wsdl:part element="impl:getObjectTypeInformation" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createFolderRequest">
+    <wsdl:part element="impl:createFolder" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="detachChangeFromRequestResponse">
+    <wsdl:part element="impl:detachChangeFromRequestResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="attmntFolderLinkCountResponse">
+    <wsdl:part element="impl:attmntFolderLinkCountResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getAttmntListRequest">
+    <wsdl:part element="impl:getAttmntList" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="attachURLLinkResponse">
+    <wsdl:part element="impl:attachURLLinkResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getPolicyInfoResponse">
+    <wsdl:part element="impl:getPolicyInfoResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="deleteWorkFlowTaskResponse">
+    <wsdl:part element="impl:deleteWorkFlowTaskResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getCommentsResponse">
+    <wsdl:part element="impl:getCommentsResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getListValuesResponse">
+    <wsdl:part element="impl:getListValuesResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="serverStatusResponse">
+    <wsdl:part element="impl:serverStatusResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getGroupMemberListValuesResponse">
+    <wsdl:part element="impl:getGroupMemberListValuesResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="loginServiceResponse">
+    <wsdl:part element="impl:loginServiceResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="doSelectResponse">
+    <wsdl:part element="impl:doSelectResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getObjectValuesResponse">
+    <wsdl:part element="impl:getObjectValuesResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getCategoryResponse">
+    <wsdl:part element="impl:getCategoryResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getRepositoryInfoResponse">
+    <wsdl:part element="impl:getRepositoryInfoResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="removeLrelRelationshipsRequest">
+    <wsdl:part element="impl:removeLrelRelationships" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="callServerMethodRequest">
+    <wsdl:part element="impl:callServerMethod" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createAttmntRequest">
+    <wsdl:part element="impl:createAttmnt" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createLrelRelationshipsRequest">
+    <wsdl:part element="impl:createLrelRelationships" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="logCommentResponse">
+    <wsdl:part element="impl:logCommentResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="loginRequest">
+    <wsdl:part element="impl:login" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getRepositoryInfoRequest">
+    <wsdl:part element="impl:getRepositoryInfo" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createAssetResponse">
+    <wsdl:part element="impl:createAssetResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createChangeOrderRequest">
+    <wsdl:part element="impl:createChangeOrder" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getWorkflowTemplateListResponse">
+    <wsdl:part element="impl:getWorkflowTemplateListResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="addMemberToGroupRequest">
+    <wsdl:part element="impl:addMemberToGroup" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createWorkFlowTaskRequest">
+    <wsdl:part element="impl:createWorkFlowTask" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getFolderInfoResponse">
+    <wsdl:part element="impl:getFolderInfoResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getAttmntListResponse">
+    <wsdl:part element="impl:getAttmntListResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="doSelectRequest">
+    <wsdl:part element="impl:doSelect" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getPendingChangeTaskListForContactRequest">
+    <wsdl:part element="impl:getPendingChangeTaskListForContact" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getDocumentsByIDsRequest">
+    <wsdl:part element="impl:getDocumentsByIDs" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="changeStatusResponse">
+    <wsdl:part element="impl:changeStatusResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="isAttmntLinkedKDResponse">
+    <wsdl:part element="impl:isAttmntLinkedKDResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getAssetExtensionInformationRequest">
+    <wsdl:part element="impl:getAssetExtensionInformation" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getQuestionsAskedRequest">
+    <wsdl:part element="impl:getQuestionsAsked" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="doSelectKDRequest">
+    <wsdl:part element="impl:doSelectKD" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getAccessTypeForContactRequest">
+    <wsdl:part element="impl:getAccessTypeForContact" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="deleteBookmarkRequest">
+    <wsdl:part element="impl:deleteBookmark" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getBookmarksRequest">
+    <wsdl:part element="impl:getBookmarks" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getFolderListResponse">
+    <wsdl:part element="impl:getFolderListResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="detachChangeFromRequestRequest">
+    <wsdl:part element="impl:detachChangeFromRequest" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="addAssetLogRequest">
+    <wsdl:part element="impl:addAssetLog" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getPrioritiesResponse">
+    <wsdl:part element="impl:getPrioritiesResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getAccessTypeForContactResponse">
+    <wsdl:part element="impl:getAccessTypeForContactResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getPendingIssueTaskListForContactRequest">
+    <wsdl:part element="impl:getPendingIssueTaskListForContact" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="addMemberToGroupResponse">
+    <wsdl:part element="impl:addMemberToGroupResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getDocumentResponse">
+    <wsdl:part element="impl:getDocumentResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getObjectTypeInformationResponse">
+    <wsdl:part element="impl:getObjectTypeInformationResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getRelatedListValuesResponse">
+    <wsdl:part element="impl:getRelatedListValuesResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="rateDocumentResponse">
+    <wsdl:part element="impl:rateDocumentResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getPendingChangeTaskListForContactResponse">
+    <wsdl:part element="impl:getPendingChangeTaskListForContactResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getHandleForUseridResponse">
+    <wsdl:part element="impl:getHandleForUseridResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="findContactsResponse">
+    <wsdl:part element="impl:findContactsResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="addCommentResponse">
+    <wsdl:part element="impl:addCommentResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="updateRatingResponse">
+    <wsdl:part element="impl:updateRatingResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="attachChangeToRequestRequest">
+    <wsdl:part element="impl:attachChangeToRequest" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="attmntFolderLinkCountRequest">
+    <wsdl:part element="impl:attmntFolderLinkCount" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getLrelLengthResponse">
+    <wsdl:part element="impl:getLrelLengthResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createObjectRequest">
+    <wsdl:part element="impl:createObject" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="removeMemberFromGroupResponse">
+    <wsdl:part element="impl:removeMemberFromGroupResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createAttmntResponse">
+    <wsdl:part element="impl:createAttmntResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createAssetParentChildRelationshipRequest">
+    <wsdl:part element="impl:createAssetParentChildRelationship" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getDocumentTypesRequest">
+    <wsdl:part element="impl:getDocumentTypes" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createIssueResponse">
+    <wsdl:part element="impl:createIssueResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="logCommentRequest">
+    <wsdl:part element="impl:logComment" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getDecisionTreesResponse">
+    <wsdl:part element="impl:getDecisionTreesResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="transferResponse">
+    <wsdl:part element="impl:transferResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getNotificationsForContactRequest">
+    <wsdl:part element="impl:getNotificationsForContact" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getQuestionsAskedResponse">
+    <wsdl:part element="impl:getQuestionsAskedResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="logoutResponse">
+    <wsdl:part element="impl:logoutResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getDocumentsByIDsResponse">
+    <wsdl:part element="impl:getDocumentsByIDsResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createLrelRelationshipsResponse">
+    <wsdl:part element="impl:createLrelRelationshipsResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="modifyDocumentRequest">
+    <wsdl:part element="impl:modifyDocument" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="addBookmarkResponse">
+    <wsdl:part element="impl:addBookmarkResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getPendingIssueTaskListForContactResponse">
+    <wsdl:part element="impl:getPendingIssueTaskListForContactResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getTaskListValuesResponse">
+    <wsdl:part element="impl:getTaskListValuesResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getTaskListValuesRequest">
+    <wsdl:part element="impl:getTaskListValues" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createFolderResponse">
+    <wsdl:part element="impl:createFolderResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createChangeOrderResponse">
+    <wsdl:part element="impl:createChangeOrderResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="notifyContactsRequest">
+    <wsdl:part element="impl:notifyContacts" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getDocumentTypesResponse">
+    <wsdl:part element="impl:getDocumentTypesResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getBopsidResponse">
+    <wsdl:part element="impl:getBopsidResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getTemplateListRequest">
+    <wsdl:part element="impl:getTemplateList" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createActivityLogRequest">
+    <wsdl:part element="impl:createActivityLog" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getStatusesRequest">
+    <wsdl:part element="impl:getStatuses" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getContactRequest">
+    <wsdl:part element="impl:getContact" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getRelatedListResponse">
+    <wsdl:part element="impl:getRelatedListResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="clearNotificationRequest">
+    <wsdl:part element="impl:clearNotification" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getLrelValuesRequest">
+    <wsdl:part element="impl:getLrelValues" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="removeMemberFromGroupRequest">
+    <wsdl:part element="impl:removeMemberFromGroup" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="deleteDocumentResponse">
+    <wsdl:part element="impl:deleteDocumentResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createAssetParentChildRelationshipResponse">
+    <wsdl:part element="impl:createAssetParentChildRelationshipResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getKDListPerAttmntResponse">
+    <wsdl:part element="impl:getKDListPerAttmntResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getPermissionGroupsRequest">
+    <wsdl:part element="impl:getPermissionGroups" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="removeAttachmentResponse">
+    <wsdl:part element="impl:removeAttachmentResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createAttachmentResponse">
+    <wsdl:part element="impl:createAttachmentResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getWorkFlowTemplatesRequest">
+    <wsdl:part element="impl:getWorkFlowTemplates" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getFolderListRequest">
+    <wsdl:part element="impl:getFolderList" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getAttmntListPerKDRequest">
+    <wsdl:part element="impl:getAttmntListPerKD" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getCommentsRequest">
+    <wsdl:part element="impl:getComments" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getConfigurationModeResponse">
+    <wsdl:part element="impl:getConfigurationModeResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createDocumentResponse">
+    <wsdl:part element="impl:createDocumentResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getCategoryRequest">
+    <wsdl:part element="impl:getCategory" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="updateRatingRequest">
+    <wsdl:part element="impl:updateRating" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getLrelLengthRequest">
+    <wsdl:part element="impl:getLrelLength" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="loginServiceManagedRequest">
+    <wsdl:part element="impl:loginServiceManaged" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getListValuesRequest">
+    <wsdl:part element="impl:getListValues" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="attachURLLinkRequest">
+    <wsdl:part element="impl:attachURLLink" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createAttachmentRequest">
+    <wsdl:part element="impl:createAttachment" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createRequestRequest">
+    <wsdl:part element="impl:createRequest" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createDocumentRequest">
+    <wsdl:part element="impl:createDocument" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getPermissionGroupsResponse">
+    <wsdl:part element="impl:getPermissionGroupsResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="freeListHandlesResponse">
+    <wsdl:part element="impl:freeListHandlesResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createRequestResponse">
+    <wsdl:part element="impl:createRequestResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getTemplateListResponse">
+    <wsdl:part element="impl:getTemplateListResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getHandleForUseridRequest">
+    <wsdl:part element="impl:getHandleForUserid" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getGroupMemberListValuesRequest">
+    <wsdl:part element="impl:getGroupMemberListValues" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getConfigurationModeRequest">
+    <wsdl:part element="impl:getConfigurationMode" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getWorkFlowTemplatesResponse">
+    <wsdl:part element="impl:getWorkFlowTemplatesResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="modifyDocumentResponse">
+    <wsdl:part element="impl:modifyDocumentResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="searchRequest">
+    <wsdl:part element="impl:search" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getKDListPerAttmntRequest">
+    <wsdl:part element="impl:getKDListPerAttmnt" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getFolderInfoRequest">
+    <wsdl:part element="impl:getFolderInfo" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="loginServiceRequest">
+    <wsdl:part element="impl:loginService" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getBopsidRequest">
+    <wsdl:part element="impl:getBopsid" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getWorkflowTemplateListRequest">
+    <wsdl:part element="impl:getWorkflowTemplateList" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getPrioritiesRequest">
+    <wsdl:part element="impl:getPriorities" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="deleteCommentRequest">
+    <wsdl:part element="impl:deleteComment" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getAttmntListPerKDResponse">
+    <wsdl:part element="impl:getAttmntListPerKDResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createWorkFlowTaskResponse">
+    <wsdl:part element="impl:createWorkFlowTaskResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="impersonateRequest">
+    <wsdl:part element="impl:impersonate" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="createQuickTicketResponse">
+    <wsdl:part element="impl:createQuickTicketResponse" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="getPolicyInfoRequest">
+    <wsdl:part element="impl:getPolicyInfo" name="parameters"/>
+  </wsdl:message>
+  <wsdl:portType name="USD_WebServiceSoap">
+    <wsdl:operation name="transfer" parameterOrder="">
+      <wsdl:input message="impl:transferRequest" name="transferRequest"/>
+      <wsdl:output message="impl:transferResponse" name="transferResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="search" parameterOrder="">
+      <wsdl:input message="impl:searchRequest" name="searchRequest"/>
+      <wsdl:output message="impl:searchResponse" name="searchResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getDocument" parameterOrder="">
+      <wsdl:input message="impl:getDocumentRequest" name="getDocumentRequest"/>
+      <wsdl:output message="impl:getDocumentResponse" name="getDocumentResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getObjectValues" parameterOrder="">
+      <wsdl:input message="impl:getObjectValuesRequest" name="getObjectValuesRequest"/>
+      <wsdl:output message="impl:getObjectValuesResponse" name="getObjectValuesResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getLrelValues" parameterOrder="">
+      <wsdl:input message="impl:getLrelValuesRequest" name="getLrelValuesRequest"/>
+      <wsdl:output message="impl:getLrelValuesResponse" name="getLrelValuesResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="addAssetLog" parameterOrder="">
+      <wsdl:input message="impl:addAssetLogRequest" name="addAssetLogRequest"/>
+      <wsdl:output message="impl:addAssetLogResponse" name="addAssetLogResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="createLrelRelationships" parameterOrder="">
+      <wsdl:input message="impl:createLrelRelationshipsRequest" name="createLrelRelationshipsRequest"/>
+      <wsdl:output message="impl:createLrelRelationshipsResponse" name="createLrelRelationshipsResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="addMemberToGroup" parameterOrder="">
+      <wsdl:input message="impl:addMemberToGroupRequest" name="addMemberToGroupRequest"/>
+      <wsdl:output message="impl:addMemberToGroupResponse" name="addMemberToGroupResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="attachChangeToRequest" parameterOrder="">
+      <wsdl:input message="impl:attachChangeToRequestRequest" name="attachChangeToRequestRequest"/>
+      <wsdl:output message="impl:attachChangeToRequestResponse" name="attachChangeToRequestResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="callServerMethod" parameterOrder="">
+      <wsdl:input message="impl:callServerMethodRequest" name="callServerMethodRequest"/>
+      <wsdl:output message="impl:callServerMethodResponse" name="callServerMethodResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="changeStatus" parameterOrder="">
+      <wsdl:input message="impl:changeStatusRequest" name="changeStatusRequest"/>
+      <wsdl:output message="impl:changeStatusResponse" name="changeStatusResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="clearNotification" parameterOrder="">
+      <wsdl:input message="impl:clearNotificationRequest" name="clearNotificationRequest"/>
+      <wsdl:output message="impl:clearNotificationResponse" name="clearNotificationResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="createActivityLog" parameterOrder="">
+      <wsdl:input message="impl:createActivityLogRequest" name="createActivityLogRequest"/>
+      <wsdl:output message="impl:createActivityLogResponse" name="createActivityLogResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="createAsset" parameterOrder="">
+      <wsdl:input message="impl:createAssetRequest" name="createAssetRequest"/>
+      <wsdl:output message="impl:createAssetResponse" name="createAssetResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="createAssetParentChildRelationship" parameterOrder="">
+      <wsdl:input message="impl:createAssetParentChildRelationshipRequest" name="createAssetParentChildRelationshipRequest"/>
+      <wsdl:output message="impl:createAssetParentChildRelationshipResponse" name="createAssetParentChildRelationshipResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="createAttachment" parameterOrder="">
+      <wsdl:input message="impl:createAttachmentRequest" name="createAttachmentRequest"/>
+      <wsdl:output message="impl:createAttachmentResponse" name="createAttachmentResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="removeAttachment" parameterOrder="">
+      <wsdl:input message="impl:removeAttachmentRequest" name="removeAttachmentRequest"/>
+      <wsdl:output message="impl:removeAttachmentResponse" name="removeAttachmentResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="createChangeOrder" parameterOrder="">
+      <wsdl:input message="impl:createChangeOrderRequest" name="createChangeOrderRequest"/>
+      <wsdl:output message="impl:createChangeOrderResponse" name="createChangeOrderResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="createIssue" parameterOrder="">
+      <wsdl:input message="impl:createIssueRequest" name="createIssueRequest"/>
+      <wsdl:output message="impl:createIssueResponse" name="createIssueResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="createWorkFlowTask" parameterOrder="">
+      <wsdl:input message="impl:createWorkFlowTaskRequest" name="createWorkFlowTaskRequest"/>
+      <wsdl:output message="impl:createWorkFlowTaskResponse" name="createWorkFlowTaskResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="deleteWorkFlowTask" parameterOrder="">
+      <wsdl:input message="impl:deleteWorkFlowTaskRequest" name="deleteWorkFlowTaskRequest"/>
+      <wsdl:output message="impl:deleteWorkFlowTaskResponse" name="deleteWorkFlowTaskResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="createObject" parameterOrder="">
+      <wsdl:input message="impl:createObjectRequest" name="createObjectRequest"/>
+      <wsdl:output message="impl:createObjectResponse" name="createObjectResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="createRequest" parameterOrder="">
+      <wsdl:input message="impl:createRequestRequest" name="createRequestRequest"/>
+      <wsdl:output message="impl:createRequestResponse" name="createRequestResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="createTicket" parameterOrder="">
+      <wsdl:input message="impl:createTicketRequest" name="createTicketRequest"/>
+      <wsdl:output message="impl:createTicketResponse" name="createTicketResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="createQuickTicket" parameterOrder="">
+      <wsdl:input message="impl:createQuickTicketRequest" name="createQuickTicketRequest"/>
+      <wsdl:output message="impl:createQuickTicketResponse" name="createQuickTicketResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="closeTicket" parameterOrder="">
+      <wsdl:input message="impl:closeTicketRequest" name="closeTicketRequest"/>
+      <wsdl:output message="impl:closeTicketResponse" name="closeTicketResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="logComment" parameterOrder="">
+      <wsdl:input message="impl:logCommentRequest" name="logCommentRequest"/>
+      <wsdl:output message="impl:logCommentResponse" name="logCommentResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getPolicyInfo" parameterOrder="">
+      <wsdl:input message="impl:getPolicyInfoRequest" name="getPolicyInfoRequest"/>
+      <wsdl:output message="impl:getPolicyInfoResponse" name="getPolicyInfoResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="detachChangeFromRequest" parameterOrder="">
+      <wsdl:input message="impl:detachChangeFromRequestRequest" name="detachChangeFromRequestRequest"/>
+      <wsdl:output message="impl:detachChangeFromRequestResponse" name="detachChangeFromRequestResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="doSelect" parameterOrder="">
+      <wsdl:input message="impl:doSelectRequest" name="doSelectRequest"/>
+      <wsdl:output message="impl:doSelectResponse" name="doSelectResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="doQuery" parameterOrder="">
+      <wsdl:input message="impl:doQueryRequest" name="doQueryRequest"/>
+      <wsdl:output message="impl:doQueryResponse" name="doQueryResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="escalate" parameterOrder="">
+      <wsdl:input message="impl:escalateRequest" name="escalateRequest"/>
+      <wsdl:output message="impl:escalateResponse" name="escalateResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="freeListHandles" parameterOrder="">
+      <wsdl:input message="impl:freeListHandlesRequest" name="freeListHandlesRequest"/>
+      <wsdl:output message="impl:freeListHandlesResponse" name="freeListHandlesResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getAssetExtensionInformation" parameterOrder="">
+      <wsdl:input message="impl:getAssetExtensionInformationRequest" name="getAssetExtensionInformationRequest"/>
+      <wsdl:output message="impl:getAssetExtensionInformationResponse" name="getAssetExtensionInformationResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getConfigurationMode" parameterOrder="">
+      <wsdl:input message="impl:getConfigurationModeRequest" name="getConfigurationModeRequest"/>
+      <wsdl:output message="impl:getConfigurationModeResponse" name="getConfigurationModeResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getGroupMemberListValues" parameterOrder="">
+      <wsdl:input message="impl:getGroupMemberListValuesRequest" name="getGroupMemberListValuesRequest"/>
+      <wsdl:output message="impl:getGroupMemberListValuesResponse" name="getGroupMemberListValuesResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getObjectTypeInformation" parameterOrder="">
+      <wsdl:input message="impl:getObjectTypeInformationRequest" name="getObjectTypeInformationRequest"/>
+      <wsdl:output message="impl:getObjectTypeInformationResponse" name="getObjectTypeInformationResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getHandleForUserid" parameterOrder="">
+      <wsdl:input message="impl:getHandleForUseridRequest" name="getHandleForUseridRequest"/>
+      <wsdl:output message="impl:getHandleForUseridResponse" name="getHandleForUseridResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getAccessTypeForContact" parameterOrder="">
+      <wsdl:input message="impl:getAccessTypeForContactRequest" name="getAccessTypeForContactRequest"/>
+      <wsdl:output message="impl:getAccessTypeForContactResponse" name="getAccessTypeForContactResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getListValues" parameterOrder="">
+      <wsdl:input message="impl:getListValuesRequest" name="getListValuesRequest"/>
+      <wsdl:output message="impl:getListValuesResponse" name="getListValuesResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getLrelLength" parameterOrder="">
+      <wsdl:input message="impl:getLrelLengthRequest" name="getLrelLengthRequest"/>
+      <wsdl:output message="impl:getLrelLengthResponse" name="getLrelLengthResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getNotificationsForContact" parameterOrder="">
+      <wsdl:input message="impl:getNotificationsForContactRequest" name="getNotificationsForContactRequest"/>
+      <wsdl:output message="impl:getNotificationsForContactResponse" name="getNotificationsForContactResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getPendingChangeTaskListForContact" parameterOrder="">
+      <wsdl:input message="impl:getPendingChangeTaskListForContactRequest" name="getPendingChangeTaskListForContactRequest"/>
+      <wsdl:output message="impl:getPendingChangeTaskListForContactResponse" name="getPendingChangeTaskListForContactResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getPendingIssueTaskListForContact" parameterOrder="">
+      <wsdl:input message="impl:getPendingIssueTaskListForContactRequest" name="getPendingIssueTaskListForContactRequest"/>
+      <wsdl:output message="impl:getPendingIssueTaskListForContactResponse" name="getPendingIssueTaskListForContactResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getPropertyInfoForCategory" parameterOrder="">
+      <wsdl:input message="impl:getPropertyInfoForCategoryRequest" name="getPropertyInfoForCategoryRequest"/>
+      <wsdl:output message="impl:getPropertyInfoForCategoryResponse" name="getPropertyInfoForCategoryResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getRelatedList" parameterOrder="">
+      <wsdl:input message="impl:getRelatedListRequest" name="getRelatedListRequest"/>
+      <wsdl:output message="impl:getRelatedListResponse" name="getRelatedListResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getRelatedListValues" parameterOrder="">
+      <wsdl:input message="impl:getRelatedListValuesRequest" name="getRelatedListValuesRequest"/>
+      <wsdl:output message="impl:getRelatedListValuesResponse" name="getRelatedListValuesResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getWorkFlowTemplates" parameterOrder="">
+      <wsdl:input message="impl:getWorkFlowTemplatesRequest" name="getWorkFlowTemplatesRequest"/>
+      <wsdl:output message="impl:getWorkFlowTemplatesResponse" name="getWorkFlowTemplatesResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getTaskListValues" parameterOrder="">
+      <wsdl:input message="impl:getTaskListValuesRequest" name="getTaskListValuesRequest"/>
+      <wsdl:output message="impl:getTaskListValuesResponse" name="getTaskListValuesResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getValidTaskTransitions" parameterOrder="">
+      <wsdl:input message="impl:getValidTaskTransitionsRequest" name="getValidTaskTransitionsRequest"/>
+      <wsdl:output message="impl:getValidTaskTransitionsResponse" name="getValidTaskTransitionsResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="login" parameterOrder="">
+      <wsdl:input message="impl:loginRequest" name="loginRequest"/>
+      <wsdl:output message="impl:loginResponse" name="loginResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="loginService" parameterOrder="">
+      <wsdl:input message="impl:loginServiceRequest" name="loginServiceRequest"/>
+      <wsdl:output message="impl:loginServiceResponse" name="loginServiceResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="loginServiceManaged" parameterOrder="">
+      <wsdl:input message="impl:loginServiceManagedRequest" name="loginServiceManagedRequest"/>
+      <wsdl:output message="impl:loginServiceManagedResponse" name="loginServiceManagedResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="impersonate" parameterOrder="">
+      <wsdl:input message="impl:impersonateRequest" name="impersonateRequest"/>
+      <wsdl:output message="impl:impersonateResponse" name="impersonateResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="logout" parameterOrder="">
+      <wsdl:input message="impl:logoutRequest" name="logoutRequest"/>
+      <wsdl:output message="impl:logoutResponse" name="logoutResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="notifyContacts" parameterOrder="">
+      <wsdl:input message="impl:notifyContactsRequest" name="notifyContactsRequest"/>
+      <wsdl:output message="impl:notifyContactsResponse" name="notifyContactsResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="removeLrelRelationships" parameterOrder="">
+      <wsdl:input message="impl:removeLrelRelationshipsRequest" name="removeLrelRelationshipsRequest"/>
+      <wsdl:output message="impl:removeLrelRelationshipsResponse" name="removeLrelRelationshipsResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="removeMemberFromGroup" parameterOrder="">
+      <wsdl:input message="impl:removeMemberFromGroupRequest" name="removeMemberFromGroupRequest"/>
+      <wsdl:output message="impl:removeMemberFromGroupResponse" name="removeMemberFromGroupResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="serverStatus" parameterOrder="">
+      <wsdl:input message="impl:serverStatusRequest" name="serverStatusRequest"/>
+      <wsdl:output message="impl:serverStatusResponse" name="serverStatusResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="updateObject" parameterOrder="">
+      <wsdl:input message="impl:updateObjectRequest" name="updateObjectRequest"/>
+      <wsdl:output message="impl:updateObjectResponse" name="updateObjectResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getBopsid" parameterOrder="">
+      <wsdl:input message="impl:getBopsidRequest" name="getBopsidRequest"/>
+      <wsdl:output message="impl:getBopsidResponse" name="getBopsidResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="createAttmnt" parameterOrder="">
+      <wsdl:input message="impl:createAttmntRequest" name="createAttmntRequest"/>
+      <wsdl:output message="impl:createAttmntResponse" name="createAttmntResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getDocumentsByIDs" parameterOrder="">
+      <wsdl:input message="impl:getDocumentsByIDsRequest" name="getDocumentsByIDsRequest"/>
+      <wsdl:output message="impl:getDocumentsByIDsResponse" name="getDocumentsByIDsResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="doSelectKD" parameterOrder="">
+      <wsdl:input message="impl:doSelectKDRequest" name="doSelectKDRequest"/>
+      <wsdl:output message="impl:doSelectKDResponse" name="doSelectKDResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getDecisionTrees" parameterOrder="">
+      <wsdl:input message="impl:getDecisionTreesRequest" name="getDecisionTreesRequest"/>
+      <wsdl:output message="impl:getDecisionTreesResponse" name="getDecisionTreesResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getComments" parameterOrder="">
+      <wsdl:input message="impl:getCommentsRequest" name="getCommentsRequest"/>
+      <wsdl:output message="impl:getCommentsResponse" name="getCommentsResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="deleteDocument" parameterOrder="">
+      <wsdl:input message="impl:deleteDocumentRequest" name="deleteDocumentRequest"/>
+      <wsdl:output message="impl:deleteDocumentResponse" name="deleteDocumentResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getCategory" parameterOrder="">
+      <wsdl:input message="impl:getCategoryRequest" name="getCategoryRequest"/>
+      <wsdl:output message="impl:getCategoryResponse" name="getCategoryResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getStatuses" parameterOrder="">
+      <wsdl:input message="impl:getStatusesRequest" name="getStatusesRequest"/>
+      <wsdl:output message="impl:getStatusesResponse" name="getStatusesResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getBookmarks" parameterOrder="">
+      <wsdl:input message="impl:getBookmarksRequest" name="getBookmarksRequest"/>
+      <wsdl:output message="impl:getBookmarksResponse" name="getBookmarksResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getQuestionsAsked" parameterOrder="">
+      <wsdl:input message="impl:getQuestionsAskedRequest" name="getQuestionsAskedRequest"/>
+      <wsdl:output message="impl:getQuestionsAskedResponse" name="getQuestionsAskedResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getPriorities" parameterOrder="">
+      <wsdl:input message="impl:getPrioritiesRequest" name="getPrioritiesRequest"/>
+      <wsdl:output message="impl:getPrioritiesResponse" name="getPrioritiesResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getDocumentTypes" parameterOrder="">
+      <wsdl:input message="impl:getDocumentTypesRequest" name="getDocumentTypesRequest"/>
+      <wsdl:output message="impl:getDocumentTypesResponse" name="getDocumentTypesResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getTemplateList" parameterOrder="">
+      <wsdl:input message="impl:getTemplateListRequest" name="getTemplateListRequest"/>
+      <wsdl:output message="impl:getTemplateListResponse" name="getTemplateListResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getWorkflowTemplateList" parameterOrder="">
+      <wsdl:input message="impl:getWorkflowTemplateListRequest" name="getWorkflowTemplateListRequest"/>
+      <wsdl:output message="impl:getWorkflowTemplateListResponse" name="getWorkflowTemplateListResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="addComment" parameterOrder="">
+      <wsdl:input message="impl:addCommentRequest" name="addCommentRequest"/>
+      <wsdl:output message="impl:addCommentResponse" name="addCommentResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="deleteComment" parameterOrder="">
+      <wsdl:input message="impl:deleteCommentRequest" name="deleteCommentRequest"/>
+      <wsdl:output message="impl:deleteCommentResponse" name="deleteCommentResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="createDocument" parameterOrder="">
+      <wsdl:input message="impl:createDocumentRequest" name="createDocumentRequest"/>
+      <wsdl:output message="impl:createDocumentResponse" name="createDocumentResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="modifyDocument" parameterOrder="">
+      <wsdl:input message="impl:modifyDocumentRequest" name="modifyDocumentRequest"/>
+      <wsdl:output message="impl:modifyDocumentResponse" name="modifyDocumentResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="rateDocument" parameterOrder="">
+      <wsdl:input message="impl:rateDocumentRequest" name="rateDocumentRequest"/>
+      <wsdl:output message="impl:rateDocumentResponse" name="rateDocumentResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="findContacts" parameterOrder="">
+      <wsdl:input message="impl:findContactsRequest" name="findContactsRequest"/>
+      <wsdl:output message="impl:findContactsResponse" name="findContactsResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getPermissionGroups" parameterOrder="">
+      <wsdl:input message="impl:getPermissionGroupsRequest" name="getPermissionGroupsRequest"/>
+      <wsdl:output message="impl:getPermissionGroupsResponse" name="getPermissionGroupsResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getContact" parameterOrder="">
+      <wsdl:input message="impl:getContactRequest" name="getContactRequest"/>
+      <wsdl:output message="impl:getContactResponse" name="getContactResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="addBookmark" parameterOrder="">
+      <wsdl:input message="impl:addBookmarkRequest" name="addBookmarkRequest"/>
+      <wsdl:output message="impl:addBookmarkResponse" name="addBookmarkResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="updateRating" parameterOrder="">
+      <wsdl:input message="impl:updateRatingRequest" name="updateRatingRequest"/>
+      <wsdl:output message="impl:updateRatingResponse" name="updateRatingResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getFolderList" parameterOrder="">
+      <wsdl:input message="impl:getFolderListRequest" name="getFolderListRequest"/>
+      <wsdl:output message="impl:getFolderListResponse" name="getFolderListResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getFolderInfo" parameterOrder="">
+      <wsdl:input message="impl:getFolderInfoRequest" name="getFolderInfoRequest"/>
+      <wsdl:output message="impl:getFolderInfoResponse" name="getFolderInfoResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getAttmntList" parameterOrder="">
+      <wsdl:input message="impl:getAttmntListRequest" name="getAttmntListRequest"/>
+      <wsdl:output message="impl:getAttmntListResponse" name="getAttmntListResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getAttmntInfo" parameterOrder="">
+      <wsdl:input message="impl:getAttmntInfoRequest" name="getAttmntInfoRequest"/>
+      <wsdl:output message="impl:getAttmntInfoResponse" name="getAttmntInfoResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getRepositoryInfo" parameterOrder="">
+      <wsdl:input message="impl:getRepositoryInfoRequest" name="getRepositoryInfoRequest"/>
+      <wsdl:output message="impl:getRepositoryInfoResponse" name="getRepositoryInfoResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="createFolder" parameterOrder="">
+      <wsdl:input message="impl:createFolderRequest" name="createFolderRequest"/>
+      <wsdl:output message="impl:createFolderResponse" name="createFolderResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="faq" parameterOrder="">
+      <wsdl:input message="impl:faqRequest" name="faqRequest"/>
+      <wsdl:output message="impl:faqResponse" name="faqResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="attmntFolderLinkCount" parameterOrder="">
+      <wsdl:input message="impl:attmntFolderLinkCountRequest" name="attmntFolderLinkCountRequest"/>
+      <wsdl:output message="impl:attmntFolderLinkCountResponse" name="attmntFolderLinkCountResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="attachURLLink" parameterOrder="">
+      <wsdl:input message="impl:attachURLLinkRequest" name="attachURLLinkRequest"/>
+      <wsdl:output message="impl:attachURLLinkResponse" name="attachURLLinkResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="deleteBookmark" parameterOrder="">
+      <wsdl:input message="impl:deleteBookmarkRequest" name="deleteBookmarkRequest"/>
+      <wsdl:output message="impl:deleteBookmarkResponse" name="deleteBookmarkResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getKDListPerAttmnt" parameterOrder="">
+      <wsdl:input message="impl:getKDListPerAttmntRequest" name="getKDListPerAttmntRequest"/>
+      <wsdl:output message="impl:getKDListPerAttmntResponse" name="getKDListPerAttmntResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getAttmntListPerKD" parameterOrder="">
+      <wsdl:input message="impl:getAttmntListPerKDRequest" name="getAttmntListPerKDRequest"/>
+      <wsdl:output message="impl:getAttmntListPerKDResponse" name="getAttmntListPerKDResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="isAttmntLinkedKD" parameterOrder="">
+      <wsdl:input message="impl:isAttmntLinkedKDRequest" name="isAttmntLinkedKDRequest"/>
+      <wsdl:output message="impl:isAttmntLinkedKDResponse" name="isAttmntLinkedKDResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="USD_WebServiceSoapSoapBinding" type="impl:USD_WebServiceSoap">
+    <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="transfer">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="transferRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="transferResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="search">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="searchRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="searchResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getDocument">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getDocumentRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getDocumentResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getObjectValues">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getObjectValuesRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getObjectValuesResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getLrelValues">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getLrelValuesRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getLrelValuesResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addAssetLog">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="addAssetLogRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="addAssetLogResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createLrelRelationships">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="createLrelRelationshipsRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createLrelRelationshipsResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addMemberToGroup">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="addMemberToGroupRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="addMemberToGroupResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="attachChangeToRequest">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="attachChangeToRequestRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="attachChangeToRequestResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="callServerMethod">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="callServerMethodRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="callServerMethodResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="changeStatus">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="changeStatusRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="changeStatusResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="clearNotification">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="clearNotificationRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="clearNotificationResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createActivityLog">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="createActivityLogRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createActivityLogResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createAsset">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="createAssetRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createAssetResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createAssetParentChildRelationship">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="createAssetParentChildRelationshipRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createAssetParentChildRelationshipResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createAttachment">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="createAttachmentRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createAttachmentResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="removeAttachment">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="removeAttachmentRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="removeAttachmentResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createChangeOrder">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="createChangeOrderRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createChangeOrderResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createIssue">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="createIssueRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createIssueResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createWorkFlowTask">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="createWorkFlowTaskRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createWorkFlowTaskResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteWorkFlowTask">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="deleteWorkFlowTaskRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="deleteWorkFlowTaskResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createObject">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="createObjectRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createObjectResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createRequest">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="createRequestRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createRequestResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createTicket">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="createTicketRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createTicketResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createQuickTicket">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="createQuickTicketRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createQuickTicketResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="closeTicket">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="closeTicketRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="closeTicketResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="logComment">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="logCommentRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="logCommentResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPolicyInfo">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getPolicyInfoRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getPolicyInfoResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="detachChangeFromRequest">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="detachChangeFromRequestRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="detachChangeFromRequestResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="doSelect">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="doSelectRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="doSelectResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="doQuery">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="doQueryRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="doQueryResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="escalate">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="escalateRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="escalateResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="freeListHandles">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="freeListHandlesRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="freeListHandlesResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAssetExtensionInformation">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getAssetExtensionInformationRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getAssetExtensionInformationResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getConfigurationMode">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getConfigurationModeRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getConfigurationModeResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getGroupMemberListValues">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getGroupMemberListValuesRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getGroupMemberListValuesResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getObjectTypeInformation">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getObjectTypeInformationRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getObjectTypeInformationResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getHandleForUserid">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getHandleForUseridRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getHandleForUseridResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAccessTypeForContact">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getAccessTypeForContactRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getAccessTypeForContactResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getListValues">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getListValuesRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getListValuesResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getLrelLength">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getLrelLengthRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getLrelLengthResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getNotificationsForContact">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getNotificationsForContactRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getNotificationsForContactResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPendingChangeTaskListForContact">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getPendingChangeTaskListForContactRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getPendingChangeTaskListForContactResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPendingIssueTaskListForContact">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getPendingIssueTaskListForContactRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getPendingIssueTaskListForContactResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPropertyInfoForCategory">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getPropertyInfoForCategoryRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getPropertyInfoForCategoryResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getRelatedList">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getRelatedListRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getRelatedListResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getRelatedListValues">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getRelatedListValuesRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getRelatedListValuesResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getWorkFlowTemplates">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getWorkFlowTemplatesRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getWorkFlowTemplatesResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getTaskListValues">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getTaskListValuesRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getTaskListValuesResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getValidTaskTransitions">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getValidTaskTransitionsRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getValidTaskTransitionsResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="login">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="loginRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="loginResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="loginService">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="loginServiceRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="loginServiceResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="loginServiceManaged">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="loginServiceManagedRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="loginServiceManagedResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="impersonate">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="impersonateRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="impersonateResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="logout">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="logoutRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="logoutResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="notifyContacts">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="notifyContactsRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="notifyContactsResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="removeLrelRelationships">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="removeLrelRelationshipsRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="removeLrelRelationshipsResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="removeMemberFromGroup">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="removeMemberFromGroupRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="removeMemberFromGroupResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="serverStatus">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="serverStatusRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="serverStatusResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateObject">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="updateObjectRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="updateObjectResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getBopsid">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getBopsidRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getBopsidResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createAttmnt">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="createAttmntRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createAttmntResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getDocumentsByIDs">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getDocumentsByIDsRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getDocumentsByIDsResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="doSelectKD">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="doSelectKDRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="doSelectKDResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getDecisionTrees">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getDecisionTreesRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getDecisionTreesResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getComments">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getCommentsRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getCommentsResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteDocument">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="deleteDocumentRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="deleteDocumentResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getCategory">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getCategoryRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getCategoryResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getStatuses">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getStatusesRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getStatusesResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getBookmarks">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getBookmarksRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getBookmarksResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getQuestionsAsked">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getQuestionsAskedRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getQuestionsAskedResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPriorities">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getPrioritiesRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getPrioritiesResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getDocumentTypes">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getDocumentTypesRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getDocumentTypesResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getTemplateList">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getTemplateListRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getTemplateListResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getWorkflowTemplateList">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getWorkflowTemplateListRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getWorkflowTemplateListResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addComment">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="addCommentRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="addCommentResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteComment">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="deleteCommentRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="deleteCommentResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createDocument">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="createDocumentRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createDocumentResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="modifyDocument">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="modifyDocumentRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="modifyDocumentResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="rateDocument">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="rateDocumentRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="rateDocumentResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="findContacts">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="findContactsRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="findContactsResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPermissionGroups">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getPermissionGroupsRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getPermissionGroupsResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getContact">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getContactRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getContactResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addBookmark">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="addBookmarkRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="addBookmarkResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateRating">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="updateRatingRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="updateRatingResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getFolderList">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getFolderListRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getFolderListResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getFolderInfo">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getFolderInfoRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getFolderInfoResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAttmntList">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getAttmntListRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getAttmntListResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAttmntInfo">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getAttmntInfoRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getAttmntInfoResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getRepositoryInfo">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getRepositoryInfoRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getRepositoryInfoResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createFolder">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="createFolderRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createFolderResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="faq">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="faqRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="faqResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="attmntFolderLinkCount">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="attmntFolderLinkCountRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="attmntFolderLinkCountResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="attachURLLink">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="attachURLLinkRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="attachURLLinkResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deleteBookmark">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="deleteBookmarkRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="deleteBookmarkResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getKDListPerAttmnt">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getKDListPerAttmntRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getKDListPerAttmntResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAttmntListPerKD">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getAttmntListPerKDRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getAttmntListPerKDResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="isAttmntLinkedKD">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="isAttmntLinkedKDRequest">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="isAttmntLinkedKDResponse">
+        <wsdlsoap:body namespace="http://www.ca.com/UnicenterServicePlus/ServiceDesk" use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="USD_WebService">
+    <wsdl:port binding="impl:USD_WebServiceSoapSoapBinding" name="USD_WebServiceSoap">
+      <wsdlsoap:address location="http://vgrusd.vgregion.se:8080/axis/services/USD_R11_WebService"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

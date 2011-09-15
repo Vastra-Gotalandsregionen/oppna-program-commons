@@ -19,14 +19,46 @@
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxws-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>1</id>
+            <goals>
+              <goal>wsimport</goal>
+            </goals>
+            <configuration>
+              <wsdlDirectory>${basedir}/src/main/wsdl</wsdlDirectory>
+              <wsdlFiles>
+                <wsdlFile>USD_R11_webService.wsdl</wsdlFile>
+              </wsdlFiles>
+              <packageName>com.ca.www.UnicenterServicePlus.ServiceDesk</packageName>
+              <extension>true</extension>
+              <sourceDestDir>${project.build.directory}/generated-sources/jaxws</sourceDestDir>
+              <staleFile>${project.build.directory}/generated-sources/jaxws/stale/.staleFlagMedcontrol</staleFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
         <configuration>
           <instrumentation>
             <ignores>
               <ignore>com.ca.*</ignore>
             </ignores>
+            <excludes>
+              <exclude>com/ca/www/UnicenterServicePlus/ServiceDesk/*.class</exclude>
+            </excludes>
           </instrumentation>
         </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>
@@ -57,11 +89,11 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
     </dependency>
-    <dependency>
-      <groupId>axis</groupId>
-      <artifactId>axis</artifactId>
-      <version>1.4</version>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>axis</groupId>-->
+      <!--<artifactId>axis</artifactId>-->
+      <!--<version>1.4</version>-->
+    <!--</dependency>-->
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
