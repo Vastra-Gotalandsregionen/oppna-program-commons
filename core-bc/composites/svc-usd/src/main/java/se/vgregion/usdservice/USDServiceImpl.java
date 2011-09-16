@@ -117,8 +117,10 @@ public class USDServiceImpl implements USDService {
             // Group issues - not assigen to user
             if (includeGroups) {
                 String groups = lookupUserGroups(sessionID, contactHandle);
-                records.addAll(getChangeOrdersForContactByGroup(sessionID, contactHandle, groups, maxRows));
-                records.addAll(getRequestForContactByGroup(sessionID, contactHandle, groups, maxRows));
+                if (groups.length() > 0) {
+                    records.addAll(getChangeOrdersForContactByGroup(sessionID, contactHandle, groups, maxRows));
+                    records.addAll(getRequestForContactByGroup(sessionID, contactHandle, groups, maxRows));
+                }
             }
 
             return records;
