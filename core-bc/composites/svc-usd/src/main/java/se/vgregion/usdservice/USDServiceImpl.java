@@ -109,9 +109,14 @@ public class USDServiceImpl implements USDService {
             }
 
             List<Issue> records = new ArrayList<Issue>();
-            // Change Orders
+            // Change Orders - Assignee
+            records.addAll(getChangeOrdersForAssignee(sessionID, contactHandle, maxRows));
+            // Incidents, Problems, Requests - Assignee
+            records.addAll(getRequestForAssignee(sessionID, contactHandle, maxRows));
+
+            // Change Orders - Affected
             records.addAll(getChangeOrdersForContact(sessionID, contactHandle, maxRows));
-            // Incidents, Problems, Requests
+            // Incidents, Problems, Requests - Affected
             records.addAll(getRequestForContact(sessionID, contactHandle, maxRows));
 
             // Group issues - not assigen to user
@@ -234,14 +239,30 @@ public class USDServiceImpl implements USDService {
     private List<Issue> getRequestForContact(int sessionID, String contactHandle, int maxRows)
             throws RemoteException {
         // Build where clause
-        String whereClause = String.format("customer = U'%s' AND active = 1", contactHandle);
+        String whereClause = String.format("customer = U'%s' AND assignee <> U'%s' AND active = 1", contactHandle, contactHandle);
 
         // Get list xml
         String listXml = getUSDWebService().doSelect(sessionID, "cr", whereClause, maxRows,
                 toArrayOfString(ATTRIBUTE_NAMES));
 
         // Parse xml to list
-        return parseIssues(listXml, null, false);
+        return parseIssues(listXml, null, "U");
+    }
+
+    /**
+     * USD-WS lookup.
+     */
+    private List<Issue> getRequestForAssignee(int sessionID, String contactHandle, int maxRows)
+            throws RemoteException {
+        // Build where clause
+        String whereClause = String.format("assignee = U'%s' AND active = 1", contactHandle);
+
+        // Get list xml
+        String listXml = getUSDWebService().doSelect(sessionID, "cr", whereClause, maxRows,
+                toArrayOfString(ATTRIBUTE_NAMES));
+
+        // Parse xml to list
+        return parseIssues(listXml, null, "A");
     }
 
     /**
@@ -251,14 +272,15 @@ public class USDServiceImpl implements USDService {
             throws RemoteException {
 
         // Build where clause
-        String whereClause = String.format("group in (%s) AND customer <> U'%s' AND active = 1", groups, contactHandle);
+        String whereClause = String.format("group in (%s) AND customer <> U'%s' AND assignee <> U'%s' AND active = 1", groups,
+                contactHandle, contactHandle);
 
         // Get list xml
         String listXml = getUSDWebService().doSelect(sessionID, "cr", whereClause, maxRows,
                 toArrayOfString(ATTRIBUTE_NAMES));
 
         // Parse xml to list
-        return parseIssues(listXml, null, true);
+        return parseIssues(listXml, null, "G");
     }
 
     /**
@@ -267,14 +289,27 @@ public class USDServiceImpl implements USDService {
     private List<Issue> getChangeOrdersForContact(int sessionID, String contactHandle, int maxRows)
             throws RemoteException {
         // Build where clause
-        String whereClause = String.format("affected_contact = U'%s' AND active = 1", contactHandle);
+        String whereClause = String.format("affected_contact = U'%s' AND assignee <> U'%s' AND active = 1", contactHandle, contactHandle);
 
         // Get list xml
         String listXml = getUSDWebService().doSelect(sessionID, "chg", whereClause, maxRows,
                 toArrayOfString(ATTRIBUTE_NAMES_CHG));
 
         // Parse xml to list
-        return parseIssues(listXml, TYPE_CHANGE_ORDER, false);
+        return parseIssues(listXml, TYPE_CHANGE_ORDER, "U");
+    }
+
+    private List<Issue> getChangeOrdersForAssignee(int sessionID, String contactHandle, int maxRows)
+            throws RemoteException {
+        // Build where clause
+        String whereClause = String.format("assignee = U'%s' AND active = 1", contactHandle);
+
+        // Get list xml
+        String listXml = getUSDWebService().doSelect(sessionID, "chg", whereClause, maxRows,
+                toArrayOfString(ATTRIBUTE_NAMES_CHG));
+
+        // Parse xml to list
+        return parseIssues(listXml, TYPE_CHANGE_ORDER, "A");
     }
 
     /**
@@ -284,14 +319,16 @@ public class USDServiceImpl implements USDService {
             throws RemoteException {
 
         // Build where clause
-        String whereClause = String.format("group in (%s) AND affected_contact <> U'%s' AND active = 1", groups, contactHandle);
+        String whereClause = String.format("group in (%s) AND affected_contact <> U'%s' AND assignee <> U'%s' AND " +
+                "active " +
+                "= 1", groups, contactHandle, contactHandle);
 
         // Get list xml
         String listXml = getUSDWebService().doSelect(sessionID, "chg", whereClause, maxRows,
                 toArrayOfString(ATTRIBUTE_NAMES_CHG));
 
         // Parse xml to list
-        return parseIssues(listXml, TYPE_CHANGE_ORDER, true);
+        return parseIssues(listXml, TYPE_CHANGE_ORDER, "G");
     }
 
     /**
@@ -342,7 +379,7 @@ public class USDServiceImpl implements USDService {
         }
     }
 
-    protected List<Issue> parseIssues(String xml, String fallbackType, boolean onGroup) throws RuntimeException {
+    protected List<Issue> parseIssues(String xml, String fallbackType, String associated) throws RuntimeException {
         List<Issue> issueList = new ArrayList<Issue>();
         try {
             // Parse the XML to get a DOM to query
@@ -367,7 +404,7 @@ public class USDServiceImpl implements USDService {
                     continue;
                 }
 
-                Issue issue = resolveIssue(refNum, i, fallbackType, onGroup, doc);
+                Issue issue = resolveIssue(refNum, i, fallbackType, associated, doc);
 
                 // Add Issue object to list
                 issueList.add(issue);
@@ -380,7 +417,7 @@ public class USDServiceImpl implements USDService {
         }
     }
 
-    private Issue resolveIssue(String refNum, int i, String fallbackType, boolean onGroup, Document doc)
+    private Issue resolveIssue(String refNum, int i, String fallbackType, String associated, Document doc)
             throws XPathExpressionException {
         Issue issue = new Issue();
         issue.setRefNum(refNum);
@@ -409,11 +446,7 @@ public class USDServiceImpl implements USDService {
         }
         issue.setType(type);
 
-        if (onGroup) {
-            issue.setAssociated("G");
-        } else {
-            issue.setAssociated("U");
-        }
+        issue.setAssociated(associated);
 
         return issue;
     }
