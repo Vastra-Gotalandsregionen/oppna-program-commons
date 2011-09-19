@@ -239,7 +239,7 @@ public class USDServiceImpl implements USDService {
     private List<Issue> getRequestForContact(int sessionID, String contactHandle, int maxRows)
             throws RemoteException {
         // Build where clause
-        String whereClause = String.format("customer = U'%s' AND assignee <> U'%s' AND active = 1", contactHandle, contactHandle);
+        String whereClause = String.format("customer = U'%1$s' AND assignee <> U'%1$s' AND active = 1", contactHandle);
 
         // Get list xml
         String listXml = getUSDWebService().doSelect(sessionID, "cr", whereClause, maxRows,
@@ -272,8 +272,8 @@ public class USDServiceImpl implements USDService {
             throws RemoteException {
 
         // Build where clause
-        String whereClause = String.format("group in (%s) AND customer <> U'%s' AND assignee <> U'%s' AND active = 1", groups,
-                contactHandle, contactHandle);
+        String whereClause = String.format("group in (%1$s) AND customer <> U'%2$s' AND assignee <> U'%2$s'" +
+                " AND active = 1", groups, contactHandle);
 
         // Get list xml
         String listXml = getUSDWebService().doSelect(sessionID, "cr", whereClause, maxRows,
@@ -289,7 +289,8 @@ public class USDServiceImpl implements USDService {
     private List<Issue> getChangeOrdersForContact(int sessionID, String contactHandle, int maxRows)
             throws RemoteException {
         // Build where clause
-        String whereClause = String.format("affected_contact = U'%s' AND assignee <> U'%s' AND active = 1", contactHandle, contactHandle);
+        String whereClause = String.format("affected_contact = U'%1$s' AND assignee <> U'%1$s' AND active = 1",
+                contactHandle);
 
         // Get list xml
         String listXml = getUSDWebService().doSelect(sessionID, "chg", whereClause, maxRows,
@@ -319,9 +320,8 @@ public class USDServiceImpl implements USDService {
             throws RemoteException {
 
         // Build where clause
-        String whereClause = String.format("group in (%s) AND affected_contact <> U'%s' AND assignee <> U'%s' AND " +
-                "active " +
-                "= 1", groups, contactHandle, contactHandle);
+        String whereClause = String.format("group in (%1$s) AND affected_contact <> U'%2$s' AND assignee <> U'%2$s'" +
+                " AND active = 1", groups, contactHandle);
 
         // Get list xml
         String listXml = getUSDWebService().doSelect(sessionID, "chg", whereClause, maxRows,
