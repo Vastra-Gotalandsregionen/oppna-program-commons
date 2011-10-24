@@ -23,7 +23,6 @@
 package se.vgregion.messagebus.converter;
 
 import com.liferay.portal.kernel.messaging.Message;
-
 import org.apache.camel.Converter;
 
 /**
@@ -61,6 +60,8 @@ public final class MessageConverter {
      */
     @Converter
     public static Message toMessage(Exception ex) {
+        ex.printStackTrace();
+        
         Message message = new Message();
 
         message.setPayload(ex);

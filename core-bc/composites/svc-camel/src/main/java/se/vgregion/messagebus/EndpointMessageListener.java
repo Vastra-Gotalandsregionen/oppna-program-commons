@@ -34,6 +34,7 @@ import java.util.Map;
 /**
  * Endpoint message listener.
  * <p/>
+ *
  * @author Bruno Farache
  */
 public class EndpointMessageListener implements MessageListener {
@@ -66,7 +67,12 @@ public class EndpointMessageListener implements MessageListener {
         Exchange exchange = new DefaultExchange(endpoint);
         org.apache.camel.Message in = new DefaultMessage();
 
-        in.setBody(message.getPayload());
+        if (message.getPayload() instanceof Map) {
+            String query = mapToQuery((Map) message.getPayload()).toString();
+            in.setBody(query);
+        } else {
+            in.setBody(message.getPayload());
+        }
         in.setHeader("responseId", message.getResponseId());
 
         Map<String, Object> params = endpoint.getParams();
@@ -85,6 +91,19 @@ public class EndpointMessageListener implements MessageListener {
         exchange.setIn(in);
 
         return exchange;
+    }
+
+    public StringBuilder mapToQuery(Map parameters) {
+        StringBuilder sb = new StringBuilder();
+        int count = 0;
+        for (Object key : parameters.keySet()) {
+            sb.append(key.toString() + "=" + parameters.get(key).toString());
+            count++;
+            if (count < parameters.size()) {
+                sb.append("&"); //we will have at least one more parameter to add to our query
+            }
+        }
+        return sb;
     }
 
     private MessageBusEndpoint endpoint;
