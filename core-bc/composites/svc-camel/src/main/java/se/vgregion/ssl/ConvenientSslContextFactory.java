@@ -45,7 +45,7 @@ public class ConvenientSslContextFactory {
      * @throws Exception Exception
      */
     public TrustManager[] getTrustManager() throws Exception {
-        TrustManager[] trustStoreManagers = null;
+        TrustManager[] trustStoreManagers;
         KeyStore trustedCertStore = KeyStore.getInstance("jks");
 
         InputStream tsStream = null;

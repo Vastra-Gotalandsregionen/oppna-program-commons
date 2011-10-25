@@ -57,6 +57,7 @@
     <constructor-arg index="0" value="vgr/messagebus_http_test_destination"/>
     <constructor-arg index="1" value="${http.destination}"/>
     <constructor-arg index="2" ref="authParams"/>
+    <constructor-arg index="3"><null/></constructor-arg> <!-- null proxy params -->
   </bean>
 
   <camelContext xmlns="http://camel.apache.org/schema/spring">
@@ -65,17 +66,22 @@
 
   </camelContext>
 
-  <bean id="myConfigurer" class="se.vgregion.ssl.HttpsClientConfigurer">
+  <bean id="httpsConfigurer" class="se.vgregion.ssl.HttpsClientConfigurer">
     <constructor-arg index="0" value="cert/clienttruststore.jks"/>
     <constructor-arg index="1" value="clientpass"/>
-    <constructor-arg index="2"><null/></constructor-arg>
-    <constructor-arg index="3"><null/></constructor-arg>
+    <constructor-arg index="2" value="cert/clientkeystore.jks"/>
+    <constructor-arg index="3" value="clientpass"/>
   </bean>
 
-  <bean id="authParams" class="se.vgregion.authentication.AuthParams">
+  <bean id="authParams" class="se.vgregion.http.AuthParams">
     <constructor-arg index="0" value="supername"/>
     <constructor-arg index="1" value="superpassword"/>
     <constructor-arg index="2" value="Basic"/>
+  </bean>
+
+  <bean id="proxyParams" class="se.vgregion.http.ProxyParams">
+    <constructor-arg index="0" value="localhost"/>
+    <constructor-arg index="1" value="8888"/>
   </bean>
 
 </beans>

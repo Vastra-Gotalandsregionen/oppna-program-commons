@@ -50,6 +50,7 @@ public class CamelHttpComponentTest {
     @Autowired
     private MessageBus messageBus;
 
+    //looks up the property via Spring's PropertyPlaceholder
     @Value("${messagebus.http.destination}")
     String messagebusDestination;
 
@@ -62,20 +63,7 @@ public class CamelHttpComponentTest {
 
         configureSslSocketConnector();
 
-        Constraint constraint = new Constraint(Constraint.__BASIC_AUTH, "superuser");
-        constraint.setAuthenticate(true);
-
-        HashUserRealm myRealm = new HashUserRealm("MyRealm");
-        myRealm.put("supername", "superpassword");
-        myRealm.addUserToRole("supername", "superuser");
-
-        SecurityHandler securityHandler = new SecurityHandler();
-        securityHandler.setUserRealm(myRealm);
-
-        ConstraintMapping constraintMapping = new ConstraintMapping();
-        constraintMapping.setConstraint(constraint);
-        constraintMapping.setPathSpec("/*");
-        securityHandler.setConstraintMappings(new ConstraintMapping[]{constraintMapping});
+        SecurityHandler securityHandler = createBasicAuthenticationSecurityHandler();
 
         server.addHandler(securityHandler);
 
@@ -83,14 +71,16 @@ public class CamelHttpComponentTest {
             @Override
             public void handle(String s, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, int i) throws IOException, ServletException {
                 expected = new StringBuilder();
-                System.out.println(httpServletRequest);
+
                 System.out.println("uri: " + httpServletRequest.getRequestURI());
                 System.out.println("queryString: " + httpServletRequest.getQueryString());
-
                 System.out.println("method: " + httpServletRequest.getMethod());
+
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 IOUtils.copy(httpServletRequest.getInputStream(), baos);
+
                 System.out.println("body: " + baos.toString());
+
                 PrintWriter writer = httpServletResponse.getWriter();
                 writer.append("testsvar");
                 expected.append("testsvar");
@@ -109,13 +99,33 @@ public class CamelHttpComponentTest {
         server.start();
     }
 
+    private SecurityHandler createBasicAuthenticationSecurityHandler() {
+        Constraint constraint = new Constraint(Constraint.__BASIC_AUTH, "superuser");
+        constraint.setAuthenticate(true);
+
+        HashUserRealm myRealm = new HashUserRealm("MyRealm");
+        myRealm.put("supername", "superpassword");
+        myRealm.addUserToRole("supername", "superuser");
+
+        SecurityHandler securityHandler = new SecurityHandler();
+        securityHandler.setUserRealm(myRealm);
+
+        ConstraintMapping constraintMapping = new ConstraintMapping();
+        constraintMapping.setConstraint(constraint);
+        constraintMapping.setPathSpec("/*");
+        securityHandler.setConstraintMappings(new ConstraintMapping[]{constraintMapping});
+        return securityHandler;
+    }
+
     private void configureSslSocketConnector() {
+        //we set up two ports to make it easy to test both with and without encryption
+
         SocketConnector socketConnector = new SocketConnector();
         socketConnector.setPort(6080);
 
         SslSocketConnector sslSocketConnector = new SslSocketConnector();
         sslSocketConnector.setPort(6443);
-//        sslSocketConnector.setNeedClientAuth(true);
+        sslSocketConnector.setNeedClientAuth(true); //why not use mutual authentication when we can
 
         String serverKeystore = this.getClass().getClassLoader().getResource("cert/serverkeystore.jks").getPath();
         sslSocketConnector.setKeystore(serverKeystore);
@@ -142,6 +152,7 @@ public class CamelHttpComponentTest {
         params.put("myParam2", "myValue2");
         message.setPayload(params);
 
+        //just to make a working sender without having a real Liferay server running
         DefaultSynchronousMessageSender sender = new DefaultSynchronousMessageSender();
         sender.setPortalUUID(new PortalUUID() {
             @Override

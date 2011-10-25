@@ -4,7 +4,8 @@ import com.liferay.portal.kernel.messaging.DestinationNames;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.spring.SpringRouteBuilder;
-import se.vgregion.authentication.AuthParams;
+import se.vgregion.http.AuthParams;
+import se.vgregion.http.ProxyParams;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -13,15 +14,15 @@ import java.io.InputStream;
 /**
  * Class for building camel routes with HTTP.
  * <p/>
- * User: pabe
- * Date: 2011-05-10
- * Time: 15:56
+ *
+ * @author Patrik Bergström
  */
 public class MessagebusHttpRouteBuilder extends SpringRouteBuilder {
 
     private String messageBusDestination;
     private String httpDestination;
     private AuthParams authParams;
+    private ProxyParams proxyParams;
 
     /**
      * Constructor.
@@ -31,10 +32,11 @@ public class MessagebusHttpRouteBuilder extends SpringRouteBuilder {
      * @param authParams            authParams
      */
     public MessagebusHttpRouteBuilder(String messageBusDestination, String httpDestination,
-                                      AuthParams authParams) {
+                                      AuthParams authParams, ProxyParams proxyParams) {
         this.messageBusDestination = messageBusDestination;
         this.httpDestination = httpDestination;
         this.authParams = authParams;
+        this.proxyParams = proxyParams;
 
         log.info("MB: {} HTTP: {}", messageBusDestination, httpDestination);
     }
@@ -46,7 +48,7 @@ public class MessagebusHttpRouteBuilder extends SpringRouteBuilder {
      * @param httpDestination       restDestination
      */
     public MessagebusHttpRouteBuilder(String messageBusDestination, String httpDestination) {
-        this(messageBusDestination, httpDestination, null);
+        this(messageBusDestination, httpDestination, null, null);
     }
 
     @Override
@@ -56,12 +58,15 @@ public class MessagebusHttpRouteBuilder extends SpringRouteBuilder {
             extraOptionsString = "&authUsername=" + authParams.getUsername() + "&authPassword="
                     + authParams.getPassword() + "&authMethod=" + authParams.getMethod();
         }
+        if (proxyParams != null) {
+            extraOptionsString += "&proxyHost=" + proxyParams.getHost() + "&proxyPort=" + proxyParams.getPort();
+        }
 
         from("liferay:" + messageBusDestination)
                 .errorHandler(deadLetterChannel("direct:error_" + messageBusDestination))
                 .setProperty("correlationId", header("responseId"))
-                //if the body of the message is not null Camel will do a POST request
-                .inOut(httpDestination + "?httpClientConfigurer=myConfigurer" + extraOptionsString)// + "&proxyHost=localhost&proxyPort=8888")
+                        //if the body of the message is not null Camel will do a POST request
+                .inOut(httpDestination + "?httpClientConfigurer=httpsConfigurer" + extraOptionsString)
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {

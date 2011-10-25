@@ -1,4 +1,4 @@
-package se.vgregion.authentication;
+package se.vgregion.http;
 
 /**
  * @author Patrik Bergström
