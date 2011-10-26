@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.handler.AbstractHandler;
+import org.mortbay.jetty.handler.HandlerList;
 import org.mortbay.jetty.security.Constraint;
 import org.mortbay.jetty.security.ConstraintMapping;
 import org.mortbay.jetty.security.HashUserRealm;
@@ -65,9 +66,9 @@ public class CamelHttpComponentTest {
 
         SecurityHandler securityHandler = createBasicAuthenticationSecurityHandler();
 
-        server.addHandler(securityHandler);
-
-        server.addHandler(new AbstractHandler() {
+        HandlerList handlerList = new HandlerList();
+        handlerList.addHandler(securityHandler);
+        handlerList.addHandler(new AbstractHandler() {
             @Override
             public void handle(String s, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, int i) throws IOException, ServletException {
                 expected = new StringBuilder();
@@ -95,6 +96,8 @@ public class CamelHttpComponentTest {
                 httpServletResponse.setStatus(HttpServletResponse.SC_OK);
             }
         });
+
+        server.addHandler(handlerList);
 
         server.start();
     }

@@ -3,7 +3,10 @@ package se.vgregion.routes;
 import com.liferay.portal.kernel.messaging.DestinationNames;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.apache.camel.component.http.HttpClientConfigurer;
 import org.apache.camel.spring.SpringRouteBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import se.vgregion.http.AuthParams;
 import se.vgregion.http.ProxyParams;
 
@@ -23,6 +26,7 @@ public class MessagebusHttpRouteBuilder extends SpringRouteBuilder {
     private String httpDestination;
     private AuthParams authParams;
     private ProxyParams proxyParams;
+    private String httpClientConfigurerName;
 
     /**
      * Constructor.
@@ -53,20 +57,15 @@ public class MessagebusHttpRouteBuilder extends SpringRouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        String extraOptionsString = "";
-        if (authParams != null) {
-            extraOptionsString = "&authUsername=" + authParams.getUsername() + "&authPassword="
-                    + authParams.getPassword() + "&authMethod=" + authParams.getMethod();
-        }
-        if (proxyParams != null) {
-            extraOptionsString += "&proxyHost=" + proxyParams.getHost() + "&proxyPort=" + proxyParams.getPort();
-        }
+        setHttpClientConfigurerName();
+
+        String extraOptionsString = buildExtraOptionString();
 
         from("liferay:" + messageBusDestination)
                 .errorHandler(deadLetterChannel("direct:error_" + messageBusDestination))
                 .setProperty("correlationId", header("responseId"))
                         //if the body of the message is not null Camel will do a POST request
-                .inOut(httpDestination + "?httpClientConfigurer=httpsConfigurer" + extraOptionsString)
+                .inOut(httpDestination + extraOptionsString)
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
@@ -78,6 +77,37 @@ public class MessagebusHttpRouteBuilder extends SpringRouteBuilder {
                 .to("liferay:" + DestinationNames.MESSAGE_BUS_DEFAULT_RESPONSE);
 
         errorHandler();
+    }
+
+    private void setHttpClientConfigurerName() {
+        String[] httpClientConfigurers = getApplicationContext().getBeanNamesForType(HttpClientConfigurer.class);
+        if (httpClientConfigurers.length == 1) {
+            httpClientConfigurerName = httpClientConfigurers[0];
+        } else if (httpClientConfigurers.length > 1) {
+            throw new IllegalArgumentException("There shouldn't be more than one bean of type "
+                    + "HttpClientConfigurer in the application context.");
+        } else {
+            httpClientConfigurerName = null;
+        }
+    }
+
+    protected String buildExtraOptionString() {
+        String extraOptionsString = "";
+        if (httpClientConfigurerName != null) {
+            extraOptionsString += "&httpClientConfigurer=" + httpClientConfigurerName;
+        }
+        if (authParams != null) {
+            extraOptionsString += "&authUsername=" + authParams.getUsername() + "&authPassword="
+                    + authParams.getPassword() + "&authMethod=" + authParams.getMethod();
+        }
+        if (proxyParams != null) {
+            extraOptionsString += "&proxyHost=" + proxyParams.getHost() + "&proxyPort=" + proxyParams.getPort();
+        }
+        if (extraOptionsString.length() > 0) {
+            //the first character is '&', replace it with '?'
+            extraOptionsString = "?" + extraOptionsString.substring(1);
+        }
+        return extraOptionsString;
     }
 
     protected void errorHandler() {
