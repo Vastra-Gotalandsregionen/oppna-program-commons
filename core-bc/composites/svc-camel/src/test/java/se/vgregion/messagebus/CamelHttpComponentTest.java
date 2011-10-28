@@ -213,6 +213,26 @@ public class CamelHttpComponentTest {
                     "myParam2=myValue2&myParam=myValue".equals(queryString));
     }
 
+    @Test
+    @DirtiesContext
+    public void testWithHttpRequestWithBody() throws MessageBusException {
+
+        HttpRequest httpRequest = new HttpRequest();
+        String body = "<xml>testing whatever</xml>";
+        httpRequest.setBody(body);
+
+        Message message = new Message();
+        //see se.vgregion.messagebus.EndpointMessageListener.createExchange() to see how the payload object is handled
+        message.setPayload(httpRequest);
+
+        DefaultSynchronousMessageSender sender = createMessageSender();
+
+        Object result = sender.send(messagebusDestination, message, 15000);
+
+        //the ordering is not deterministic and doesn't matter so both alternatives are ok
+        assertEquals(body, this.body);
+    }
+
     private DefaultSynchronousMessageSender createMessageSender() {
         //just to make a working sender without having a real Liferay server running
         DefaultSynchronousMessageSender sender = new DefaultSynchronousMessageSender();

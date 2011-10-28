@@ -8,7 +8,6 @@ import java.util.Map;
  */
 public class HttpRequest {
 
-    private HttpMethod method;
     private String queryString;
     private String body;
 
@@ -33,14 +32,6 @@ public class HttpRequest {
         this.body = body;
     }
 
-    public HttpMethod getMethod() {
-        return method;
-    }
-
-    public void setMethod(HttpMethod method) {
-        this.method = method;
-    }
-
     public static StringBuilder mapToQuery(Map<String, String> parameters) {
         StringBuilder sb = new StringBuilder();
         int count = 0;
@@ -52,9 +43,5 @@ public class HttpRequest {
             }
         }
         return sb;
-    }
-
-    public enum HttpMethod {
-        POST, GET;
     }
 }
