@@ -5,8 +5,6 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.component.http.HttpClientConfigurer;
 import org.apache.camel.spring.SpringRouteBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import se.vgregion.http.AuthParams;
 import se.vgregion.http.ProxyParams;
 
@@ -118,13 +116,11 @@ public class MessagebusHttpRouteBuilder extends SpringRouteBuilder {
     }
 
     private String extractResponseBody(Exchange exchange) throws IOException {
-//        Response response = (Response) exchange.getIn().getBody();
 
         InputStream inputStream = null;
         BufferedInputStream bis = null;
         try {
             inputStream = (InputStream) exchange.getIn().getBody();
-//            inputStream = (InputStream) (response).getEntity();
             bis = new BufferedInputStream(inputStream);
             final int i = 1024;
             byte[] buffer = new byte[i];

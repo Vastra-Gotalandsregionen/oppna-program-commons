@@ -57,6 +57,7 @@
     <constructor-arg index="0" value="vgr/messagebus_http_test_destination"/>
     <constructor-arg index="1" value="${http.destination}"/>
     <constructor-arg index="2" ref="authParams"/>
+    <!--<constructor-arg index="3" ref="proxyParams"/>-->
     <constructor-arg index="3"><null/></constructor-arg> <!-- null proxy params -->
   </bean>
 
@@ -79,6 +80,7 @@
     <constructor-arg index="2" value="Basic"/>
   </bean>
 
+  <!-- If you would like to monitor with e.g. Fiddler2 or similar-->
   <bean id="proxyParams" class="se.vgregion.http.ProxyParams">
     <constructor-arg index="0" value="localhost"/>
     <constructor-arg index="1" value="8888"/>

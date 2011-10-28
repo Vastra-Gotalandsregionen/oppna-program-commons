@@ -28,6 +28,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.impl.DefaultExchange;
 import org.apache.camel.impl.DefaultMessage;
+import se.vgregion.http.HttpRequest;
 
 import java.util.Map;
 
@@ -67,11 +68,21 @@ public class EndpointMessageListener implements MessageListener {
         Exchange exchange = new DefaultExchange(endpoint);
         org.apache.camel.Message in = new DefaultMessage();
 
-        if (message.getPayload() instanceof Map) {
-            String query = mapToQuery((Map) message.getPayload()).toString();
+        Object payload = message.getPayload();
+        if (payload instanceof Map) {
+            String query = HttpRequest.mapToQuery((Map) payload).toString();
             in.setBody(query);
+        } else if (payload instanceof HttpRequest){
+            String queryString = ((HttpRequest) payload).getQueryString();
+            if (queryString != null) {
+                in.setHeader(Exchange.HTTP_QUERY, queryString);
+            }
+            String body = ((HttpRequest) payload).getBody();
+            if (body != null) {
+                in.setBody(body);
+            }
         } else {
-            in.setBody(message.getPayload());
+            in.setBody(payload);
         }
         in.setHeader("responseId", message.getResponseId());
 
@@ -91,19 +102,6 @@ public class EndpointMessageListener implements MessageListener {
         exchange.setIn(in);
 
         return exchange;
-    }
-
-    public StringBuilder mapToQuery(Map parameters) {
-        StringBuilder sb = new StringBuilder();
-        int count = 0;
-        for (Object key : parameters.keySet()) {
-            sb.append(key.toString() + "=" + parameters.get(key).toString());
-            count++;
-            if (count < parameters.size()) {
-                sb.append("&"); //we will have at least one more parameter to add to our query
-            }
-        }
-        return sb;
     }
 
     private MessageBusEndpoint endpoint;

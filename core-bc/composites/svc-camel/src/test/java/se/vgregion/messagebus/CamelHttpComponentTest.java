@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import se.vgregion.http.HttpRequest;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +39,7 @@ import java.util.Map;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * User: pabe
@@ -57,7 +59,10 @@ public class CamelHttpComponentTest {
 
     private Server server = new Server();
 
+    //Use fields to verify what happens in the embedded test server.
     private StringBuilder expected;
+    private String queryString;
+    private String body;
 
     @Before
     public void setUp() throws Exception {
@@ -74,13 +79,13 @@ public class CamelHttpComponentTest {
                 expected = new StringBuilder();
 
                 System.out.println("uri: " + httpServletRequest.getRequestURI());
-                System.out.println("queryString: " + httpServletRequest.getQueryString());
+                System.out.println("queryString: " + (queryString = httpServletRequest.getQueryString()));
                 System.out.println("method: " + httpServletRequest.getMethod());
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 IOUtils.copy(httpServletRequest.getInputStream(), baos);
 
-                System.out.println("body: " + baos.toString());
+                System.out.println("body: " + (body = baos.toString()));
 
                 PrintWriter writer = httpServletResponse.getWriter();
                 writer.append("testsvar");
@@ -153,8 +158,62 @@ public class CamelHttpComponentTest {
         Map<String, String> params = new HashMap();
         params.put("myParam", "myValue");
         params.put("myParam2", "myValue2");
+        //see se.vgregion.messagebus.EndpointMessageListener.createExchange() to see how the payload object is handled
+        //a map will be translated to an http request body in a POST request
         message.setPayload(params);
 
+        DefaultSynchronousMessageSender sender = createMessageSender();
+
+        Object result = sender.send(messagebusDestination, message, 15000);
+        assertEquals(expected.toString(), result);
+        //the ordering is not deterministic and doesn't matter so both alternatives are ok
+        assertTrue( "myParam=myValue&myParam2=myValue2".equals(body) ||
+                    "myParam2=myValue2&myParam=myValue".equals(body));
+    }
+
+    @Test
+    @DirtiesContext
+    public void testWithHttpRequestWithQueryByString() throws MessageBusException {
+
+        HttpRequest httpRequest = new HttpRequest();
+        String localQueryString = "OpenAgent&username=ex_teste&password=123456";
+        httpRequest.setQueryByString(localQueryString);
+
+        Message message = new Message();
+        //see se.vgregion.messagebus.EndpointMessageListener.createExchange() to see how the payload object is handled
+        message.setPayload(httpRequest);
+
+        DefaultSynchronousMessageSender sender = createMessageSender();
+
+        Object result = sender.send(messagebusDestination, message, 15000);
+
+        assertEquals(localQueryString, queryString);
+    }
+
+    @Test
+    @DirtiesContext
+    public void testWithHttpRequestWithQueryMap() throws MessageBusException {
+
+        HttpRequest httpRequest = new HttpRequest();
+        Map<String, String> params = new HashMap();
+        params.put("myParam", "myValue");
+        params.put("myParam2", "myValue2");
+        httpRequest.setQueryByMap(params);
+
+        Message message = new Message();
+        //see se.vgregion.messagebus.EndpointMessageListener.createExchange() to see how the payload object is handled
+        message.setPayload(httpRequest);
+
+        DefaultSynchronousMessageSender sender = createMessageSender();
+
+        Object result = sender.send(messagebusDestination, message, 15000);
+
+        //the ordering is not deterministic and doesn't matter so both alternatives are ok
+        assertTrue( "myParam=myValue&myParam2=myValue2".equals(queryString) ||
+                    "myParam2=myValue2&myParam=myValue".equals(queryString));
+    }
+
+    private DefaultSynchronousMessageSender createMessageSender() {
         //just to make a working sender without having a real Liferay server running
         DefaultSynchronousMessageSender sender = new DefaultSynchronousMessageSender();
         sender.setPortalUUID(new PortalUUID() {
@@ -165,8 +224,7 @@ public class CamelHttpComponentTest {
             }
         });
         sender.setMessageBus(messageBus);
-        Object result = sender.send(messagebusDestination, message, 15000);
-        assertEquals(expected.toString(), result);
+        return sender;
     }
 
 }

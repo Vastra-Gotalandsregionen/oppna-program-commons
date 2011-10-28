@@ -86,8 +86,8 @@ public class MockHttpListenerWithAuthentication {
         constraint.setAuthenticate(true);
 
         HashUserRealm myRealm = new HashUserRealm("MyRealm");
-        myRealm.put("supername", "superpassword");
-        myRealm.addUserToRole("supername", "superuser");
+        myRealm.put("tobechanged", "tobechanged");
+        myRealm.addUserToRole("tobechanged", "superuser");
 
         SecurityHandler securityHandler = new SecurityHandler();
         securityHandler.setUserRealm(myRealm);
