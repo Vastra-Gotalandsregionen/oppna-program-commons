@@ -1,6 +1,8 @@
 package se.vgregion.http;
 
 
+import javax.xml.bind.DatatypeConverter;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -10,6 +12,7 @@ public class HttpRequest {
 
     private String queryString;
     private String body;
+    private Map<String,String> headers = new HashMap<String, String>();
 
     public void setQueryByString(String queryString) {
         this.queryString = queryString;
@@ -30,6 +33,15 @@ public class HttpRequest {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public void addBasicAuthentication(String userName, String password) {
+        String base64Part = DatatypeConverter.printBase64Binary((userName + ":" + password).getBytes());
+        headers.put("Authorization", "Basic " + base64Part);
+    }
+
+    public Map<String, String> getHeaders() {
+        return headers;
     }
 
     public static StringBuilder mapToQuery(Map<String, String> parameters) {

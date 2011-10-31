@@ -73,13 +73,17 @@ public class EndpointMessageListener implements MessageListener {
             String query = HttpRequest.mapToQuery((Map) payload).toString();
             in.setBody(query);
         } else if (payload instanceof HttpRequest){
-            String queryString = ((HttpRequest) payload).getQueryString();
+            HttpRequest httpRequest = (HttpRequest) payload;
+            String queryString = httpRequest.getQueryString();
             if (queryString != null) {
                 in.setHeader(Exchange.HTTP_QUERY, queryString);
             }
-            String body = ((HttpRequest) payload).getBody();
+            String body = httpRequest.getBody();
             if (body != null) {
                 in.setBody(body);
+            }
+            for (Map.Entry<String, String> entry : httpRequest.getHeaders().entrySet()) {
+                in.setHeader(entry.getKey(), entry.getValue());
             }
         } else {
             in.setBody(payload);
