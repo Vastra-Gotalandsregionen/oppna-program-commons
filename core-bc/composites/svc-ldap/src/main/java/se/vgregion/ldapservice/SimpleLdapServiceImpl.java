@@ -84,20 +84,23 @@ public class SimpleLdapServiceImpl implements LdapService {
      * @param uid
      * @return
      */
-    public LdapUser getLdapUserByUid(String uid) {
+    public LdapUser getLdapUserByUid(String base, String uid) {
         ParameterizedContextMapper<SimpleLdapUser> ldapUserMapper = new SimpleLdapServiceImpl.LdapUserMapper();
         SimpleLdapUser ldapUser = null;
         AndFilter filter = new AndFilter();
         filter.and(new EqualsFilter("objectclass", "person")).and(new EqualsFilter("uid", uid));
         try {
-            ldapUser = ldapTemplate.searchForObject(DistinguishedName.EMPTY_PATH, filter.encode(), ldapUserMapper);
+            ldapUser = ldapTemplate.searchForObject(base, filter.encode(), ldapUserMapper);
         } catch (EmptyResultDataAccessException e) {
             // User was not found.
         }
         return ldapUser;
     }
 
-   
+    public LdapUser getLdapUserByUid(String uid) {
+        return getLdapUserByUid("", uid);
+    }
+
     public Properties getProperties() {
         throw new UnsupportedOperationException("Not implemented in simple ldap service, use LdapServiceImpl.");
     }

@@ -24,22 +24,24 @@ import java.util.Properties;
 
 public interface LdapService {
 
-    public abstract LdapUser[] search(String base, String filter);
+    LdapUser[] search(String base, String filter);
 
-    public abstract LdapUser[] search(String base, String filter, String[] attributes);
+    LdapUser[] search(String base, String filter, String[] attributes);
 
-    public abstract LdapUser getLdapUser(String base, String filter);
+    LdapUser getLdapUser(String base, String filter);
 
-    public abstract LdapUser getLdapUser(String base, String filter, String[] attributes);
+    LdapUser getLdapUser(String base, String filter, String[] attributes);
 
-    public abstract Properties getProperties();
+    Properties getProperties();
 
-    public abstract boolean addLdapUser(String context, HashMap<String, String> attributes);
+    boolean addLdapUser(String context, HashMap<String, String> attributes);
 
-    public abstract boolean modifyLdapUser(LdapUser e, HashMap<String, String> modifyAttributes);
+    boolean modifyLdapUser(LdapUser e, HashMap<String, String> modifyAttributes);
 
-    public abstract boolean deleteLdapUser(LdapUser e);
+    boolean deleteLdapUser(LdapUser e);
+
+    LdapUser getLdapUserByUid(String base, String uid);
     
-    public LdapUser getLdapUserByUid(String uid);
+    LdapUser getLdapUserByUid(String uid);
 
 }

@@ -260,6 +260,11 @@ public class LdapServiceImpl implements LdapService {
 
     }
 
+    @Override
+    public LdapUser getLdapUserByUid(String base, String uid) {
+        throw new UnsupportedOperationException("Not implemented in LdapServiceImpl, use simple ldap service");
+    }
+
     public static String dumpSearchRes(LdapUser[] res) {
         StringBuffer buf = new StringBuffer(256);
         for (int i = 0; i < res.length; i++) {
