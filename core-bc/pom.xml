@@ -4,6 +4,7 @@
     <groupId>se.vgregion.commons-util</groupId>
     <artifactId>commons-util-system</artifactId>
     <version>3.8-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
   <groupId>se.vgregion.commons-util</groupId>
   <artifactId>commons-util-core-bc</artifactId>
@@ -16,6 +17,7 @@
     <module>composites/svc-sitemap</module>
     <module>composites/svc-usd</module>
     <module>composites/svc-ldap</module>
+    <!--<module>composites/svc-liferay</module>-->
     <module>composites/webcomp-sitemap</module>
     <module>composites/types</module>
     <module>composites/svc-camel</module>

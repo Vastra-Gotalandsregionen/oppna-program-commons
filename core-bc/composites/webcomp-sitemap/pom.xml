@@ -9,6 +9,7 @@
     <groupId>se.vgregion.commons-util</groupId>
     <artifactId>commons-util-core-bc</artifactId>
     <version>3.8-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
   <groupId>se.vgregion.commons-util</groupId>
   <artifactId>commons-util-core-bc-composite-webcomp-sitemap</artifactId>

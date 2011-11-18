@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>se.vgregion.commons-util</groupId>
     <artifactId>commons-util-core-bc</artifactId>
     <version>3.8-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
+  <groupId>se.vgregion.commons-util</groupId>
   <artifactId>commons-util-core-bc-composite-svc-camel</artifactId>
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
 
   <properties>
     <camel-version>2.7.1</camel-version>
+    <liferay.version>6.0.6</liferay.version>
   </properties>
 
   <dependencies>
@@ -39,7 +41,7 @@
     <dependency>
       <groupId>com.liferay.portal</groupId>
       <artifactId>portal-service</artifactId>
-      <version>6.0.5</version>
+      <version>${liferay.version}</version>
       <scope>provided</scope>
       <!--<classifier>ee</classifier>-->
     </dependency>
