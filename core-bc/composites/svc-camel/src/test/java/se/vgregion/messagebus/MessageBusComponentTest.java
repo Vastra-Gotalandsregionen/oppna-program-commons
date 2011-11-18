@@ -82,6 +82,7 @@ public class MessageBusComponentTest {
     }
     
     @DirtiesContext
+    @Test
     public void testConsumer() throws Exception {
     	Message message = new Message();
     	message.setPayload("testing");
@@ -95,6 +96,7 @@ public class MessageBusComponentTest {
     }
     
     @DirtiesContext
+    @Test
     public void testFile() throws Exception {
         File file = null;
         try {

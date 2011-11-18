@@ -23,6 +23,14 @@
       <to uri="mock:result"/>
     </route>
 
+    <route>
+      <from uri="liferay:testFile"/>
+      <setHeader headerName="CamelFileName">
+        <constant>testFile.txt</constant>
+      </setHeader>
+      <to uri="file:bin"/>
+    </route>
+
   </camelContext>
 
 </beans>
