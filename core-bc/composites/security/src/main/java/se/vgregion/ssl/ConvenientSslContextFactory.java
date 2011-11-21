@@ -22,7 +22,8 @@ public class ConvenientSslContextFactory {
     private String keyStore;
     private String keyStorePassword;
 
-    public ConvenientSslContextFactory(String trustStore, String trustStorePassword, String keyStore, String keyStorePassword) {
+    public ConvenientSslContextFactory(String trustStore, String trustStorePassword, String keyStore,
+                                       String keyStorePassword) {
         this.trustStore = trustStore;
         this.trustStorePassword = trustStorePassword;
         this.keyStore = keyStore;
@@ -32,7 +33,7 @@ public class ConvenientSslContextFactory {
     public SSLContext createSslContext() throws Exception {
         try {
             SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(getKeyManager(), getTrustManager(), null);
+            sslContext.init(getKeyManagers(), getTrustManagers(), null);
             return sslContext;
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
@@ -44,12 +45,12 @@ public class ConvenientSslContextFactory {
      * @return Array of {@link javax.net.ssl.TrustManager}s.
      * @throws Exception Exception
      */
-    public TrustManager[] getTrustManager() throws Exception {
+    public TrustManager[] getTrustManagers() {
         TrustManager[] trustStoreManagers;
-        KeyStore trustedCertStore = KeyStore.getInstance("jks");
 
         InputStream tsStream = null;
         try {
+            KeyStore trustedCertStore = KeyStore.getInstance("jks");
             tsStream = getClass().getClassLoader().getResourceAsStream(trustStore);
 
             trustedCertStore.load(tsStream, trustStorePassword.toCharArray());
@@ -60,9 +61,15 @@ public class ConvenientSslContextFactory {
             tmf.init(trustedCertStore);
             trustStoreManagers = tmf.getTrustManagers();
             return trustStoreManagers;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         } finally {
             if (tsStream != null) {
-                tsStream.close();
+                try {
+                    tsStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -72,21 +79,34 @@ public class ConvenientSslContextFactory {
      * @return Array of {@link javax.net.ssl.KeyManager}s.
      * @throws Exception Exception
      */
-    public KeyManager[] getKeyManager() throws Exception {
-        KeyManagerFactory kmf =
-                KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        KeyStore ks = KeyStore.getInstance("jks");
-        KeyManager[] keystoreManagers = null;
+    public KeyManager[] getKeyManagers() {
+        ByteArrayInputStream bin = null;
+        try {
+            KeyManagerFactory kmf =
+                    KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            KeyStore ks = KeyStore.getInstance("jks");
+            KeyManager[] keystoreManagers = null;
 
-        byte[] sslCert = loadClientCredential(keyStore);
+            byte[] sslCert = loadClientCredential(keyStore);
 
-        if (sslCert != null && sslCert.length > 0) {
-            ByteArrayInputStream bin = new ByteArrayInputStream(sslCert);
-            ks.load(bin, keyStorePassword.toCharArray());
-            kmf.init(ks, keyStorePassword.toCharArray());
-            keystoreManagers = kmf.getKeyManagers();
+            if (sslCert != null && sslCert.length > 0) {
+                bin = new ByteArrayInputStream(sslCert);
+                ks.load(bin, keyStorePassword.toCharArray());
+                kmf.init(ks, keyStorePassword.toCharArray());
+                keystoreManagers = kmf.getKeyManagers();
+            }
+            return keystoreManagers;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (bin != null) {
+                try {
+                    bin.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-        return keystoreManagers;
     }
 
     private byte[] loadClientCredential(String fileName) throws IOException {

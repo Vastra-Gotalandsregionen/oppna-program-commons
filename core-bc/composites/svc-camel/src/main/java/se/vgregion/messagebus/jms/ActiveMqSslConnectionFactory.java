@@ -5,6 +5,7 @@ import org.apache.activemq.broker.SslContext;
 import org.apache.activemq.transport.Transport;
 import org.apache.activemq.transport.tcp.SslTransportFactory;
 import org.apache.activemq.util.JMSExceptionSupport;
+import se.vgregion.ssl.ConvenientSslContextFactory;
 
 import javax.jms.JMSException;
 import javax.net.ssl.KeyManager;
@@ -29,93 +30,22 @@ public final class ActiveMqSslConnectionFactory extends ActiveMQSslConnectionFac
             return super.createTransport();
         }
 
-        try {
-            if (keyManager == null || trustManager == null) {
-                trustManager = getTrustManager();
-                keyManager = getKeyManager();
-                // secureRandom can be left as null
-            }
-            SslTransportFactory sslFactory = new SslTransportFactory();
-            SslContext ctx = new SslContext(keyManager, trustManager, secureRandom);
-            SslContext.setCurrentSslContext(ctx);
-            return sslFactory.doConnect(brokerURL);
-        } catch (Exception e) {
-            throw JMSExceptionSupport.create("Could not create Transport. Reason: " + e, e);
+        ConvenientSslContextFactory convenientSslContextFactory = new ConvenientSslContextFactory(trustStore,
+                trustStorePassword, keyStore, keyStorePassword);
+
+        if (keyManager == null && notEmpty(keyStore)) {
+            keyManager = convenientSslContextFactory.getKeyManagers();
         }
+
+        if (trustManager == null && notEmpty(trustStore)) {
+            trustManager = convenientSslContextFactory.getTrustManagers();
+        }
+
+        return super.createTransport();
     }
 
-    /**
-     * Get {@link TrustManager} array.
-     * @return Array of {@link TrustManager}s.
-     * @throws Exception Exception
-     */
-    public TrustManager[] getTrustManager() throws Exception {
-        TrustManager[] trustStoreManagers = null;
-        KeyStore trustedCertStore = KeyStore.getInstance("jks");
-
-        InputStream tsStream = null;
-        try {
-            tsStream = getClass().getResourceAsStream(trustStore);
-
-            trustedCertStore.load(tsStream, trustStorePassword.toCharArray());
-
-            TrustManagerFactory tmf =
-                    TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-
-            tmf.init(trustedCertStore);
-            trustStoreManagers = tmf.getTrustManagers();
-            return trustStoreManagers;
-        } finally {
-            if (tsStream != null) {
-                tsStream.close();
-            }
-        }
-    }
-
-    /**
-     * Get {@link KeyManager} array.
-     * @return Array of {@link KeyManager}s.
-     * @throws Exception Exception
-     */
-    public KeyManager[] getKeyManager() throws Exception {
-        KeyManagerFactory kmf =
-                KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        KeyStore ks = KeyStore.getInstance("jks");
-        KeyManager[] keystoreManagers = null;
-
-        byte[] sslCert = loadClientCredential(keyStore);
-
-        if (sslCert != null && sslCert.length > 0) {
-            ByteArrayInputStream bin = new ByteArrayInputStream(sslCert);
-            ks.load(bin, keyStorePassword.toCharArray());
-            kmf.init(ks, keyStorePassword.toCharArray());
-            keystoreManagers = kmf.getKeyManagers();
-        }
-        return keystoreManagers;
-    }
-
-    private byte[] loadClientCredential(String fileName) throws IOException {
-        if (fileName == null) {
-            return new byte[0];
-        }
-
-        InputStream in = null;
-        try {
-            in = getClass().getResourceAsStream(fileName);
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            final int i1 = 512;
-            byte[] buf = new byte[i1];
-            int i = in.read(buf);
-            while (i > 0) {
-                out.write(buf, 0, i);
-                i = in.read(buf);
-            }
-            return out.toByteArray();
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-        }
+    private boolean notEmpty(String string) {
+        return string != null && !string.equals("");
     }
 
     public String getTrustStore() {
