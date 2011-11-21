@@ -58,8 +58,8 @@ public class UserGroupHelperImpl implements UserGroupHelper {
                 addUserToGroup(userGroup, users);
             }
         } catch (Exception e) {
-            String msg = String.format("Failed to add users [%s] to UserGroup [%s]", userGroupName,
-                    toIdArray(users));
+            String msg = String.format("Failed to add users [%s] to UserGroup [%s]",
+                    toScreenNames(users), userGroupName);
             log(msg, e);
         }
     }
@@ -72,8 +72,8 @@ public class UserGroupHelperImpl implements UserGroupHelper {
             try {
                 userLocalService.unsetUserGroupUsers(userGroup.getUserGroupId(), toIdArray(users));
             } catch (Exception e) {
-                String msg = String.format("Failed to remove users [%s] from UserGroup [%s]", userGroup.getName(),
-                        toIdArray(users));
+                String msg = String.format("Failed to remove users [%s] from UserGroup [%s]",
+                        toScreenNames(users), userGroup.getName());
                 log(msg, e);
             }
         }

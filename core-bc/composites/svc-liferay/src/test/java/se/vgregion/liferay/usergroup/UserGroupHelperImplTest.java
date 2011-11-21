@@ -16,7 +16,7 @@ import se.vgregion.liferay.LiferayAutomation;
 
 import java.io.StringWriter;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -51,10 +51,6 @@ public class UserGroupHelperImplTest {
 
     @Test
     public void testAddUserToGroup() throws Exception {
-
-        User sysadmin = mock(User.class);
-        when(liferayAutomation.lookupSysadmin(anyLong())).thenReturn(sysadmin);
-
         UserGroup userGroup = mock(UserGroup.class);
         when(userGroup.getUserGroupId()).thenReturn(1L);
         User user = mock(User.class);
@@ -62,6 +58,7 @@ public class UserGroupHelperImplTest {
         userGroupHelper.addUserToGroup(userGroup, user);
 
         verify(userLocalService).addUserGroupUsers(1L, new long[]{2L});
+        verifyZeroInteractions(liferayAutomation);
     }
 
     @Test
@@ -85,6 +82,7 @@ public class UserGroupHelperImplTest {
         userGroupHelper.addUserToGroup(userGroup, user);
 
         verify(userLocalService).addUserGroupUsers(1L, new long[]{2L});
+        verifyZeroInteractions(liferayAutomation.lookupSysadmin(anyLong()));
 
         // then
         String[] logMessages = writer.toString().split(EOL);
@@ -92,18 +90,73 @@ public class UserGroupHelperImplTest {
     }
 
     @Test
-    public void testRemoveUserFromGroup1() throws Exception {
+    public void testAddUserToGroupByName() throws Exception {
 
     }
 
     @Test
-    public void testRemoveUserFromGroup2() throws Exception {
+    public void testRemoveUserFromGroup() throws Exception {
+        UserGroup userGroup = mock(UserGroup.class);
+        when(userGroup.getUserGroupId()).thenReturn(1L);
+
+        userGroupHelper.removeUserFromGroup(userGroup);
+        verifyZeroInteractions(userLocalService);
+
+        User user = mock(User.class);
+        when(user.getUserId()).thenReturn(2L);
+
+        userGroupHelper.removeUserFromGroup(userGroup, user);
+        verify(userLocalService).unsetUserGroupUsers(1L, new long[]{2L});
+    }
+
+    @Test
+    public void testRemoveUserFromGroupFail() throws Exception {
+        // given
+        final StringWriter writer = setupLogger(UserGroupHelperImpl.class, Level.WARN);
+
+        UserGroup userGroup = mock(UserGroup.class);
+        when(userGroup.getUserGroupId()).thenReturn(1L);
+        when(userGroup.getName()).thenReturn("UG");
+
+        User user = mock(User.class);
+        when(user.getUserId()).thenReturn(2L);
+        when(user.getScreenName()).thenReturn("U");
+
+        doThrow(new SystemException("ERROR")).when(userLocalService).unsetUserGroupUsers(1L, new long[]{2L});
+
+        userGroupHelper.removeUserFromGroup(userGroup, user);
+
+        // then
+        String[] logMessages = writer.toString().split(EOL);
+        assertEquals("WARN - Failed to remove users [U] from UserGroup [UG]", logMessages[0]);
+    }
+
+    @Test
+    public void testRemoveUserFromGroupByName() throws Exception {
 
     }
 
     @Test
     public void testFindByName() throws Exception {
+        UserGroup userGroup = mock(UserGroup.class);
+        when(userGroupLocalService.getUserGroup(1L, "UG")).thenReturn(userGroup);
 
+        UserGroup result = userGroupHelper.findByName("UG", 1L);
+
+        assertSame(userGroup, result);
+    }
+
+    @Test
+    public void testFindByNameFail() throws Exception {
+        final StringWriter writer = setupLogger(UserGroupHelperImpl.class, Level.WARN);
+
+        when(userGroupLocalService.getUserGroup(1L, "UG")).thenThrow(new SystemException("ERROR"));
+
+        UserGroup result = userGroupHelper.findByName("UG", 1L);
+
+        assertNull(result);
+        String[] logMessages = writer.toString().split(EOL);
+        assertEquals("WARN - Unable to find UserGroup [UG] for companyId [1]", logMessages[0]);
     }
 
     @Test
