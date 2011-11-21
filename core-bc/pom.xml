@@ -13,6 +13,7 @@
   <name>${project.artifactId}</name>
 
   <modules>
+    <module>composites/security</module>
     <module>composites/svc-pivotaltracker</module>
     <module>composites/svc-sitemap</module>
     <module>composites/svc-usd</module>

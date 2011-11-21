@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+  <!--
+    This is the Web-app Maven POM. Template version: 1.1-SNAPSHOT
+    Generation time : 2009-01-08 10:18:23 CET
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>se.vgregion.commons-util</groupId>
+    <artifactId>commons-util-core-bc</artifactId>
+    <version>3.8-SNAPSHOT</version>
+  </parent>
+  <groupId>se.vgregion.commons-util</groupId>
+  <artifactId>commons-util-core-bc-composite-security</artifactId>
+  <packaging>jar</packaging>
+  <name>${project.artifactId}</name>
+
+  <dependencies>
+    
+  </dependencies>
+
+</project>
