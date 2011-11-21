@@ -37,8 +37,8 @@ public class UserGroupHelperImpl implements UserGroupHelper {
             try {
                 userLocalService.addUserGroupUsers(userGroup.getUserGroupId(), toIdArray(users));
             } catch (Exception e) {
-                String msg = String.format("Failed to add users [%s] to UserGroup [%s]", userGroup.getName(),
-                        toIdArray(users));
+                String msg = String.format("Failed to add users [%s] to UserGroup [%s]",
+                        toScreenNames(users), userGroup.getName());
                 log(msg, e);
             }
         }
@@ -198,6 +198,15 @@ public class UserGroupHelperImpl implements UserGroupHelper {
             userIds[i] = users[i].getUserId();
         }
         return userIds;
+    }
+
+    private String toScreenNames(User... users) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < users.length; i++) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(users[i].getScreenName());
+        }
+        return sb.toString();
     }
 
     private void log(String msg, Exception e) {
