@@ -17,7 +17,7 @@
     <module>composites/svc-sitemap</module>
     <module>composites/svc-usd</module>
     <module>composites/svc-ldap</module>
-    <!--<module>composites/svc-liferay</module>-->
+    <module>composites/svc-liferay</module>
     <module>composites/webcomp-sitemap</module>
     <module>composites/types</module>
     <module>composites/svc-camel</module>
