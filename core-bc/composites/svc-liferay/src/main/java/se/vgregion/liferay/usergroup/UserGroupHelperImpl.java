@@ -218,7 +218,7 @@ public class UserGroupHelperImpl implements UserGroupHelper {
             long companyId = users[0].getCompanyId();
             for (User user : users) {
                 if (user.getCompanyId() != companyId) {
-                    LOGGER.error("User are from different Liferay instances");
+                    LOGGER.error("Users are from different Liferay instances (they have different companyId)");
                     return true;
                 }
             }
