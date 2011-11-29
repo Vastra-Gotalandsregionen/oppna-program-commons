@@ -8,9 +8,6 @@ import com.liferay.portal.service.UserLocalService;
 import org.apache.log4j.*;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.vgregion.liferay.LiferayAutomation;
 
@@ -55,7 +52,7 @@ public class UserGroupHelperImplTest {
         when(userGroup.getUserGroupId()).thenReturn(1L);
         User user = mock(User.class);
         when(user.getUserId()).thenReturn(2L);
-        userGroupHelper.addUserToGroup(userGroup, user);
+        userGroupHelper.addUser(userGroup, user);
 
         verify(userLocalService).addUserGroupUsers(1L, new long[]{2L});
         verifyZeroInteractions(liferayAutomation);
@@ -79,7 +76,7 @@ public class UserGroupHelperImplTest {
         doThrow(new SystemException("ERROR")).when(userLocalService).
                 addUserGroupUsers(1L, new long[]{2L});
 
-        userGroupHelper.addUserToGroup(userGroup, user);
+        userGroupHelper.addUser(userGroup, user);
 
         verify(userLocalService).addUserGroupUsers(1L, new long[]{2L});
         verifyZeroInteractions(liferayAutomation.lookupSysadmin(anyLong()));
@@ -99,13 +96,13 @@ public class UserGroupHelperImplTest {
         UserGroup userGroup = mock(UserGroup.class);
         when(userGroup.getUserGroupId()).thenReturn(1L);
 
-        userGroupHelper.removeUserFromGroup(userGroup);
+        userGroupHelper.removeUser(userGroup);
         verifyZeroInteractions(userLocalService);
 
         User user = mock(User.class);
         when(user.getUserId()).thenReturn(2L);
 
-        userGroupHelper.removeUserFromGroup(userGroup, user);
+        userGroupHelper.removeUser(userGroup, user);
         verify(userLocalService).unsetUserGroupUsers(1L, new long[]{2L});
     }
 
@@ -124,7 +121,7 @@ public class UserGroupHelperImplTest {
 
         doThrow(new SystemException("ERROR")).when(userLocalService).unsetUserGroupUsers(1L, new long[]{2L});
 
-        userGroupHelper.removeUserFromGroup(userGroup, user);
+        userGroupHelper.removeUser(userGroup, user);
 
         // then
         String[] logMessages = writer.toString().split(EOL);

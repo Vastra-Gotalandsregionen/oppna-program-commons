@@ -11,11 +11,11 @@ import com.liferay.portal.model.UserGroup;
  */
 public interface UserGroupHelper {
 
-    void addUserToGroup(UserGroup userGroup, User... user);
-    void addUserToGroup(String userGroupName, User... user);
+    void addUser(UserGroup userGroup, User... user);
+    void addUser(String userGroupName, User... user);
 
-    void removeUserFromGroup(UserGroup userGroup, User... user);
-    void removeUserFromGroup(String userGroupName, User... user);
+    void removeUser(UserGroup userGroup, User... user);
+    void removeUser(String userGroupName, User... user);
 
     UserGroup findByName(String userGroupName, long companyId);
 

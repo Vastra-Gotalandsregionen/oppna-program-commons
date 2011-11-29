@@ -2,6 +2,12 @@ package se.vgregion.liferay.expando;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.model.ResourceConstants;
+import com.liferay.portal.model.Role;
+import com.liferay.portal.model.RoleConstants;
+import com.liferay.portal.security.permission.ActionKeys;
+import com.liferay.portal.service.ResourcePermissionLocalService;
+import com.liferay.portal.service.RoleLocalService;
 import com.liferay.portlet.expando.model.ExpandoColumn;
 import com.liferay.portlet.expando.model.ExpandoColumnConstants;
 import com.liferay.portlet.expando.model.ExpandoTable;
@@ -36,6 +42,12 @@ public class ExpandoUtil {
 
     @Autowired
     protected ExpandoValueLocalService expandoValueService;
+
+    @Autowired(required = false)
+    protected RoleLocalService roleLocalService;
+
+    @Autowired(required = false)
+    protected ResourcePermissionLocalService resourcePermissionLocalService;
 
     public void setExpando(String targetClassName, String columnName, Object value, long companyId,
             long classPK, Mode mode) {
@@ -88,11 +100,28 @@ public class ExpandoUtil {
         }
     }
 
-    private ExpandoColumn createExpandoColumn(long tableId, String columnName, int expandoType) {
+    private ExpandoColumn createExpandoColumn(long companyId, long tableId, String columnName, int expandoType) {
         try {
-            return expandoColumnService.addColumn(tableId, columnName, expandoType);
+            ExpandoColumn expandoColumn = expandoColumnService.addColumn(tableId, columnName, expandoType);
+            resourcePermission(companyId, expandoColumn, RoleConstants.USER);
+
+            return expandoColumn;
         } catch (Exception e) {
             LOGGER.error("createExpandoColumn", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void resourcePermission(long companyId, ExpandoColumn expandoColumn, String roleName) {
+        try {
+            if (roleLocalService != null && resourcePermissionLocalService != null) {
+                Role permissionRole = roleLocalService.getRole(companyId, roleName);
+                resourcePermissionLocalService.setResourcePermissions(companyId, ExpandoColumn.class.getName(),
+                        ResourceConstants.SCOPE_INDIVIDUAL, String.valueOf(expandoColumn.getColumnId()),
+                        permissionRole.getRoleId(), new String[]{ActionKeys.VIEW});
+            }
+        } catch (Exception e) {
+            LOGGER.error("resource permission", e);
             throw new RuntimeException(e);
         }
     }
@@ -124,7 +153,7 @@ public class ExpandoUtil {
         } catch (PortalException e) {
             if (e instanceof com.liferay.portlet.expando.NoSuchColumnException) {
                 // If column don't exists we try to create it.
-                createExpandoColumn(expandoTable.getTableId(), columnName, expandoType);
+                createExpandoColumn(companyId, expandoTable.getTableId(), columnName, expandoType);
             }
         } catch (SystemException e) {
             throw new RuntimeException("Failed to create ExpandoColumn [" + columnName + "]", e);

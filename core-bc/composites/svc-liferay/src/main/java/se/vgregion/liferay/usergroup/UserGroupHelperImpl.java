@@ -30,7 +30,7 @@ public class UserGroupHelperImpl implements UserGroupHelper {
     private UserLocalService userLocalService;
 
     @Override
-    public void addUserToGroup(UserGroup userGroup, User... users) {
+    public void addUser(UserGroup userGroup, User... users) {
         if (isInvalid(users)) return;
 
         if (userGroup != null) {
@@ -45,7 +45,7 @@ public class UserGroupHelperImpl implements UserGroupHelper {
     }
 
     @Override
-    public void addUserToGroup(String userGroupName, User... users) {
+    public void addUser(String userGroupName, User... users) {
         if (isInvalid(users)) return;
 
         try {
@@ -53,9 +53,9 @@ public class UserGroupHelperImpl implements UserGroupHelper {
             if (userGroup == null) {
                 // create and try again
                 createIfNeeded(userGroupName, users[0].getCompanyId());
-                addUserToGroup(userGroupName, users);
+                addUser(userGroupName, users);
             } else {
-                addUserToGroup(userGroup, users);
+                addUser(userGroup, users);
             }
         } catch (Exception e) {
             String msg = String.format("Failed to add users [%s] to UserGroup [%s]",
@@ -65,7 +65,7 @@ public class UserGroupHelperImpl implements UserGroupHelper {
     }
 
     @Override
-    public void removeUserFromGroup(UserGroup userGroup, User... users) {
+    public void removeUser(UserGroup userGroup, User... users) {
         if (isInvalid(users)) return;
 
         if (userGroup != null) {
@@ -80,11 +80,11 @@ public class UserGroupHelperImpl implements UserGroupHelper {
     }
 
     @Override
-    public void removeUserFromGroup(String userGroupName, User... users) {
+    public void removeUser(String userGroupName, User... users) {
         if (isInvalid(users)) return;
 
         UserGroup userGroup = findByName(userGroupName, users[0].getCompanyId());
-        removeUserFromGroup(userGroup, users);
+        removeUser(userGroup, users);
     }
 
     @Override
