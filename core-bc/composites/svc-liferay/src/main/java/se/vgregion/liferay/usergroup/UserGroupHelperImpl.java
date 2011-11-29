@@ -211,7 +211,7 @@ public class UserGroupHelperImpl implements UserGroupHelper {
 
     private void log(String msg, Exception e) {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(msg, e);
+            LOGGER.warn(msg, e);
         } else {
             LOGGER.warn(msg);
         }

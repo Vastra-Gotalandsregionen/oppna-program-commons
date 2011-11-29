@@ -16,7 +16,8 @@ public class CommunityExpandoHelperImpl implements CommunityExpandoHelper {
 
     @Override
     public <T> void set(String columnName, T value, long companyId, long communityId) {
-        expandoUtil.setExpando(COMMUNITY_CLASSNAME, columnName, value, companyId, communityId);
+        expandoUtil.setExpando(COMMUNITY_CLASSNAME, columnName, value, companyId, communityId,
+                ExpandoUtil.Mode.AUTO_CREATE);
     }
 
     @Override

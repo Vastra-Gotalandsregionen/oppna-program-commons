@@ -16,7 +16,7 @@ public class UserExpandoHelperImpl implements UserExpandoHelper {
 
     @Override
     public <T> void set(String columnName, T value, long companyId, long userId) {
-        expandoUtil.setExpando(USER_CLASSNAME, columnName, value, companyId, userId);
+        expandoUtil.setExpando(USER_CLASSNAME, columnName, value, companyId, userId, ExpandoUtil.Mode.AUTO_CREATE);
     }
 
     @Override

@@ -184,7 +184,6 @@ public class UserGroupHelperImplTest {
 
     }
 
-
     private StringWriter setupLogger(Class loggerClass, Level level) {
         Logger logger = Logger.getLogger(loggerClass);
         logger.setLevel(level);

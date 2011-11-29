@@ -20,7 +20,8 @@ public class CompanyExpandoHelperImpl implements CompanyExpandoHelper {
 
 	@Override
     public void set(String columnName, String value, long companyId) {
-        expandoUtil.setExpando(COMPANY_CLASSNAME, columnName, value, companyId, companyId);
+        expandoUtil.setExpando(COMPANY_CLASSNAME, columnName, value, companyId, companyId,
+                ExpandoUtil.Mode.AUTO_CREATE);
 	}
 
     @Override

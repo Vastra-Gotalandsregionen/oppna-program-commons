@@ -24,6 +24,8 @@ import java.util.List;
  * @author <a href="mailto:david.rosell@redpill-linpro.com">David Rosell</a>
  */
 public class ExpandoUtil {
+    enum Mode {AUTO_CREATE, SET_ONLY}
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ExpandoUtil.class);
 
     @Autowired
@@ -35,16 +37,22 @@ public class ExpandoUtil {
     @Autowired
     protected ExpandoValueLocalService expandoValueService;
 
-    public void setExpando(String targetClassName, String columnName, Object value, long companyId, long classPK) {
+    public void setExpando(String targetClassName, String columnName, Object value, long companyId,
+            long classPK, Mode mode) {
         try {
             expandoValueService.addValue(companyId, targetClassName, ExpandoTableConstants.DEFAULT_TABLE_NAME,
                     columnName, classPK, value);
         } catch (Exception e) {
-            LOGGER.info("set", e);
-            // Create expando and try again.
-            int expandoType = resolveExpandoType(value.getClass());
-            createIfNeeded(companyId, targetClassName, columnName, expandoType);
-            setExpando(targetClassName, columnName, value, companyId, classPK);
+            if (mode == Mode.AUTO_CREATE) {
+                // Create expando and try again.
+                int expandoType = resolveExpandoType(value.getClass());
+                createIfNeeded(companyId, targetClassName, columnName, expandoType);
+                setExpando(targetClassName, columnName, value, companyId, classPK, Mode.SET_ONLY);
+            } else {
+                String msg = String.format("Failed to set expando value [%s, %s, %s, %s, %s]", companyId,
+                        targetClassName, columnName, classPK, value);
+                log(msg, e);
+            }
         }
     }
 
@@ -54,7 +62,6 @@ public class ExpandoUtil {
         try {
             value = expandoValueService.getData(companyId, targetClassName,
                     ExpandoTableConstants.DEFAULT_TABLE_NAME, columnName, classPK);
-
         } catch (PortalException e) {
             throw new RuntimeException(e);
         } catch (SystemException e) {
@@ -82,22 +89,22 @@ public class ExpandoUtil {
     }
 
     private ExpandoColumn createExpandoColumn(long tableId, String columnName, int expandoType) {
-		try {
-			return expandoColumnService.addColumn(tableId, columnName, expandoType);
-		} catch (Exception e) {
-            LOGGER.error("createExpandoColumn", e);
-			throw new RuntimeException(e);
-		}
-	}
-
-	private ExpandoTable createExpandoTable(long companyId, String targetClassName) {
         try {
-			return expandoTableService.addDefaultTable(companyId, targetClassName);
-		} catch (Exception e) {
+            return expandoColumnService.addColumn(tableId, columnName, expandoType);
+        } catch (Exception e) {
+            LOGGER.error("createExpandoColumn", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private ExpandoTable createExpandoTable(long companyId, String targetClassName) {
+        try {
+            return expandoTableService.addDefaultTable(companyId, targetClassName);
+        } catch (Exception e) {
             LOGGER.error("createExpandoTable", e);
-			throw new RuntimeException(e);
-		}
-	}
+            throw new RuntimeException(e);
+        }
+    }
 
     private void createIfNeeded(long companyId, String targetClassName, String columnName, int expandoType) {
         ExpandoTable expandoTable = null;
@@ -109,7 +116,7 @@ public class ExpandoUtil {
                 expandoTable = createExpandoTable(companyId, targetClassName);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create ExpandoTable ["+targetClassName+"]", e);
+            throw new RuntimeException("Failed to create ExpandoTable [" + targetClassName + "]", e);
         }
 
         try {
@@ -120,7 +127,7 @@ public class ExpandoUtil {
                 createExpandoColumn(expandoTable.getTableId(), columnName, expandoType);
             }
         } catch (SystemException e) {
-            throw new RuntimeException("Failed to create ExpandoColumn ["+columnName+"]", e);
+            throw new RuntimeException("Failed to create ExpandoColumn [" + columnName + "]", e);
         }
     }
 
@@ -148,4 +155,12 @@ public class ExpandoUtil {
         throw new IllegalArgumentException(msg);
     }
 
+
+    private void log(String msg, Exception e) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.warn(msg, e);
+        } else {
+            LOGGER.warn(msg);
+        }
+    }
 }
