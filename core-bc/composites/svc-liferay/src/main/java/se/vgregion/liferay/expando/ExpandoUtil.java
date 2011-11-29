@@ -34,13 +34,13 @@ public class ExpandoUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExpandoUtil.class);
 
-    @Autowired
+    @Autowired(required = false)
     protected ExpandoColumnLocalService expandoColumnService;
 
-    @Autowired
+    @Autowired(required = false)
     protected ExpandoTableLocalService expandoTableService;
 
-    @Autowired
+    @Autowired(required = false)
     protected ExpandoValueLocalService expandoValueService;
 
     @Autowired(required = false)
@@ -52,6 +52,9 @@ public class ExpandoUtil {
     public void setExpando(String targetClassName, String columnName, Object value, long companyId,
             long classPK, Mode mode) {
         try {
+            if (expandoValueService == null) {
+                throw new Exception("ExpandoValueService is not configured");
+            }
             expandoValueService.addValue(companyId, targetClassName, ExpandoTableConstants.DEFAULT_TABLE_NAME,
                     columnName, classPK, value);
         } catch (Exception e) {
@@ -69,23 +72,24 @@ public class ExpandoUtil {
     }
 
     public Object getExpando(long companyId, String targetClassName, String columnName, long classPK) {
-
-        Object value = null;
         try {
-            value = expandoValueService.getData(companyId, targetClassName,
+            if (expandoValueService == null) {
+                throw new Exception("ExpandoValueService is not configured");
+            }
+            return expandoValueService.getData(companyId, targetClassName,
                     ExpandoTableConstants.DEFAULT_TABLE_NAME, columnName, classPK);
-        } catch (PortalException e) {
-            throw new RuntimeException(e);
-        } catch (SystemException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return value;
     }
 
     public List<ExpandoColumn> getAllExpando(String targetClassName, long companyId) {
         try {
+            if (expandoColumnService == null) {
+                throw new Exception("ExpandoColumnService is not configured");
+            }
             return expandoColumnService.getDefaultTableColumns(companyId, targetClassName);
-        } catch (SystemException e) {
+        } catch (Exception e) {
             LOGGER.error("getAllExpando", e);
             throw new RuntimeException(e);
         }
@@ -93,6 +97,9 @@ public class ExpandoUtil {
 
     public void deleteExpando(String targetClassName, String columnName, long companyId) {
         try {
+            if (expandoColumnService == null) {
+                throw new Exception("ExpandoColumnService is not configured");
+            }
             expandoColumnService.deleteColumn(companyId, targetClassName, ExpandoTableConstants.DEFAULT_TABLE_NAME, columnName);
         } catch (Exception e) {
             LOGGER.error("deleteExpando", e);
@@ -102,6 +109,9 @@ public class ExpandoUtil {
 
     private ExpandoColumn createExpandoColumn(long companyId, long tableId, String columnName, int expandoType) {
         try {
+            if (expandoColumnService == null) {
+                throw new Exception("ExpandoColumnService is not configured");
+            }
             ExpandoColumn expandoColumn = expandoColumnService.addColumn(tableId, columnName, expandoType);
             resourcePermission(companyId, expandoColumn, RoleConstants.USER);
 
@@ -114,6 +124,12 @@ public class ExpandoUtil {
 
     private void resourcePermission(long companyId, ExpandoColumn expandoColumn, String roleName) {
         try {
+            if (roleLocalService == null) {
+                throw new Exception("RoleLocalService is not configured");
+            }
+            if (resourcePermissionLocalService == null) {
+                throw new Exception("ResourcePermissionLocalService is not configured");
+            }
             if (roleLocalService != null && resourcePermissionLocalService != null) {
                 Role permissionRole = roleLocalService.getRole(companyId, roleName);
                 resourcePermissionLocalService.setResourcePermissions(companyId, ExpandoColumn.class.getName(),
@@ -128,6 +144,9 @@ public class ExpandoUtil {
 
     private ExpandoTable createExpandoTable(long companyId, String targetClassName) {
         try {
+            if (expandoTableService == null) {
+                throw new Exception("ExpandoTableService is not configured");
+            }
             return expandoTableService.addDefaultTable(companyId, targetClassName);
         } catch (Exception e) {
             LOGGER.error("createExpandoTable", e);
@@ -138,6 +157,9 @@ public class ExpandoUtil {
     private void createIfNeeded(long companyId, String targetClassName, String columnName, int expandoType) {
         ExpandoTable expandoTable = null;
         try {
+            if (expandoTableService == null) {
+                throw new Exception("ExpandoTableService is not configured");
+            }
             expandoTable = expandoTableService.getDefaultTable(companyId, targetClassName);
         } catch (PortalException e) {
             if (e instanceof com.liferay.portlet.expando.NoSuchTableException) {
@@ -149,13 +171,16 @@ public class ExpandoUtil {
         }
 
         try {
+            if (expandoColumnService == null) {
+                throw new Exception("ExpandoColumnService is not configured");
+            }
             expandoColumnService.getColumn(expandoTable.getTableId(), columnName);
         } catch (PortalException e) {
             if (e instanceof com.liferay.portlet.expando.NoSuchColumnException) {
                 // If column don't exists we try to create it.
                 createExpandoColumn(companyId, expandoTable.getTableId(), columnName, expandoType);
             }
-        } catch (SystemException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Failed to create ExpandoColumn [" + columnName + "]", e);
         }
     }
