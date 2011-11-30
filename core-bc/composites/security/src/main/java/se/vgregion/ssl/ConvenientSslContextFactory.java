@@ -7,6 +7,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -42,6 +43,7 @@ public class ConvenientSslContextFactory {
 
     /**
      * Get {@link javax.net.ssl.TrustManager} array.
+     *
      * @return Array of {@link javax.net.ssl.TrustManager}s.
      * @throws Exception Exception
      */
@@ -53,6 +55,14 @@ public class ConvenientSslContextFactory {
             KeyStore trustedCertStore = KeyStore.getInstance("jks");
             tsStream = getClass().getClassLoader().getResourceAsStream(trustStore);
 
+            if (tsStream == null) {
+                //try absolute location on disk
+                tsStream = new FileInputStream(trustStore);
+                if (tsStream == null) {
+                    throw new RuntimeException("Could not find truststore " + trustStore);
+                }
+            }
+            System.out.println(trustStore);
             trustedCertStore.load(tsStream, trustStorePassword.toCharArray());
 
             TrustManagerFactory tmf =
@@ -76,6 +86,7 @@ public class ConvenientSslContextFactory {
 
     /**
      * Get {@link javax.net.ssl.KeyManager} array.
+     *
      * @return Array of {@link javax.net.ssl.KeyManager}s.
      * @throws Exception Exception
      */
@@ -117,6 +128,12 @@ public class ConvenientSslContextFactory {
         InputStream in = null;
         try {
             in = getClass().getClassLoader().getResourceAsStream(fileName);
+
+            if (in == null) {
+                //try absolute location on disk
+                in = new FileInputStream(fileName);
+            }
+
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             final int i1 = 512;
             byte[] buf = new byte[i1];
