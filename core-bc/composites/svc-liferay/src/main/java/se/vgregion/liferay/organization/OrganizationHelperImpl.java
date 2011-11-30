@@ -2,6 +2,8 @@ package se.vgregion.liferay.organization;
 
 import com.liferay.portal.model.Organization;
 import com.liferay.portal.model.User;
+import com.liferay.portal.service.OrganizationLocalService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by IntelliJ IDEA.
@@ -10,6 +12,10 @@ import com.liferay.portal.model.User;
  * @author <a href="mailto:david.rosell@redpill-linpro.com">David Rosell</a>
  */
 public class OrganizationHelperImpl implements OrganizationHelper {
+
+    @Autowired
+    private OrganizationLocalService organizationLocalService;
+
     @Override
     public void addUser(Organization organization, User... user) {
         //To change body of implemented methods use File | Settings | File Templates.

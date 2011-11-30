@@ -20,13 +20,13 @@ import java.util.List;
 public class UserGroupHelperImpl implements UserGroupHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserGroupHelperImpl.class);
 
-    @Autowired(required = false)
+    @Autowired
     private LiferayAutomation liferayAutomation;
 
-    @Autowired(required = false)
+    @Autowired
     private UserGroupLocalService userGroupLocalService;
 
-    @Autowired(required = false)
+    @Autowired
     private UserLocalService userLocalService;
 
     @Override
@@ -35,9 +35,6 @@ public class UserGroupHelperImpl implements UserGroupHelper {
 
         if (userGroup != null) {
             try {
-                if (userLocalService == null) {
-                    throw new Exception("UserLocalService is not configured");
-                }
                 userLocalService.addUserGroupUsers(userGroup.getUserGroupId(), toIdArray(users));
             } catch (Exception e) {
                 String msg = String.format("Failed to add users [%s] to UserGroup [%s]",
@@ -73,9 +70,6 @@ public class UserGroupHelperImpl implements UserGroupHelper {
 
         if (userGroup != null) {
             try {
-                if (userLocalService == null) {
-                    throw new Exception("UserLocalService is not configured");
-                }
                 userLocalService.unsetUserGroupUsers(userGroup.getUserGroupId(), toIdArray(users));
             } catch (Exception e) {
                 String msg = String.format("Failed to remove users [%s] from UserGroup [%s]",
@@ -96,9 +90,6 @@ public class UserGroupHelperImpl implements UserGroupHelper {
     @Override
     public UserGroup findByName(String userGroupName, long companyId) {
         try {
-            if (userGroupLocalService == null) {
-                throw new Exception("UserGroupLocalService is not configured");
-            }
             return userGroupLocalService.getUserGroup(companyId, userGroupName);
         } catch (Exception e) {
             String msg = String.format("Unable to find UserGroup [%s] for companyId [%s]",
@@ -111,9 +102,6 @@ public class UserGroupHelperImpl implements UserGroupHelper {
     @Override
     public boolean isMember(UserGroup userGroup, User user) {
         try {
-            if (userLocalService == null) {
-                throw new Exception("UserLocalService is not configured");
-            }
             return userLocalService.hasUserGroupUser(userGroup.getUserGroupId(), user.getUserId());
         } catch (Exception e) {
             String msg = String.format("Failed to lookup if user belongs to group [%s, %s]",
@@ -126,13 +114,6 @@ public class UserGroupHelperImpl implements UserGroupHelper {
     @Override
     public void createIfNeeded(String userGroupName, long companyId) {
         try {
-            if (userGroupLocalService == null) {
-                throw new Exception("UserGroupLocalService is not configured");
-            }
-            if (liferayAutomation == null) {
-                throw new Exception("LiferayAutomation is not configured");
-            }
-
             if (findByName(userGroupName, companyId) != null) return;
 
             User systemUser = liferayAutomation.lookupSysadmin(companyId);
@@ -150,12 +131,6 @@ public class UserGroupHelperImpl implements UserGroupHelper {
     @Override
     public void rename(String newUserGroupName, UserGroup userGroup) {
         try {
-            if (userGroupLocalService == null) {
-                throw new Exception("UserGroupLocalService is not configured");
-            }
-            if (liferayAutomation == null) {
-                throw new Exception("LiferayAutomation is not configured");
-            }
             String description = liferayAutomation.autoRenameDescription(userGroup.getName(), newUserGroupName);
             userGroup.setName(newUserGroupName);
             userGroup.setDescription(userGroup.getDescription() + description);
@@ -171,9 +146,6 @@ public class UserGroupHelperImpl implements UserGroupHelper {
     @Override
     public void moveUsers(UserGroup fromGroup, UserGroup toGroup) {
         try {
-            if (userLocalService == null) {
-                throw new Exception("UserLocalService is not configured");
-            }
             List<User> users = userLocalService.getUserGroupUsers(fromGroup.getUserGroupId());
             long[] userIds = toIdArray(users.toArray(new User[]{}));
 
@@ -191,13 +163,6 @@ public class UserGroupHelperImpl implements UserGroupHelper {
     @Override
     public void delete(UserGroup userGroup) {
         try {
-            if (userLocalService == null) {
-                throw new Exception("UserLocalService is not configured");
-            }
-            if (userGroupLocalService == null) {
-                throw new Exception("UserGroupLocalService is not configured");
-            }
-
             List<User> users = userLocalService.getUserGroupUsers(userGroup.getUserGroupId());
             long[] userIds = toIdArray(users.toArray(new User[]{}));
 
