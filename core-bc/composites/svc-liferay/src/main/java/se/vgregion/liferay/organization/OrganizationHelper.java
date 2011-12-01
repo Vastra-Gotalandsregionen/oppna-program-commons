@@ -12,15 +12,18 @@ import java.util.List;
  * @author <a href="mailto:david.rosell@redpill-linpro.com">David Rosell</a>
  */
 public interface OrganizationHelper {
-    void addUser(List<String> organizationNames, User user);
+    void addUser(Organization organization, User... user);
+    void addUser(String organizationNames, User... user);
 
-    void removeUser(List<String> organizationNames, User user);
+    void removeUser(Organization organization, User... user);
+    void removeUser(String organizationNames, User... user);
 
     Organization findByName(String organizationName, long companyId);
 
     boolean isMember(Organization organization, User user);
     boolean isMember(String organizationName, User user);
 
+    void createIfNeeded(String organizationName, Organization parent, long companyId);
     void createIfNeeded(String organizationName, long companyId);
 
 }

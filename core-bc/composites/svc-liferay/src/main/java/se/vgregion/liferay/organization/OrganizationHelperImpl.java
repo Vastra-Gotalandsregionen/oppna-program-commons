@@ -1,14 +1,15 @@
 package se.vgregion.liferay.organization;
 
-import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.model.ListTypeConstants;
 import com.liferay.portal.model.Organization;
+import com.liferay.portal.model.OrganizationConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.OrganizationLocalService;
 import com.liferay.portal.service.UserLocalService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import se.vgregion.liferay.LiferayAutomation;
 
 import java.util.List;
 
@@ -25,56 +26,103 @@ public class OrganizationHelperImpl implements OrganizationHelper {
     private OrganizationLocalService organizationLocalService;
 
     @Autowired
+    private LiferayAutomation liferayAutomation;
+
+    @Autowired
     private UserLocalService userLocalService;
 
-    @Override
-    public void addUser(List<String> organizationNames, User user) {
+    public void addUser(Organization organization, User... users) {
+        if (isInvalid(users)) return;
 
-        for (String organizationName: organizationNames) {
+        if (organization != null) {
             try {
-                long organizationId = organizationLocalService.getOrganizationId(user.getCompanyId(),
-                        organizationName);
-
-                userLocalService.addOrganizationUsers(organizationId, new long[]{user.getUserId()});
-
+                userLocalService.addOrganizationUsers(organization.getOrganizationId(),
+                        toIdArray(users));
             } catch (Exception e) {
-                String msg = String.format("Failed to add user [%s] to organization [%s]",
-                        user.getFullName(), organizationName);
+                String msg = String.format("Failed to add users [%s] to Organization [%s]",
+                        toScreenNames(users), organization.getName());
+                log(msg, e);
+            }
+        }
+
+    }
+
+    @Override
+    public void addUser(String organizationName, User... users) {
+        if (isInvalid(users)) return;
+
+        try {
+            Organization organization = findByName(organizationName, users[0].getCompanyId());
+            if (organization == null) {
+                // create and try again
+                createIfNeeded(organizationName, users[0].getCompanyId());
+                addUser(organizationName, users);
+            } else {
+                addUser(organization, users);
+            }
+
+        } catch (Exception e) {
+            String msg = String.format("Failed to add users [%s] to Organization [%s]",
+                    toScreenNames(users), organizationName);
+            log(msg, e);
+        }
+    }
+
+    @Override
+    public void removeUser(Organization organization, User... users) {
+        if (isInvalid(users)) return;
+
+        if (organization != null) {
+            try {
+                userLocalService.unsetOrganizationUsers(organization.getOrganizationId(),
+                        toIdArray(users));
+            } catch (Exception e) {
+                String msg = String.format("Failed to remove users [%s] from Organization [%s]",
+                        toScreenNames(users), organization.getName());
                 log(msg, e);
             }
         }
     }
 
+
     @Override
-    public void removeUser(List<String> organizationNames, User user) {
-        long[] users= {user.getUserId()};
-        for (String organizationName: organizationNames) {
-            try {
-                long organizationId = organizationLocalService.getOrganizationId(user.getCompanyId(),
-                        organizationName);
+    public void removeUser(String organizationName, User... users) {
+        if (isInvalid(users)) return;
 
+        try {
+            Organization organization = findByName(organizationName, users[0].getCompanyId());
 
-                userLocalService.unsetOrganizationUsers(organizationId, new long[]{user.getUserId()});
-
-            } catch (Exception e) {
-                String msg = String.format("Failed to add user [%s] to organization [%s]",
-                        user.getFullName(), organizationName);
-                log(msg, e);
-            }
+            removeUser(organization, users);
+        } catch (Exception e) {
+            String msg = String.format("Failed to add user [%s] to organization [%s]",
+                    toScreenNames(users), organizationName);
+            log(msg, e);
         }
-
-
-
     }
 
     @Override
     public Organization findByName(String organizationName, long companyId) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        try {
+            return organizationLocalService.getOrganization(companyId, organizationName);
+        } catch (Exception e) {
+            String msg = String.format("Failed to find organization [%s] in company [%s]", organizationName,
+                    companyId);
+            log(msg, e);
+        }
+        return null;
     }
 
     @Override
     public boolean isMember(Organization organization, User user) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        try {
+            return user.getOrganizations().contains(organization);
+        } catch (Exception e) {
+            String msg = String.format("Failed to lookup if user [%s] is member in organization [%s]",
+                    user.getScreenName(), organization.getName());
+            log(msg, e);
+            throw new RuntimeException(msg, e);
+
+        }
     }
 
     @Override
@@ -96,8 +144,61 @@ public class OrganizationHelperImpl implements OrganizationHelper {
     }
 
     @Override
+    public void createIfNeeded(String organizationName, Organization parent, long companyId) {
+        try {
+            if (findByName(organizationName, companyId) != null) return;
+
+            User systemUser = liferayAutomation.lookupSysadmin(companyId);
+
+            Long parentId = (parent != null) ? parent.getOrganizationId() : 0L;
+            String description = liferayAutomation.autoCreateDescription();
+            organizationLocalService.addOrganization(systemUser.getUserId(), parentId, organizationName,
+                    OrganizationConstants.TYPE_REGULAR_ORGANIZATION, true, 0, 0,
+                    ListTypeConstants.ORGANIZATION_STATUS_DEFAULT, description, null);
+        } catch (Exception e) {
+            String msg = String.format("Failed to create UserGroup [%s]", organizationName);
+            log(msg, e);
+            throw new RuntimeException(msg, e);
+        }
+    }
+
+    @Override
     public void createIfNeeded(String organizationName, long companyId) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        createIfNeeded(organizationName, null, companyId);
+    }
+
+
+    private boolean isInvalid(User... users) {
+        if (users.length <= 0) return true;
+
+        if (users.length > 1) {
+            long companyId = users[0].getCompanyId();
+            for (User user : users) {
+                if (user.getCompanyId() != companyId) {
+                    LOGGER.error("Users are from different Liferay instances (they have different companyId)");
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private long[] toIdArray(User... users) {
+        long[] userIds = new long[users.length];
+        for (int i = 0; i < users.length; i++) {
+            userIds[i] = users[i].getUserId();
+        }
+        return userIds;
+    }
+
+    private String toScreenNames(User... users) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < users.length; i++) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(users[i].getScreenName());
+        }
+        return sb.toString();
     }
 
     private void log(String msg, Exception e) {
