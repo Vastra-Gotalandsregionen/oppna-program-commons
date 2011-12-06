@@ -30,7 +30,7 @@
             <configuration>
               <wsdlDirectory>${basedir}/src/main/wsdl</wsdlDirectory>
               <wsdlFiles>
-                <wsdlFile>USD_R11_webService.wsdl</wsdlFile>
+                <wsdlFile>USD_R11_WebService.wsdl</wsdlFile>
               </wsdlFiles>
               <packageName>com.ca.www.UnicenterServicePlus.ServiceDesk</packageName>
               <extension>true</extension>
