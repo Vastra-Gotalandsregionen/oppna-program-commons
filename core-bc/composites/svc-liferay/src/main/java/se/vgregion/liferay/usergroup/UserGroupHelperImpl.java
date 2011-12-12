@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.vgregion.liferay.LiferayAutomation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,6 +20,7 @@ import java.util.List;
  */
 public class UserGroupHelperImpl implements UserGroupHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserGroupHelperImpl.class);
+    private static final String POSTFIX_INTERNAL_ONLY = "_internal_only";
 
     @Autowired
     private LiferayAutomation liferayAutomation;
@@ -174,6 +176,47 @@ public class UserGroupHelperImpl implements UserGroupHelper {
             log(msg, e);
             throw new RuntimeException(msg, e);
         }
+    }
+
+    @Override
+    public void processInternalAccessOnly(User user) {
+        Boolean internalAccess = null;
+        try {
+            internalAccess = (Boolean) user.getExpandoBridge().getAttribute("isInternalAccess");
+
+            List<UserGroup> allUserGroups = user.getUserGroups();
+            List<UserGroup> internalOnlyGroups = internalOnlyGroups(allUserGroups);
+
+            for (UserGroup internalAccessUserGroup : internalOnlyGroups) {
+                String userGroupWithRole = internalOnlyCalculateUserGroupName(internalAccessUserGroup);
+                if (internalAccess) {
+                    addUser(userGroupWithRole, user);
+                } else {
+                    removeUser(userGroupWithRole, user);
+                }
+            }
+        } catch (Exception e) {
+            String msg = String.format("Failed to change UserGroup's according to internal_only access " +
+                    "restrictions [%s] for [%s]", internalAccess, user.getScreenName());
+            log(msg, e);
+            throw new RuntimeException(msg, e);
+        }
+    }
+
+    private List<UserGroup> internalOnlyGroups(List<UserGroup> allUserGroups) {
+        List<UserGroup> result = new ArrayList<UserGroup>();
+        for (UserGroup group : allUserGroups) {
+            if (group.getName().endsWith(POSTFIX_INTERNAL_ONLY)) {
+                result.add(group);
+            }
+        }
+        return result;
+    }
+
+    private String internalOnlyCalculateUserGroupName(UserGroup group) {
+        String groupWithRightsName = group.getName().substring(0,
+                group.getName().length() - POSTFIX_INTERNAL_ONLY.length());
+        return groupWithRightsName;
     }
 
     private boolean isInvalid(User... users) {

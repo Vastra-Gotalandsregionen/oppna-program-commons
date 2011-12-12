@@ -29,4 +29,5 @@ public interface UserGroupHelper {
 
     void delete(UserGroup userGroup);
 
+    void processInternalAccessOnly(User user);
 }
