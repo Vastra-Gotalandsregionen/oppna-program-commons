@@ -11,13 +11,13 @@ Generation time : 2009-04-17 09:01:59 CEST
   <parent>
     <groupId>se.vgregion.commons-util</groupId>
     <artifactId>commons-util-core-bc</artifactId>
-    <version>3.9-SNAPSHOT</version>
+    <version>3.9</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
   <artifactId>commons-util-core-bc-composite-types</artifactId>
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
-  <version>3.9-SNAPSHOT</version>
+  <version>3.9</version>
 
   <dependencies>
   </dependencies>
