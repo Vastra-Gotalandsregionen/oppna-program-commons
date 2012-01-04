@@ -139,8 +139,18 @@ public class SimpleLdapServiceImpl implements LdapService {
                 NamingEnumeration<? extends Attribute> allAttributes = adapter.getAttributes().getAll();
                 ArrayList<? extends Attribute> allAttributesList = Collections.list(allAttributes);
                 for (Attribute attribute : allAttributesList) {
-                    if (attribute.size() > 0) {
+                    if (attribute.size() == 1) {
                         simpleLdapUser.setAttributeValue(attribute.getID(), attribute.get(0));
+                    } else if (attribute.size() > 1) {
+                        Object[] objects = new Object[attribute.size()];
+                        NamingEnumeration<?> all = attribute.getAll();
+                        int count = 0;
+                        while (all.hasMore()) {
+                            Object next = all.next();
+                            objects[count] = next;
+                            count++;
+                        }
+                        simpleLdapUser.setAttributeValue(attribute.getID(), objects);
                     }
                 }
 
