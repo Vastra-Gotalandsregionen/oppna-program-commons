@@ -62,7 +62,7 @@ public class ConvenientSslContextFactory {
                     throw new RuntimeException("Could not find truststore " + trustStore);
                 }
             }
-            System.out.println(trustStore);
+
             trustedCertStore.load(tsStream, trustStorePassword.toCharArray());
 
             TrustManagerFactory tmf =
