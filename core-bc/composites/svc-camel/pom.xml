@@ -4,7 +4,7 @@
   <parent>
     <groupId>se.vgregion.commons-util</groupId>
     <artifactId>commons-util-core-bc</artifactId>
-    <version>3.10-SNAPSHOT</version>
+    <version>3.10</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
   <groupId>se.vgregion.commons-util</groupId>
