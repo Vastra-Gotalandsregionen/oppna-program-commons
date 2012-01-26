@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.vgregion.liferay.LiferayAutomation;
+import se.vgregion.liferay.expando.UserExpandoHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,9 @@ public class UserGroupHelperImpl implements UserGroupHelper {
 
     @Autowired
     private UserLocalService userLocalService;
+
+    @Autowired
+    private UserExpandoHelper userExpandoHelper;
 
     @Override
     public void addUser(UserGroup userGroup, User... users) {
@@ -182,10 +186,18 @@ public class UserGroupHelperImpl implements UserGroupHelper {
     public void processInternalAccessOnly(User user) {
         Boolean internalAccess = null;
         try {
-            internalAccess = (Boolean) user.getExpandoBridge().getAttribute("isInternalAccess");
+            internalAccess = userExpandoHelper.get("isInternalAccess", user);
 
-            List<UserGroup> allUserGroups = user.getUserGroups();
-            List<UserGroup> internalOnlyGroups = internalOnlyGroups(allUserGroups);
+            int cnt = userGroupLocalService.getUserGroupsCount();
+            List<UserGroup> allUserGroups = userGroupLocalService.getUserGroups(0, cnt);
+            List<UserGroup> allInternalUserGroups = internalOnlyGroups(allUserGroups);
+            for (UserGroup internalUserGroup: allInternalUserGroups) {
+                String userGroupWithRole = internalOnlyCalculateUserGroupName(internalUserGroup);
+                removeUser(userGroupWithRole, user);
+            }
+
+            List<UserGroup> userGroups = user.getUserGroups();
+            List<UserGroup> internalOnlyGroups = internalOnlyGroups(userGroups);
 
             for (UserGroup internalAccessUserGroup : internalOnlyGroups) {
                 String userGroupWithRole = internalOnlyCalculateUserGroupName(internalAccessUserGroup);

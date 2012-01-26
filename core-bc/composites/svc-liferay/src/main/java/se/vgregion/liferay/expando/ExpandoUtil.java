@@ -113,7 +113,7 @@ public class ExpandoUtil {
                 Role permissionRole = roleLocalService.getRole(companyId, roleName);
                 resourcePermissionLocalService.setResourcePermissions(companyId, ExpandoColumn.class.getName(),
                         ResourceConstants.SCOPE_INDIVIDUAL, String.valueOf(expandoColumn.getColumnId()),
-                        permissionRole.getRoleId(), new String[]{ActionKeys.VIEW});
+                        permissionRole.getRoleId(), new String[]{ActionKeys.VIEW, ActionKeys.UPDATE});
             }
         } catch (Exception e) {
             LOGGER.error("resource permission", e);
