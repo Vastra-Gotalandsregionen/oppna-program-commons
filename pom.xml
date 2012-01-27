@@ -8,7 +8,7 @@
   <groupId>se.vgregion.commons-util</groupId>
   <artifactId>commons-util-system</artifactId>
   <packaging>pom</packaging>
-  <version>3.12-SNAPSHOT</version>
+  <version>3.11-SNAPSHOT</version>
   <name>${project.artifactId}</name>
 
   <scm>
