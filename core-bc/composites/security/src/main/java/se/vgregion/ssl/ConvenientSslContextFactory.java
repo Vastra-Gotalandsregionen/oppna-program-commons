@@ -23,6 +23,18 @@ public class ConvenientSslContextFactory {
     private String keyStore;
     private String keyStorePassword;
 
+    /**
+     * Constructor.
+     *
+     * @param trustStore the trustStore either as a classpath resource name (see
+     * {@link ClassLoader#getResourceAsStream(java.lang.String)} or a file system path (see
+     * {@link java.io.FileInputStream#FileInputStream(java.lang.String)}), or <code>null</code>
+     * @param trustStorePassword the trustStore password, or <code>null</code>
+     * @param keyStore the keyStore either as a classpath resource name (see
+     * {@link ClassLoader#getResourceAsStream(java.lang.String)} or a file system path (see
+     * {@link java.io.FileInputStream#FileInputStream(java.lang.String)}), or <code>null</code>
+     * @param keyStorePassword the keyStore password, or <code>null</code>
+     */
     public ConvenientSslContextFactory(String trustStore, String trustStorePassword, String keyStore,
                                        String keyStorePassword) {
         this.trustStore = trustStore;
