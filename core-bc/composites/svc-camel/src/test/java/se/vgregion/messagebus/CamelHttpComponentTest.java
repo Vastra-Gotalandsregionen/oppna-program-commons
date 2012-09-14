@@ -238,9 +238,19 @@ public class CamelHttpComponentTest {
         DefaultSynchronousMessageSender sender = new DefaultSynchronousMessageSender();
         sender.setPortalUUID(new PortalUUID() {
             @Override
+            public String fromJsSafeUuid(String s) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
             public String generate() {
                 Random random = new Random();
                 return random.nextInt() + "";
+            }
+
+            @Override
+            public String toJsSafeUuid(String s) {
+                throw new UnsupportedOperationException();
             }
         });
         sender.setMessageBus(messageBus);

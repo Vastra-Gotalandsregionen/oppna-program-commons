@@ -31,8 +31,18 @@ import java.util.UUID;
  */
 public class PortalUUIDImpl implements PortalUUID {
 
-	public String generate() {
+    @Override
+    public String fromJsSafeUuid(String s) {
+        throw new UnsupportedOperationException();
+    }
+
+    public String generate() {
 		return UUID.randomUUID().toString();
 	}
+
+    @Override
+    public String toJsSafeUuid(String s) {
+        throw new UnsupportedOperationException();
+    }
 
 }

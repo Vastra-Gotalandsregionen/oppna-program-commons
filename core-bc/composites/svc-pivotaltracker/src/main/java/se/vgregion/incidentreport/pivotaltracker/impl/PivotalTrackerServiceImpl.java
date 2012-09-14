@@ -60,7 +60,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 
     private String ptUser;
 
-    private static final String GET_USER_TOKEN = "https://www.pivotaltracker.com/services/tokens/active";
+    private static final String GET_USER_TOKEN = "https://www.pivotaltracker.com/services/v3/tokens/active";
     private static final String GET_PROJECT = "https://www.pivotaltracker.com/services/v3/projects";
     private static final String GET_PROJECT_TEST = "http://127.0.0.1/services/v3/projects";
 

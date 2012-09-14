@@ -14,7 +14,6 @@
 
   <properties>
     <camel-version>2.7.1</camel-version>
-    <liferay.version>6.0.6</liferay.version>
   </properties>
 
   <dependencies>
