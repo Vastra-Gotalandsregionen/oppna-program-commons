@@ -30,17 +30,14 @@ import org.w3c.dom.NodeList;
 import se.vgregion.incidentreport.pivotaltracker.PTStory;
 import se.vgregion.incidentreport.pivotaltracker.PivotalTrackerService;
 import se.vgregion.incidentreport.pivotaltracker.TyckTillProjectData;
+import se.vgregion.ssl.ConvenientSslContextFactory;
 import se.vgregion.util.Attachment;
 import se.vgregion.util.HTTPUtils;
 import se.vgregion.util.HttpUtilsException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -63,6 +60,10 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
     private static final String GET_USER_TOKEN = "https://www.pivotaltracker.com/services/v3/tokens/active";
     private static final String GET_PROJECT = "https://www.pivotaltracker.com/services/v3/projects";
     private static final String GET_PROJECT_TEST = "http://127.0.0.1/services/v3/projects";
+    private static final String TRUSTSTORE = "pivotaltracker.jks";
+    private static final String TRUSTSTORE_PASSWORD = "changeit";
+    private static final ConvenientSslContextFactory SSL_CONTEXT_FACTORY = new ConvenientSslContextFactory(TRUSTSTORE,
+            TRUSTSTORE_PASSWORD, null, null);
 
     // http://www.pivotaltracker.com/services/v3/projects/PROJECT_ID/stories/STORY_ID/attachments
 
@@ -86,7 +87,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
      * @throws Exception when there is http problems
      */
     private String getUserToken(String username, String password) {
-        DefaultHttpClient client = new DefaultHttpClient();
+        DefaultHttpClient client = getNewClient();
         String tokenFound = null;
         try {
             // Use basicAuth to make the request to the server
@@ -131,7 +132,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
             throw new RuntimeException("Token cannot be null. Please set it first.");
         }
 
-        DefaultHttpClient client = new DefaultHttpClient();
+        DefaultHttpClient client = getNewClient();
         TyckTillProjectData result = null;
         try {
             HttpResponse response = HTTPUtils.makeRequest(GET_PROJECT + "/" + projectId, token, client);
@@ -151,7 +152,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
         if (token == null) {
             throw new RuntimeException("Token cannot be null. Please set it first.");
         }
-        DefaultHttpClient client = new DefaultHttpClient();
+        DefaultHttpClient client = getNewClient();
         String result = null;
         try {
             HttpResponse response = HTTPUtils.makeRequest(GET_PROJECT + "/" + projectId + "/stories", token,
@@ -174,7 +175,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
     public String addStoryForProject(String projectId, PTStory story) {
         String token = getUserToken(ptUser, ptPwd);
 
-        DefaultHttpClient client = new DefaultHttpClient();
+        DefaultHttpClient client = getNewClient();
         String result = null;
         String xml = "<story><story_type>" + story.getType() + "</story_type><name>" + story.getName() + "</name>"
                 + "<description>" + story.getDescription() + "</description><requested_by>"
@@ -205,6 +206,12 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
         return result;
     }
 
+    private DefaultHttpClient getNewClient() {
+        DefaultHttpClient client = new DefaultHttpClient();
+        client = se.vgregion.ssl.WebClientWrapper.wrapClient(client, SSL_CONTEXT_FACTORY);
+        return client;
+    }
+
     /** */
     @SuppressWarnings("deprecation")
     private List<TyckTillProjectData> getAllProjects(String token) {
@@ -212,7 +219,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
             throw new RuntimeException("Token cannot be null. Please set it first.");
         }
 
-        DefaultHttpClient client = new DefaultHttpClient();
+        DefaultHttpClient client = getNewClient();
         List result = null;
         try {
             HttpResponse response = HTTPUtils.makeRequest(GET_PROJECT, token, client);
@@ -333,7 +340,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
         String token = getUserToken(ptUser, ptPwd);
 
         for (Attachment attachment : story.getAttachments()) {
-            DefaultHttpClient client = new DefaultHttpClient();
+            DefaultHttpClient client = getNewClient();
             try {
                 String uploadUrl = getUploadUrl(story);
 

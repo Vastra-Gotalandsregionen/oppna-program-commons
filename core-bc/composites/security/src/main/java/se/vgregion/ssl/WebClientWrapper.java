@@ -21,19 +21,23 @@ public class WebClientWrapper {
      * @param factory a factory with given SSL/TLS-related parameters set
      * @return the wrapped {@link HttpClient}
      */
-    public static HttpClient wrapClient(HttpClient base, ConvenientSslContextFactory factory) {
+    public static DefaultHttpClient wrapClient(HttpClient base, ConvenientSslContextFactory factory) {
         try {
             SSLContext ctx = factory.createSslContext();
 
-            SSLSocketFactory ssf = new SSLSocketFactory(ctx);
-            ssf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-            ClientConnectionManager ccm = base.getConnectionManager();
-            SchemeRegistry sr = ccm.getSchemeRegistry();
-            sr.register(new Scheme("https", ssf, 443));
-            return new DefaultHttpClient(ccm, base.getParams());
+            return wrapClient(base, ctx);
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;
         }
+    }
+
+    public static DefaultHttpClient wrapClient(HttpClient base, SSLContext ctx) {
+        SSLSocketFactory ssf = new SSLSocketFactory(ctx);
+        ssf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+        ClientConnectionManager ccm = base.getConnectionManager();
+        SchemeRegistry sr = ccm.getSchemeRegistry();
+        sr.register(new Scheme("https", ssf, 443));
+        return new DefaultHttpClient(ccm, base.getParams());
     }
 }
