@@ -21,22 +21,17 @@ package se.vgregion.portal.cs.util;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
+import java.io.*;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
-import java.util.Properties;
 import java.util.Scanner;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * This implementation uses the AES algorithm with CTR block cipher mode to provide secure encryption.
@@ -55,6 +50,11 @@ public class AesCtrCryptoUtilImpl implements CryptoUtil {
     private static final int KEY_SIZE = 128;
 
     private File keyFile;
+    private final SecretKeySpec sks;
+    private final Cipher encryptCipher;
+    private final Cipher decryptCipher;
+    private Lock encryptLock = new ReentrantLock();
+    private Lock decryptLock = new ReentrantLock();
 
     /**
      * Constructor.
@@ -62,7 +62,20 @@ public class AesCtrCryptoUtilImpl implements CryptoUtil {
      * @param keyFile file where the key is stored
      */
     public AesCtrCryptoUtilImpl(File keyFile) {
+        if (!keyFile.exists()) {
+            throw new IllegalStateException("The encryption file [" + keyFile.getAbsolutePath() + "] must exist.");
+        }
+
         this.keyFile = keyFile;
+        try {
+            sks = getSecretKeySpec();
+            encryptCipher = Cipher.getInstance(ALGORITHM);
+            decryptCipher = Cipher.getInstance(ALGORITHM);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchPaddingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -76,24 +89,21 @@ public class AesCtrCryptoUtilImpl implements CryptoUtil {
      */
     @Override
     public String encrypt(String value) throws GeneralSecurityException {
-        if (!keyFile.exists()) {
-            throw new IllegalStateException("The encryption file [" + keyFile.getAbsolutePath() + "] must exist.");
-        }
-        
-        SecretKeySpec sks = getSecretKeySpec();
 
-        Cipher cipher = Cipher.getInstance(ALGORITHM);
-        cipher.init(Cipher.ENCRYPT_MODE, sks);
         // Initialization vector - it is randomly generated and stored together with the encrypted password since
         // it does not need to be kept secret. E.g. it makes so that equal passwords will not be encrypted
         // equally and thus makes it harder for a potential attacker.
-        byte[] iv = cipher.getParameters().getParameterSpec(IvParameterSpec.class).getIV();
-
-        byte[] encrypted = new byte[0];
+        byte[] encrypted;
+        byte[] iv;
         try {
-            encrypted = cipher.doFinal(value.getBytes(CHARSET_NAME));
+            encryptLock.lock();
+            encryptCipher.init(Cipher.ENCRYPT_MODE, sks);
+            iv = encryptCipher.getParameters().getParameterSpec(IvParameterSpec.class).getIV();
+            encrypted = encryptCipher.doFinal(value.getBytes(CHARSET_NAME));
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
+        } finally {
+            encryptLock.unlock();
         }
 
         String encryptedHex = byteArrayToHexString(encrypted);
@@ -123,13 +133,15 @@ public class AesCtrCryptoUtilImpl implements CryptoUtil {
         String encPasswordHex = encPasswordPlusIv[0];
         String ivHex = encPasswordPlusIv[1];
 
-        SecretKeySpec sks = getSecretKeySpec();
-
-        Cipher cipher = Cipher.getInstance(ALGORITHM);
-        cipher.init(Cipher.DECRYPT_MODE, sks, new IvParameterSpec(hexStringToByteArray(ivHex)));
-
-        byte[] cipherBytes = hexStringToByteArray(encPasswordHex);
-        byte[] decrypted = cipher.doFinal(cipherBytes);
+        byte[] decrypted;
+        try {
+            decryptLock.lock();
+            decryptCipher.init(Cipher.DECRYPT_MODE, sks, new IvParameterSpec(hexStringToByteArray(ivHex)));
+            byte[] cipherBytes = hexStringToByteArray(encPasswordHex);
+            decrypted = decryptCipher.doFinal(cipherBytes);
+        } finally {
+            decryptLock.unlock();
+        }
 
         try {
             return new String(decrypted, CHARSET_NAME);
@@ -181,7 +193,7 @@ public class AesCtrCryptoUtilImpl implements CryptoUtil {
         }
         return b;
     }
-    
+
     public static void createKeyFile(File keyFile) {
         FileWriter fw = null;
         try {
