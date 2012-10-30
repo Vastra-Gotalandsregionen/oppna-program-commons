@@ -8,15 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
- * This implementation wraps an {@link LdapService} and makes the calls asynchronously, thus fetches the result lazily.
- * The returned object is a wrapper implementation which uses concurrency to enable lazy loading.
+ * This implementation wraps an {@link LdapService} and makes the calls asynchronously (when possible), thus fetches the
+ * result lazily. The returned object is a wrapper (when possible) implementation which uses concurrency to enable lazy
+ * loading.
  *
  * @author Patrik Bergström
  * @see LdapService
@@ -31,6 +29,8 @@ public class AsyncCachingLdapServiceWrapper implements LdapService {
     private LdapService ldapService;
     private static final int N_THREADS = 10;
     private ExecutorService executor = Executors.newFixedThreadPool(N_THREADS);
+    private ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledFuture<?> lastScheduledTask;
 
     /**
      * Constructor.
@@ -86,24 +86,12 @@ public class AsyncCachingLdapServiceWrapper implements LdapService {
             return (LdapUser[]) element.getValue();
         }
 
-/*
-        Callable callable = new Callable<LdapUser[]>() {
-            @Override
-            public LdapUser[] call() throws Exception {
-                return ldapService.search(base, filter);
-            }
-        };
-
-        Future<LdapUser[]> futureLdapUser = executor.submit(callable);
-
-
-        AsyncLdapUserWrapper ldapUser = new AsyncLdapUserWrapper(futureLdapUser);
-*/
         // We cannot make a wrapper of an Array, so just delegate synchronously.
-
         LdapUser[] search = ldapService.search(base, filter);
 
-//        cache.put(new Element(cacheKey, search));
+        if (search != null) {
+            cache.put(new Element(cacheKey, search));
+        }
 
         return search;
     }
@@ -180,7 +168,24 @@ public class AsyncCachingLdapServiceWrapper implements LdapService {
 
         AsyncLdapUserWrapper ldapUser = new AsyncLdapUserWrapper(futureLdapUser, cacheKey);
 
-//        cache.put(new Element(cacheKey, ldapUser));
+        cache.put(new Element(cacheKey, ldapUser));
+
+        // Cleanup null objects since we don't want to cache them.
+        if (lastScheduledTask == null || lastScheduledTask.isDone()) {
+            // Otherwise it is unnecessary to pile up tasks
+            lastScheduledTask = scheduledExecutorService.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    final List keys = cache.getKeys();
+                    for (Object key : keys) {
+                        final Element element1 = cache.get(key);
+                        if (element1 == null || element1.getObjectValue() == null) {
+                            cache.remove(key);
+                        }
+                    }
+                }
+            }, 5, TimeUnit.SECONDS);
+        }
 
         return ldapUser;
     }
