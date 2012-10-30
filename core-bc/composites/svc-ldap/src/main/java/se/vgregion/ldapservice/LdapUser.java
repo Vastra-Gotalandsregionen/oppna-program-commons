@@ -19,10 +19,11 @@
 
 package se.vgregion.ldapservice;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 
-public interface LdapUser {
+public interface LdapUser extends Serializable {
 
     String getDn();
 

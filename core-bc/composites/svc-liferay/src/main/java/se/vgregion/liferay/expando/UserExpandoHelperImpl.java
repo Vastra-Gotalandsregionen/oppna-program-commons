@@ -42,5 +42,13 @@ public class UserExpandoHelperImpl implements UserExpandoHelper {
         }
     }
 
+    public ExpandoUtil getExpandoUtil() {
+        return expandoUtil;
+    }
+
+    public void setExpandoUtil(ExpandoUtil expandoUtil) {
+        this.expandoUtil = expandoUtil;
+    }
+
     private static final String USER_CLASSNAME = User.class.getName();
 }

@@ -131,8 +131,9 @@ public class LdapServiceImpl implements LdapService {
             NamingEnumeration results = getBaseContext().search(base, filter, sc);
             List entries = new ArrayList();
 
-            while (results.hasMore()) {
-                SearchResult oneRes = (SearchResult) results.next();
+            int j = 0;
+            while (results.hasMoreElements()) {
+                SearchResult oneRes = (SearchResult) results.nextElement();
                 entries.add(new LdapUserEntryImpl(base, oneRes));
             }
             LdapUser[] res = new LdapUser[entries.size()];

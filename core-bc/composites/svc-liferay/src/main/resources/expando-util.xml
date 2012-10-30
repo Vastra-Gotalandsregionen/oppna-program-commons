@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd">
+
+  <!--<bean id="userUpdateService" class="se.vgregion.userupdate.svc.UserUpdateService"/>-->
+
+  <bean id="userExpandoHelper" class="se.vgregion.liferay.expando.UserExpandoHelperImpl"/>
+
+  <bean id="expandoUtil" class="se.vgregion.liferay.expando.ExpandoUtil"/>
+
+  <bean id="userGroupHelper" class="se.vgregion.liferay.usergroup.UserGroupHelperImpl"/>
+
+  <bean id="liferayAutomation" class="se.vgregion.liferay.LiferayAutomation"/>
+
+  <bean id="organizationHelper" class="se.vgregion.liferay.organization.OrganizationHelperImpl"/>
+
+  <!-- Ldap utilities -->
+  <!--<bean id="userLdapDao" class="se.vgregion.userupdate.ldap.UserLdapDao"/>-->
+
+  <!-- Liferay utilities-->
+  <bean id="userLocalService" class="com.liferay.portal.service.UserLocalServiceUtil"
+        factory-method="getService"/>
+  <bean id="contactLocalService" class="com.liferay.portal.service.ContactLocalServiceUtil"
+        factory-method="getService"/>
+  <bean id="expandoColumnLocalService" class="com.liferay.portlet.expando.service.ExpandoColumnLocalServiceUtil"
+        factory-method="getService"/>
+  <bean id="expandoTableLocalService" class="com.liferay.portlet.expando.service.ExpandoTableLocalServiceUtil"
+        factory-method="getService"/>
+  <bean id="expandoValueLocalService" class="com.liferay.portlet.expando.service.ExpandoValueLocalServiceUtil"
+        factory-method="getService"/>
+  <bean id="userGroupLocalService" class="com.liferay.portal.service.UserGroupLocalServiceUtil"
+        factory-method="getService"/>
+  <bean id="roleLocalService" class="com.liferay.portal.service.RoleLocalServiceUtil"
+        factory-method="getService"/>
+  <bean id="resourcePermissionLocalService" class="com.liferay.portal.service.ResourcePermissionLocalServiceUtil"
+        factory-method="getService"/>
+  <bean id="organizationLocalService" class="com.liferay.portal.service.OrganizationLocalServiceUtil"
+        factory-method="getService"/>
+
+</beans>

@@ -1,20 +1,19 @@
 package se.vgregion.liferay.expando;
 
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.model.ResourceConstants;
 import com.liferay.portal.model.Role;
 import com.liferay.portal.model.RoleConstants;
 import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.service.ResourcePermissionLocalService;
+import com.liferay.portal.service.ResourcePermissionLocalServiceUtil;
 import com.liferay.portal.service.RoleLocalService;
+import com.liferay.portal.service.RoleLocalServiceUtil;
 import com.liferay.portlet.expando.model.ExpandoColumn;
 import com.liferay.portlet.expando.model.ExpandoColumnConstants;
 import com.liferay.portlet.expando.model.ExpandoTable;
 import com.liferay.portlet.expando.model.ExpandoTableConstants;
-import com.liferay.portlet.expando.service.ExpandoColumnLocalService;
-import com.liferay.portlet.expando.service.ExpandoTableLocalService;
-import com.liferay.portlet.expando.service.ExpandoValueLocalService;
+import com.liferay.portlet.expando.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +47,21 @@ public class ExpandoUtil {
 
     @Autowired
     protected ResourcePermissionLocalService resourcePermissionLocalService;
+
+    /**
+     * Creates an ExpandoUtil instance which is dependent on the Liferay runtime. No additional configuration is needed.
+     * @return a new ExpandoUtil instance
+     */
+    public static ExpandoUtil createDefaultExpandoUtil() {
+        ExpandoUtil expandoUtil = new ExpandoUtil();
+        expandoUtil.expandoColumnService = ExpandoColumnLocalServiceUtil.getService();
+        expandoUtil.expandoTableService = ExpandoTableLocalServiceUtil.getService();
+        expandoUtil.expandoValueService = ExpandoValueLocalServiceUtil.getService();
+        expandoUtil.roleLocalService = RoleLocalServiceUtil.getService();
+        expandoUtil.resourcePermissionLocalService = ResourcePermissionLocalServiceUtil.getService();
+
+        return expandoUtil;
+    }
 
     public void setExpando(String targetClassName, String columnName, Object value, long companyId,
             long classPK, Mode mode) {
