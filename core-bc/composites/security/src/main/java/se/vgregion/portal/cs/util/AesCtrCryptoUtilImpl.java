@@ -152,8 +152,8 @@ public class AesCtrCryptoUtilImpl implements CryptoUtil {
 
     private SecretKeySpec getSecretKeySpec() throws NoSuchAlgorithmException {
         byte[] key = readKeyFile();
-        SecretKeySpec sks = new SecretKeySpec(key, AES);
-        return sks;
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key, AES);
+        return secretKeySpec;
     }
 
     private byte[] readKeyFile() {
@@ -194,6 +194,11 @@ public class AesCtrCryptoUtilImpl implements CryptoUtil {
         return b;
     }
 
+    /**
+     * Create a new file containing i newly generated key.
+     *
+     * @param keyFile the file to store the key
+     */
     public static void createKeyFile(File keyFile) {
         FileWriter fw = null;
         try {

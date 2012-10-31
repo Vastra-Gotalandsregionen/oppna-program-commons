@@ -18,11 +18,11 @@ public class CompanyExpandoHelperImpl implements CompanyExpandoHelper {
     @Autowired
     private ExpandoUtil expandoUtil;
 
-	@Override
+    @Override
     public void set(String columnName, String value, long companyId) {
         expandoUtil.setExpando(COMPANY_CLASSNAME, columnName, value, companyId, companyId,
                 ExpandoUtil.Mode.AUTO_CREATE);
-	}
+    }
 
     @Override
     public String get(String columnName, long companyId) {
@@ -30,7 +30,7 @@ public class CompanyExpandoHelperImpl implements CompanyExpandoHelper {
         if (value == null) {
             return "";
         }
-        return (String)value;
+        return (String) value;
     }
 
     @Override
@@ -43,5 +43,5 @@ public class CompanyExpandoHelperImpl implements CompanyExpandoHelper {
         expandoUtil.deleteExpando(COMPANY_CLASSNAME, columnName, companyId);
     }
 
-	private static final String COMPANY_CLASSNAME = Company.class.getName();
+    private static final String COMPANY_CLASSNAME = Company.class.getName();
 }

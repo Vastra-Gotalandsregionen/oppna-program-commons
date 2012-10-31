@@ -1,22 +1,10 @@
 package se.vgregion.messagebus.jms;
 
 import org.apache.activemq.ActiveMQSslConnectionFactory;
-import org.apache.activemq.broker.SslContext;
 import org.apache.activemq.transport.Transport;
-import org.apache.activemq.transport.tcp.SslTransportFactory;
-import org.apache.activemq.util.JMSExceptionSupport;
 import se.vgregion.ssl.ConvenientSslContextFactory;
 
 import javax.jms.JMSException;
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.KeyStore;
 
 public final class ActiveMqSslConnectionFactory extends ActiveMQSslConnectionFactory {
     private String trustStore;

@@ -98,7 +98,7 @@ public class AsyncCachingLdapServiceWrapper implements LdapService {
 
     private Integer createCacheKey(Object... args) {
         int callingLineNumber = new Exception().getStackTrace()[1].getLineNumber();
-        int prime = 7;
+        final int prime = 7;
         int hash = callingLineNumber * prime;
         for (Object arg : args) {
             if (arg != null) {
@@ -173,6 +173,7 @@ public class AsyncCachingLdapServiceWrapper implements LdapService {
         // Cleanup null objects since we don't want to cache them.
         if (lastScheduledTask == null || lastScheduledTask.isDone()) {
             // Otherwise it is unnecessary to pile up tasks
+            final int delay = 5;
             lastScheduledTask = scheduledExecutorService.schedule(new Runnable() {
                 @Override
                 public void run() {
@@ -184,7 +185,7 @@ public class AsyncCachingLdapServiceWrapper implements LdapService {
                         }
                     }
                 }
-            }, 5, TimeUnit.SECONDS);
+            }, delay, TimeUnit.SECONDS);
         }
 
         return ldapUser;
