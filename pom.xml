@@ -8,12 +8,12 @@
   <groupId>se.vgregion.commons-util</groupId>
   <artifactId>commons-util-system</artifactId>
   <packaging>pom</packaging>
-  <version>3.16</version>
+  <version>3.17-SNAPSHOT</version>
   <name>${project.artifactId}</name>
 
   <scm>
-    <developerConnection>scm:svn:https://oppna-program-commons.googlecode.com/svn/tags/commons-util-system-3.16</developerConnection>
-    <url>http://oppna-program-commons.googlecode.com/svn/tags/commons-util-system-3.16</url>
+    <developerConnection>scm:svn:https://oppna-program-commons.googlecode.com/svn/trunk</developerConnection>
+    <url>http://oppna-program-commons.googlecode.com/svn/trunk</url>
   </scm>
 
   <modules>
