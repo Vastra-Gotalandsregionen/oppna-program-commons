@@ -1,8 +1,15 @@
 package se.vgregion.ldapservice;
 
+import net.sf.ehcache.Ehcache;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.util.StopWatch;
 
+import java.io.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -14,7 +21,7 @@ public class AsyncCachingLdapServiceTest {
     public void testGetLdapUserByUidAsyncCapability() throws Exception {
         SlowMockLdapService ldapService = new SlowMockLdapService(2000);
 
-        AsyncCachingLdapServiceWrapper asyncCachingLdapService = new AsyncCachingLdapServiceWrapper(ldapService, 5000);
+        AsyncCachingLdapServiceWrapper asyncCachingLdapService = new AsyncCachingLdapServiceWrapper(ldapService, 5);
 
         LdapUser ldapUser = asyncCachingLdapService.getLdapUserByUid("doesn't matter");
 
@@ -37,6 +44,7 @@ public class AsyncCachingLdapServiceTest {
         stopWatch = new StopWatch();
         stopWatch.start();
         ldapUser.getAttributeValue("mailServer");
+        assertNotNull(ldapUser.getDn());
         stopWatch.stop();
 
         assertTrue(stopWatch.getTotalTimeMillis() < 100);
@@ -70,5 +78,47 @@ public class AsyncCachingLdapServiceTest {
         stopWatch.stop();
 
         assertTrue(stopWatch.getTotalTimeMillis() < 100);
+    }
+
+    // The AsyncCachingLdapServiceWrapper should remove objects that are null from cache since they may be null because
+    // of some error and we don't want that to be cached.
+    @Test
+    public void testClearCacheFromNullObjects() throws InterruptedException {
+        ReturnNullMockLdapService ldapService = new ReturnNullMockLdapService();
+
+        AsyncCachingLdapServiceWrapper asyncCachingLdapService = new AsyncCachingLdapServiceWrapper(ldapService, 50000);
+
+        LdapUser ldapUser = asyncCachingLdapService.getLdapUserByUid("a specific id");
+
+        Ehcache cache = asyncCachingLdapService.getCache();
+
+        assertEquals(1, cache.getStatistics().getObjectCount());
+
+        Thread.sleep(6000);
+
+        assertEquals(0, cache.getStatistics().getObjectCount());
+    }
+
+    @Test
+    public void testSerializeAsyncLdapUserWrapper() throws IOException, ClassNotFoundException {
+
+        // Write output
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        LdapUser ldapUser = new SimpleLdapUser("someDn");
+        LdapService ldapService = Mockito.mock(LdapService.class);
+        AsyncCachingLdapServiceWrapper serviceWrapper = new AsyncCachingLdapServiceWrapper(ldapService);
+        AsyncCachingLdapServiceWrapper.AsyncLdapUserWrapper ldapUserWrapper = new AsyncCachingLdapServiceWrapper
+                .AsyncLdapUserWrapper(new AsyncResult<LdapUser>(ldapUser), 1234);
+        oos.writeObject(ldapUserWrapper);
+
+        // Read input
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        ObjectInputStream ois = new ObjectInputStream(bais);
+        LdapUser ldapUserDeserialized = (LdapUser) ois.readObject();
+        String dn = ldapUserDeserialized.getDn();
+
+        // Verify
+        assertEquals("someDn", dn);
     }
 }

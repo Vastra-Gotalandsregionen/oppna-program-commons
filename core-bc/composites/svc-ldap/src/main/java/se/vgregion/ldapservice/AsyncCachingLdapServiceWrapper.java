@@ -6,8 +6,11 @@ import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -41,14 +44,13 @@ public class AsyncCachingLdapServiceWrapper implements LdapService {
         final int hours = 48;
         final int minutes = 60;
         final int seconds = 60;
-        final int millis = 1000;
-        long timeoutInMillis = hours * minutes * seconds * millis; // 48 hours
+        long timeoutInSeconds = hours * minutes * seconds; // 48 hours
         // The timeout arguments mean that it's only the time from creation that matters; the idle time can
         // never be longer than the time since creation.
-        String name = this.getClass() + "Cache_" + timeoutInMillis;
+        String name = this.getClass() + "Cache_" + timeoutInSeconds;
         if (!SINGLE_CACHE_MANAGER.cacheExists(name)) {
             final int maxElementsInMemory = 500;
-            this.cache = new Cache(name, maxElementsInMemory, false, false, timeoutInMillis, timeoutInMillis);
+            this.cache = new Cache(name, maxElementsInMemory, false, false, timeoutInSeconds, timeoutInSeconds);
             SINGLE_CACHE_MANAGER.addCache(cache);
         } else {
             this.cache = SINGLE_CACHE_MANAGER.getCache(name);
@@ -180,7 +182,8 @@ public class AsyncCachingLdapServiceWrapper implements LdapService {
                     final List keys = cache.getKeys();
                     for (Object key : keys) {
                         final Element element1 = cache.get(key);
-                        if (element1 == null || element1.getObjectValue() == null) {
+                        if (element1 == null || element1.getObjectValue() == null
+                                || ((LdapUser)element1.getValue()).getDn() == null) {
                             cache.remove(key);
                         }
                     }
@@ -191,18 +194,22 @@ public class AsyncCachingLdapServiceWrapper implements LdapService {
         return ldapUser;
     }
 
-    private class AsyncLdapUserWrapper implements LdapUser {
+    Ehcache getCache() {
+        return cache;
+    }
+
+    static class AsyncLdapUserWrapper implements LdapUser, Serializable {
         private final Logger LOGGER = LoggerFactory.getLogger(AsyncLdapUserWrapper.class);
         private static final long serialVersionUID = -1123850060733039675L;
 
-        private Future<LdapUser> futureLdapUser;
+        private transient Future<LdapUser> futureLdapUser;
         private Integer cacheKey;
 
         /**
          * Constructor.
          *
          * @param futureLdapUser futureLdapUser
-         * @param cacheKey
+         * @param cacheKey       cacheKey
          */
         public AsyncLdapUserWrapper(Future<LdapUser> futureLdapUser, Integer cacheKey) {
             this.futureLdapUser = futureLdapUser;
@@ -216,7 +223,6 @@ public class AsyncCachingLdapServiceWrapper implements LdapService {
                 if (ldapUser == null) {
                     return null;
                 }
-                cache.put(new Element(cacheKey, ldapUser));
                 return ldapUser.getDn();
             } catch (InterruptedException e) {
                 throw new LdapUserRetrievalException(e);
@@ -232,7 +238,6 @@ public class AsyncCachingLdapServiceWrapper implements LdapService {
                 if (ldapUser == null) {
                     return null;
                 }
-                cache.put(new Element(cacheKey, ldapUser));
                 return ldapUser.getAttributeValue(s);
             } catch (InterruptedException e) {
                 throw new LdapUserRetrievalException(e);
@@ -248,7 +253,6 @@ public class AsyncCachingLdapServiceWrapper implements LdapService {
                 if (ldapUser == null) {
                     return null;
                 }
-                cache.put(new Element(cacheKey, ldapUser));
                 return ldapUser.getAttributeValues(s);
             } catch (InterruptedException e) {
                 throw new LdapUserRetrievalException(e);
@@ -264,7 +268,6 @@ public class AsyncCachingLdapServiceWrapper implements LdapService {
                 if (ldapUser == null) {
                     return null;
                 }
-                cache.put(new Element(cacheKey, ldapUser));
                 return ldapUser.getAttributes();
             } catch (InterruptedException e) {
                 throw new LdapUserRetrievalException(e);
@@ -280,7 +283,6 @@ public class AsyncCachingLdapServiceWrapper implements LdapService {
                 if (ldapUser == null) {
                     return;
                 }
-                cache.put(new Element(cacheKey, ldapUser));
                 ldapUser.clearAttribute(s);
             } catch (InterruptedException e) {
                 throw new LdapUserRetrievalException(e);
@@ -296,7 +298,6 @@ public class AsyncCachingLdapServiceWrapper implements LdapService {
                 if (ldapUser == null) {
                     return;
                 }
-                cache.put(new Element(cacheKey, ldapUser));
                 ldapUser.setAttributeValue(s, o);
             } catch (InterruptedException e) {
                 throw new LdapUserRetrievalException(e);
@@ -312,7 +313,6 @@ public class AsyncCachingLdapServiceWrapper implements LdapService {
                 if (ldapUser == null) {
                     return;
                 }
-                cache.put(new Element(cacheKey, ldapUser));
                 ldapUser.addAttributeValue(s, o);
             } catch (InterruptedException e) {
                 throw new LdapUserRetrievalException(e);
@@ -328,13 +328,30 @@ public class AsyncCachingLdapServiceWrapper implements LdapService {
                 if (ldapUser == null) {
                     return;
                 }
-                cache.put(new Element(cacheKey, ldapUser));
                 ldapUser.setAttributeValue(s, objects);
             } catch (InterruptedException e) {
                 throw new LdapUserRetrievalException(e);
             } catch (ExecutionException e) {
                 throw new LdapUserRetrievalException(e);
             }
+        }
+
+        private void writeObject(java.io.ObjectOutputStream out)
+                throws IOException {
+            out.defaultWriteObject();
+            try {
+                out.writeObject(futureLdapUser.get());
+            } catch (InterruptedException e) {
+                LOGGER.error(e.getMessage(), e);
+            } catch (ExecutionException e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
+
+        private void readObject(java.io.ObjectInputStream in)
+                throws IOException, ClassNotFoundException {
+            in.defaultReadObject();
+            futureLdapUser = new AsyncResult<LdapUser>((LdapUser) in.readObject());
         }
     }
 }

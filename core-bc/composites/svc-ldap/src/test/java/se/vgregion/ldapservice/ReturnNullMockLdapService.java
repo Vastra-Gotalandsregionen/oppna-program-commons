@@ -3,17 +3,12 @@ package se.vgregion.ldapservice;
 import java.util.HashMap;
 import java.util.Properties;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 /**
  * @author Patrik Bergström
  */
-public class SlowMockLdapService implements LdapService {
-    private long delayForGettingUser;
+public class ReturnNullMockLdapService implements LdapService {
 
-    public SlowMockLdapService(long delayForGettingUser) {
-        this.delayForGettingUser = delayForGettingUser;
+    public ReturnNullMockLdapService() {
     }
 
     @Override
@@ -63,15 +58,6 @@ public class SlowMockLdapService implements LdapService {
 
     @Override
     public LdapUser getLdapUserByUid(String s) {
-        LdapUser ldapUser = mock(LdapUser.class);
-        when(ldapUser.getDn()).thenReturn("someDn");
-        when(ldapUser.getAttributeValue("mailServer")).thenReturn("CN=liv,OU=epost,O=vgregion");
-
-        try {
-            Thread.sleep(delayForGettingUser);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return ldapUser;
+        return null;
     }
 }
