@@ -19,25 +19,18 @@
 
 package se.vgregion.ldapservice;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.BasicAttributes;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
-import javax.naming.directory.SearchControls;
-import javax.naming.directory.SearchResult;
+import javax.naming.NamingException;
+import javax.naming.directory.*;
+import java.util.*;
 
 public class LdapServiceImpl implements LdapService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LdapServiceImpl.class);
 
     private String _bindDN;
     private String _bindPw;
@@ -48,32 +41,32 @@ public class LdapServiceImpl implements LdapService {
 
     private Object[] _objectClasses;
 
-    private DirContext _ctx;
     protected String base;
     protected Properties properties;
+    private Hashtable env;
 
     public Properties getProperties() {
         return properties;
     }
-    
+
     /**
      * Default zero-arg constructor
      */
     public LdapServiceImpl() {
-      
+
     }
 
     public LdapServiceImpl(Properties p) {
 
-        this(p.getProperty("BIND_URL"), p.getProperty("BIND_DN"), p.getProperty("BIND_PW"), new String[] {},
-                new String[] {}, new Object[] {});
+        this(p.getProperty("BIND_URL"), p.getProperty("BIND_DN"), p.getProperty("BIND_PW"), new String[]{},
+                new String[]{}, new Object[]{});
         this.properties = p;
         this.base = p.getProperty("BASE");
 
     }
 
     private LdapServiceImpl(String bindUrl, String bindDN, String bindPassword, String[] readAttrs,
-            String[] updateAttrs, Object[] objClasses) {
+                            String[] updateAttrs, Object[] objClasses) {
 
         _bindDN = bindDN;
         _bindUrl = bindUrl;
@@ -87,30 +80,22 @@ public class LdapServiceImpl implements LdapService {
         _defaultAddAttrs[2] = "sn";
         _defaultAddAttrs[3] = "mail";
 
-    }
-
-    private void bind() {
-        try {
-            Hashtable env = new Hashtable();
-            env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-            env.put(Context.PROVIDER_URL, _bindUrl);
-            if (_bindDN != null) {
-                env.put(Context.SECURITY_PRINCIPAL, _bindDN);
-                env.put(Context.SECURITY_CREDENTIALS, _bindPw);
-            }
-            _ctx = new InitialDirContext(env);
-
-        }
-        catch (Exception e) {
-            throw new RuntimeException("Bind failed", e);
+        env = new Hashtable();
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+        env.put(Context.PROVIDER_URL, _bindUrl);
+        env.put("com.sun.jndi.ldap.connect.pool", "true");
+        if (_bindDN != null) {
+            env.put(Context.SECURITY_PRINCIPAL, _bindDN);
+            env.put(Context.SECURITY_CREDENTIALS, _bindPw);
         }
     }
 
     private DirContext getBaseContext() {
-        if (_ctx == null) {
-            bind();
+        try {
+            return new InitialDirContext(env);
+        } catch (Exception e) {
+            throw new RuntimeException("Bind failed", e);
         }
-        return _ctx;
     }
 
     public LdapUser[] search(String base, String filter, String[] attributes) {
@@ -122,13 +107,15 @@ public class LdapServiceImpl implements LdapService {
         if (base == null) {
             base = this.base;
         }
+        DirContext dirContext = null;
         try {
             SearchControls sc = new SearchControls();
             sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
             if (_defaultReadAttrs.length > 0) {
                 sc.setReturningAttributes(_defaultReadAttrs);
             }
-            NamingEnumeration results = getBaseContext().search(base, filter, sc);
+            dirContext = getBaseContext();
+            NamingEnumeration results = dirContext.search(base, filter, sc);
             List entries = new ArrayList();
 
             int j = 0;
@@ -142,9 +129,10 @@ public class LdapServiceImpl implements LdapService {
             }
             return res;
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("Search failed: base=" + base + " filter=" + filter, e);
+        } finally {
+            closeContext(dirContext);
         }
     }
 
@@ -157,13 +145,15 @@ public class LdapServiceImpl implements LdapService {
         if (base == null) {
             base = this.base;
         }
+        DirContext dirContext = null;
         try {
             SearchControls sc = new SearchControls();
             sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
             if (_defaultReadAttrs.length > 0) {
                 sc.setReturningAttributes(_defaultReadAttrs);
             }
-            NamingEnumeration results = getBaseContext().search(base, filter, sc);
+            dirContext = getBaseContext();
+            NamingEnumeration results = dirContext.search(base, filter, sc);
             List entries = new ArrayList();
 
             while (results.hasMore()) {
@@ -173,16 +163,16 @@ public class LdapServiceImpl implements LdapService {
 
             if (entries.size() > 1) {
                 throw new RuntimeException("Entry is not unique: " + filter);
-            }
-            else if (entries.size() == 0) {
+            } else if (entries.size() == 0) {
                 return null;
             }
 
             return (LdapUser) entries.get(0);
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("Search failed: base=" + base + " filter=" + filter, e);
+        } finally {
+            closeContext(dirContext);
         }
     }
 
@@ -193,6 +183,7 @@ public class LdapServiceImpl implements LdapService {
      */
     public boolean addLdapUser(String context, HashMap<String, String> attributes) {
 
+        DirContext dirContext = null;
         try {
 
             int x = 0;
@@ -212,11 +203,13 @@ public class LdapServiceImpl implements LdapService {
 
             Attributes attrs = ((LdapUserEntryImpl) e).getAttributes(addAttrs);
             String dn = e.getDn();
-            getBaseContext().createSubcontext(dn, attrs);
+            dirContext = getBaseContext();
+            dirContext.createSubcontext(dn, attrs);
             return true;
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new RuntimeException("Add failed", ex);
+        } finally {
+            closeContext(dirContext);
         }
 
     }
@@ -227,6 +220,7 @@ public class LdapServiceImpl implements LdapService {
      * @see se.vgregion.ldapservice.LdapService#modifyLdapUser(se.vgregion.ldapservice.LdapUser, java.util.HashMap)
      */
     public boolean modifyLdapUser(LdapUser e, HashMap<String, String> modifyAttributes) {
+        DirContext dirContext = null;
         try {
             int x = 0;
             String[] modifyAttrs = new String[modifyAttributes.size() + 1];
@@ -237,11 +231,13 @@ public class LdapServiceImpl implements LdapService {
             }
 
             Attributes attrs = ((LdapUserEntryImpl) e).getAttributes(modifyAttrs);
-            getBaseContext().modifyAttributes(e.getDn(), InitialDirContext.REPLACE_ATTRIBUTE, attrs);
+            dirContext = getBaseContext();
+            dirContext.modifyAttributes(e.getDn(), InitialDirContext.REPLACE_ATTRIBUTE, attrs);
             return true;
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new RuntimeException("Modify failed", ex);
+        } finally {
+            closeContext(dirContext);
         }
     }
 
@@ -251,12 +247,15 @@ public class LdapServiceImpl implements LdapService {
      * @see se.vgregion.ldapservice.LdapService#deleteLdapUser(se.vgregion.ldapservice.LdapUser)
      */
     public boolean deleteLdapUser(LdapUser e) {
+        DirContext dirContext = null;
         try {
-            getBaseContext().destroySubcontext(e.getDn());
+            dirContext = getBaseContext();
+            dirContext.destroySubcontext(e.getDn());
             return true;
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new RuntimeException("Delete failed", ex);
+        } finally {
+            closeContext(dirContext);
         }
 
     }
@@ -280,8 +279,7 @@ public class LdapServiceImpl implements LdapService {
                 if (val == null) {
                     return true;
                 }
-            }
-            else {
+            } else {
                 if (a[i].equals(val)) {
                     return true;
                 }
@@ -314,8 +312,18 @@ public class LdapServiceImpl implements LdapService {
         return e;
     }
 
-	public LdapUser getLdapUserByUid(String uid) {
-		throw new UnsupportedOperationException("Not implemented in LdapServiceImpl, use simple ldap service");
-		 
-	}
+    public LdapUser getLdapUserByUid(String uid) {
+        throw new UnsupportedOperationException("Not implemented in LdapServiceImpl, use simple ldap service");
+
+    }
+
+    private void closeContext(DirContext dirContext) {
+        if (dirContext != null) {
+            try {
+                dirContext.close();
+            } catch (NamingException e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
+    }
 }

@@ -22,6 +22,7 @@ import java.util.List;
 public class UserGroupHelperImpl implements UserGroupHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserGroupHelperImpl.class);
     private static final String POSTFIX_INTERNAL_ONLY = "_internal_only";
+    private static final String POSTFIX_EXTERNALLY_SITHS_ONLY = "_externally_siths_only";
 
     @Autowired
     private LiferayAutomation liferayAutomation;
@@ -191,20 +192,32 @@ public class UserGroupHelperImpl implements UserGroupHelper {
             int cnt = userGroupLocalService.getUserGroupsCount();
             List<UserGroup> allUserGroups = userGroupLocalService.getUserGroups(0, cnt);
             List<UserGroup> allInternalUserGroups = internalOnlyGroups(allUserGroups);
-            for (UserGroup internalUserGroup: allInternalUserGroups) {
-                String userGroupWithRole = internalOnlyCalculateUserGroupName(internalUserGroup);
-                removeUser(userGroupWithRole, user);
+            List<UserGroup> userGroups = user.getUserGroups();
+            List<UserGroup> userInternalOnlyGroups = internalOnlyGroups(userGroups);
+
+            List<String> userGroupNames = new ArrayList<String>();
+            for (UserGroup userGroup : userGroups) {
+                userGroupNames.add(userGroup.getName());
             }
 
-            List<UserGroup> userGroups = user.getUserGroups();
-            List<UserGroup> internalOnlyGroups = internalOnlyGroups(userGroups);
+            // Iterate over all internal groups. For each one, remove the user if access is not internal and he is
+            // currently a member (or he is not a member of the corresponding internal group), or add the user if access
+            // is internal and he is not yet a member (and he is a member of the corresponding internal group).
+            for (UserGroup internalUserGroup: allInternalUserGroups) {
+                String userGroupWithRole = internalOnlyCalculateUserGroupName(internalUserGroup);
 
-            for (UserGroup internalAccessUserGroup : internalOnlyGroups) {
-                String userGroupWithRole = internalOnlyCalculateUserGroupName(internalAccessUserGroup);
-                if (internalAccess) {
-                    addUser(userGroupWithRole, user);
+                if (userGroupNames.contains(userGroupWithRole)) {
+                    // User already in group. Should he be there?
+                    if (!internalAccess || !userInternalOnlyGroups.contains(internalUserGroup)) {
+                        // Nope
+                        removeUser(userGroupWithRole, user);
+                    }
                 } else {
-                    removeUser(userGroupWithRole, user);
+                    // User not member in group. Should he be there?
+                    if (internalAccess && userInternalOnlyGroups.contains(internalUserGroup)) {
+                        // Yup
+                        addUser(userGroupWithRole, user);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -212,6 +225,54 @@ public class UserGroupHelperImpl implements UserGroupHelper {
                     "restrictions [%s] for [%s]", internalAccess, user.getScreenName());
             log(msg, e);
             throw new RuntimeException(msg, e);
+        }
+    }
+
+    @Override
+    public void processExternallySithsOnlyAccess(User user) {
+        try {
+            Boolean internalAccess = userExpandoHelper.get("isInternalAccess", user);
+            Boolean externalSithsAccess = userExpandoHelper.get("isExternalSithsAccess", user);
+
+            int cnt = userGroupLocalService.getUserGroupsCount();
+            List<UserGroup> allUserGroups = userGroupLocalService.getUserGroups(0, cnt);
+            List<UserGroup> allExternallySithsOnlyGroups = externallySithsOnlyGroups(allUserGroups);
+            List<UserGroup> userGroups = user.getUserGroups();
+            List<UserGroup> userExternallySithsOnlyGroups = externallySithsOnlyGroups(userGroups);
+
+            List<String> userGroupNames = new ArrayList<String>();
+            for (UserGroup userGroup : userGroups) {
+                userGroupNames.add(userGroup.getName());
+            }
+
+            if (internalAccess || externalSithsAccess) {
+                // The user should be member of the externallySithsOnly groups where the user is.
+                for (UserGroup externallySithsOnlyGroup : allExternallySithsOnlyGroups) {
+                    String userGroupWithRole = externallySithsOnlyCalculateUserGroupName(externallySithsOnlyGroup);
+
+                    if (userGroupNames.contains(userGroupWithRole)) {
+                        // Already a member
+                    } else if (userExternallySithsOnlyGroups.contains(externallySithsOnlyGroup)) {
+                        // Is member of the externallySithsOnly group but not a member of the corresponding
+                        // original group, so add the user
+                        addUser(userGroupWithRole, user);
+                    }
+                }
+            } else {
+                // To get here (!internalAccess && !externalSithsAccess) == true
+                // Then the user should not be member of externallySithsOnly groups
+                for (UserGroup externallySithsOnlyGroup : allExternallySithsOnlyGroups) {
+                    String userGroupWithRole = internalOnlyCalculateUserGroupName(externallySithsOnlyGroup);
+
+                    if (userGroupNames.contains(userGroupWithRole)) {
+                        // Is member, remove.
+                        removeUser(userGroupWithRole, user);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
@@ -225,9 +286,25 @@ public class UserGroupHelperImpl implements UserGroupHelper {
         return result;
     }
 
+    private List<UserGroup> externallySithsOnlyGroups(List<UserGroup> allUserGroups) {
+        List<UserGroup> result = new ArrayList<UserGroup>();
+        for (UserGroup group : allUserGroups) {
+            if (group.getName().endsWith(POSTFIX_EXTERNALLY_SITHS_ONLY)) {
+                result.add(group);
+            }
+        }
+        return result;
+    }
+
     private String internalOnlyCalculateUserGroupName(UserGroup group) {
         String groupWithRightsName = group.getName().substring(0,
                 group.getName().length() - POSTFIX_INTERNAL_ONLY.length());
+        return groupWithRightsName;
+    }
+
+    private String externallySithsOnlyCalculateUserGroupName(UserGroup group) {
+        String groupWithRightsName = group.getName().substring(0,
+                group.getName().length() - POSTFIX_EXTERNALLY_SITHS_ONLY.length());
         return groupWithRightsName;
     }
 
