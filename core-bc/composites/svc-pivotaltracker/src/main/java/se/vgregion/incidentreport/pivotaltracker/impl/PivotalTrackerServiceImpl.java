@@ -30,14 +30,15 @@ import org.w3c.dom.NodeList;
 import se.vgregion.incidentreport.pivotaltracker.PTStory;
 import se.vgregion.incidentreport.pivotaltracker.PivotalTrackerService;
 import se.vgregion.incidentreport.pivotaltracker.TyckTillProjectData;
-import se.vgregion.ssl.ConvenientSslContextFactory;
 import se.vgregion.util.Attachment;
 import se.vgregion.util.HTTPUtils;
 import se.vgregion.util.HttpUtilsException;
 
+import javax.net.ssl.SSLContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -52,6 +53,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
     public final static String TYCKTILL_PT_PWD_KEY = "PT_PWD";
 
     public final static String TYCK_TILL_PT_USER_KEY = "PT_USER";
+    private SSLContext sslContext;
 
     private String ptPwd;
 
@@ -60,10 +62,6 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
     private static final String GET_USER_TOKEN = "https://www.pivotaltracker.com/services/v3/tokens/active";
     private static final String GET_PROJECT = "https://www.pivotaltracker.com/services/v3/projects";
     private static final String GET_PROJECT_TEST = "http://127.0.0.1/services/v3/projects";
-    private static final String TRUSTSTORE = "pivotaltracker.jks";
-    private static final String TRUSTSTORE_PASSWORD = "changeit";
-    private static final ConvenientSslContextFactory SSL_CONTEXT_FACTORY = new ConvenientSslContextFactory(TRUSTSTORE,
-            TRUSTSTORE_PASSWORD, null, null);
 
     // http://www.pivotaltracker.com/services/v3/projects/PROJECT_ID/stories/STORY_ID/attachments
 
@@ -73,6 +71,11 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
             throw new RuntimeException("Missing username in pivotalTracker.properties");
         }
         ptPwd = p.getProperty(TYCKTILL_PT_PWD_KEY);
+        try {
+            sslContext = SSLContext.getDefault();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /** */
@@ -86,7 +89,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
      * @return a populated TokenData object or null
      * @throws Exception when there is http problems
      */
-    private String getUserToken(String username, String password) {
+    String getUserToken(String username, String password) {
         DefaultHttpClient client = getNewClient();
         String tokenFound = null;
         try {
@@ -208,7 +211,7 @@ public class PivotalTrackerServiceImpl implements PivotalTrackerService {
 
     private DefaultHttpClient getNewClient() {
         DefaultHttpClient client = new DefaultHttpClient();
-        client = se.vgregion.ssl.WebClientWrapper.wrapClient(client, SSL_CONTEXT_FACTORY);
+        client = se.vgregion.ssl.WebClientWrapper.wrapClient(client, sslContext);
         return client;
     }
 

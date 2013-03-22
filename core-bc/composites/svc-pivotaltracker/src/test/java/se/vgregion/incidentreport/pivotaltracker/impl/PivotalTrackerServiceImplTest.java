@@ -25,6 +25,7 @@ import javax.ws.rs.core.Response;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * This action do that and that, if it has something special it is.
@@ -285,6 +286,18 @@ public class PivotalTrackerServiceImplTest {
             return size;
         }
 
+    }
+
+    // To test the ssl transport
+    @Test
+    public void getUserToken() throws Exception {
+        Properties p = new Properties();
+        p.setProperty("PT_USER", "asdf");
+        p.setProperty("PT_PWD", "asdf");
+
+        PivotalTrackerServiceImpl service = new PivotalTrackerServiceImpl(p);
+
+        String userToken = service.getUserToken("asdf", "asdf");
     }
 }
 
