@@ -108,7 +108,7 @@ public class USDServiceImpl implements USDService {
                 return null;
             }
 
-            List<Issue> records = new ArrayList<Issue>();
+            Set<Issue> records = new HashSet<Issue>();
             // Change Orders - Assignee
             records.addAll(getChangeOrdersForAssignee(sessionID, contactHandle, maxRows));
             // Incidents, Problems, Requests - Assignee
@@ -128,7 +128,7 @@ public class USDServiceImpl implements USDService {
                 }
             }
 
-            return records;
+            return new ArrayList<Issue>(records);
         } catch (RemoteException e) {
             log.error("Failed to get issue list from USD Service for user=" + userId, e);
             throw new RuntimeException(e);
@@ -289,7 +289,7 @@ public class USDServiceImpl implements USDService {
     private List<Issue> getChangeOrdersForContact(int sessionID, String contactHandle, int maxRows)
             throws RemoteException {
         // Build where clause
-        String whereClause = String.format("affected_contact = U'%1$s' AND assignee <> U'%1$s' AND active = 1",
+        String whereClause = String.format("affected_contact = U'%1$s' AND active = 1",
                 contactHandle);
 
         // Get list xml

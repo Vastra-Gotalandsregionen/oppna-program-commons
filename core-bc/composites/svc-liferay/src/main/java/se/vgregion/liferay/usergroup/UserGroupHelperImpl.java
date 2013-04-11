@@ -51,6 +51,13 @@ public class UserGroupHelperImpl implements UserGroupHelper {
         }
     }
 
+    /**
+     * Adds {@link User}s to a {@link UserGroup} with a given name. If the {@link UserGroup} does not exist an attempt
+     * to create it is made.
+     *
+     * @param userGroupName the userGroupName
+     * @param users the {@link User}s
+     */
     @Override
     public void addUser(String userGroupName, User... users) {
         if (isInvalid(users)) return;
@@ -245,6 +252,7 @@ public class UserGroupHelperImpl implements UserGroupHelper {
                 userGroupNames.add(userGroup.getName());
             }
 
+            // If "internalAccess" is true, then "externalSithsAccess" doesn't matter.
             if (internalAccess || externalSithsAccess) {
                 // The user should be member of the externallySithsOnly groups where the user is.
                 for (UserGroup externallySithsOnlyGroup : allExternallySithsOnlyGroups) {

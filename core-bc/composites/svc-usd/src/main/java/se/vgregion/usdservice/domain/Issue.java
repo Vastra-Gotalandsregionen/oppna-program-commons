@@ -90,4 +90,21 @@ public class Issue {
     public void setAssociated(String associated) {
         this.associated = associated;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Issue issue = (Issue) o;
+
+        if (refNum != null ? !refNum.equals(issue.refNum) : issue.refNum != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return refNum != null ? refNum.hashCode() : 0;
+    }
 }
