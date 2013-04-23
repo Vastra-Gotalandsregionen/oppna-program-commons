@@ -108,7 +108,7 @@ public class USDServiceImpl implements USDService {
                 return null;
             }
 
-            Set<Issue> records = new HashSet<Issue>();
+            List<Issue> records = new ArrayList<Issue>();
             // Change Orders - Assignee
             records.addAll(getChangeOrdersForAssignee(sessionID, contactHandle, maxRows));
             // Incidents, Problems, Requests - Assignee
@@ -128,7 +128,14 @@ public class USDServiceImpl implements USDService {
                 }
             }
 
-            return new ArrayList<Issue>(records);
+            List<Issue> listWithoutDuplicates = new ArrayList<Issue>();
+            for (Issue record : records) {
+                if (!listWithoutDuplicates.contains(record)) {
+                    listWithoutDuplicates.add(record);
+                }
+            }
+
+            return listWithoutDuplicates;
         } catch (RemoteException e) {
             log.error("Failed to get issue list from USD Service for user=" + userId, e);
             throw new RuntimeException(e);
