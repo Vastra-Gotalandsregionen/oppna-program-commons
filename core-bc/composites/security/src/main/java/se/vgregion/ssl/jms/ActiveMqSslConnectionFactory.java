@@ -1,4 +1,4 @@
-package se.vgregion.messagebus.jms;
+package se.vgregion.ssl.jms;
 
 import org.apache.activemq.ActiveMQSslConnectionFactory;
 import org.apache.activemq.transport.Transport;

@@ -27,7 +27,7 @@
   </amq:broker>
 
 
-  <bean id="jmsFactory" class="se.vgregion.messagebus.jms.ActiveMqSslConnectionFactory">
+  <bean id="jmsFactory" class="se.vgregion.ssl.jms.ActiveMqSslConnectionFactory">
     <property name="brokerURL" value="ssl://localhost:61617"/>
     <property name="trustStore" value="client.ts"/>
     <property name="trustStorePassword" value="password"/>

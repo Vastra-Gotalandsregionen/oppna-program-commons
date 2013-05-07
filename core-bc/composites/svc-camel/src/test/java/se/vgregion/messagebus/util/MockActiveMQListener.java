@@ -1,6 +1,6 @@
 package se.vgregion.messagebus.util;
 
-import se.vgregion.messagebus.jms.ActiveMqSslConnectionFactory;
+import se.vgregion.ssl.jms.ActiveMqSslConnectionFactory;
 
 import javax.jms.*;
 
