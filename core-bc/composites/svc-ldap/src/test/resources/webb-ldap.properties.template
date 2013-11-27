@@ -1,0 +1,5 @@
+# Ldap for user information
+ldap.org.authentication.java.naming.provider.url=
+ldap.org.synchronization.java.naming.security.principal=
+ldap.org.synchronization.java.naming.security.credentials=
+ldap.org.synchronization.userSearchBase=
