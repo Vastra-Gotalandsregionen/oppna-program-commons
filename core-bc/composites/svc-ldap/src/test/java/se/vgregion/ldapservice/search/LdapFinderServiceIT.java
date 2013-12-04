@@ -2,11 +2,6 @@ package se.vgregion.ldapservice.search;
 
 import org.junit.Test;
 import org.springframework.context.support.GenericXmlApplicationContext;
-import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.core.support.LdapContextSource;
-import org.springframework.ldap.pool.factory.PoolingContextSource;
-import org.springframework.ldap.pool.validation.DefaultDirContextValidator;
-import se.vgregion.ldapservice.AsyncCachingLdapServiceTest;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -19,7 +14,7 @@ import java.util.concurrent.Future;
  */
 public class LdapFinderServiceIT {
 
-    private String userId = "lifra1";
+    private String userId = "someRealUserId";
 
     @Test
     public void findFromWebLdap() {
@@ -78,7 +73,7 @@ public class LdapFinderServiceIT {
         ctx.refresh();
 
         LdapFinderService finder = ctx.getBean("ldapService", LdapFinderService.class);
-        return finder.toBeanText();
+        return finder.toBeanText(userId);
     }
 
     public List<?> find(String confFile, Object template) {

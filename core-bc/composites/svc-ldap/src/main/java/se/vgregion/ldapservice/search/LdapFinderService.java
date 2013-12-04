@@ -1,6 +1,5 @@
 package se.vgregion.ldapservice.search;
 
-import org.apache.commons.beanutils.BeanMap;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
@@ -8,6 +7,7 @@ import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.filter.Filter;
 import org.springframework.ldap.filter.LikeFilter;
+import se.vgregion.ldapservice.search.beanutil.BeanMap;
 
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -88,7 +88,15 @@ public class LdapFinderService {
     public <T> List<T> find(T sample) {
         return findImp(sample, newBeanAttributesMapper(sample.getClass()));
     }
-    
+
+    /**
+     * Se se.vgregion.ldapservice.search.LdapFinderService#find(T) to understand this method. Except that it wraps
+     * the return in a future object.
+     * @param sample holds properties that (could) match fields in the db by the operator '=' or 'like' (in conjunction
+     *               with having a '*' character in a String value).
+     * @param <T>    type of the param and type of the answers inside the resulting list.
+     * @return a list of search hits, wraped in a future object.
+     */
     public <T> Future<List<T>> findFuture(final T sample) {
         return executor.submit(new Callable<List<T>>() {
             @Override
@@ -104,11 +112,8 @@ public class LdapFinderService {
         searchControls.setReturningAttributes(new String[]{"*"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-        @SuppressWarnings("unchecked")
-        List<T> result = ldapTemplate.search(StringUtils.EMPTY, searchFilter.encode(), searchControls,
+        return ldapTemplate.search(StringUtils.EMPTY, searchFilter.encode(), searchControls,
                 mapper);
-
-        return result;
     }
 
     /**
@@ -160,7 +165,7 @@ public class LdapFinderService {
         for (Object entryObj : bm.entrySet()) {
             Map.Entry<String, Object> entry = (Map.Entry<String, Object>) entryObj;
             String property = entry.getKey();
-            if (bm.getWriteMethod(property) != null) {
+            if (bm.isWritable(property)) {
                 Object value = entry.getValue();
                 if (value != null && !"".equals(value.toString().trim())) {
                     String ldapPropertyName = getPlainNameOrExplicit(type, property);
@@ -202,17 +207,25 @@ public class LdapFinderService {
         }
     }
 
+    /**
+     * Getter for ldapTemplate.
+     * @return instance of mentioned var.
+     */
     public LdapTemplate getLdapTemplate() {
         return ldapTemplate;
     }
 
+    /**
+     * Setter for ldapTemplate.
+     * @param ldapTemplate the new value.
+     */
     public void setLdapTemplate(LdapTemplate ldapTemplate) {
         this.ldapTemplate = ldapTemplate;
     }
 
-    public String toBeanText() {
+    public String toBeanText(String sampleCn) {
         WebLdapPerson sample = new WebLdapPerson();
-        sample.setCn("clalu4");
+        sample.setCn(sampleCn);
         StringBuilder sb = new StringBuilder();
         findImp(sample, newBeanToJavaCodeAttributesMapper(sb));
         return sb.toString();
@@ -276,18 +289,13 @@ public class LdapFinderService {
 
             while (all.hasMore()) {
                 Attribute attribute = all.next();
-
                 String name = toBeanPropertyName(attribute.getID());
-
                 actualValues.put(name, attribute.getID());
-                if (bm.containsKey(name) && bm.getWriteMethod(name) != null) {
+                if (bm.containsKey(name) && bm.isWritable(name)) {
                     bm.put(name, attribute.get());
                 }
             }
-
             return result;
         }
-
     }
-
 }
