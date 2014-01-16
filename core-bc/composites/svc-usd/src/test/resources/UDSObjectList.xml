@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<UDSObjectList>
+<UDSObject>
+<Handle>cr:1662791</Handle>
+<Attributes>
+<Attribute DataType="2002">
+<AttrName>description</AttrName>
+<AttrValue>Hej!
+Så här ser det ut när jag försöker komma in
+&#31;‹&#8;&#3;í=ëvÛ6ÒÿsÎ¾&#3;–{¾VÞ %_ri&#29;K]ÇV&#26;ïÚµ&#143;-·Û/Íñ&#129;DHbD‘\^äx½ÞÇøž }…¾€_ì›&#1;@&#18;¼I”L%i7îi$&#17;ƒÁ`Ì &#3;ð&#15;&#143;þPòßÞ&#31;&#15;O&#15;z?žuÉ8˜ZäìòåñÑ&#1;ÑôVë‡&#157;ƒVë°wHþñºwrL¶š›¤çQÛ7&#3;Ó±©Õju¿Óˆ6&#14;&#2;w·Õº¾¾n^ï4&#29;oÔê&#157;·Þ#®-¬,¿ê&#129;R³i&#4;†Öy´Ç&#27;|?µl¿]€fëë¯¿&#22;µ9,£Fç&#17;!d/0&#3;‹uö­¡Çü&#129;C¾ðè?Cç&#5;Ù·g÷?Û&#6;Åv,:ò&#3;:³è^K@óŠS&#22;P‚íèìŸ¡9kkÿÐ/÷õ&#3;gêÒÀì[L#&#3;Ç&#14;˜&#29;´µ£®FZ&#157;G¼Ú&#31;u&#157;&#28;A‰Ot] ²L{Bp¦Shø&#157;¯uöZ&#2;vElý°ß‡ŽŽš³íæ–&gt;5—FÚiµöþøæàp¿·ÿ&#6;¡áïÇý×§§Í—&#17;æÐöÃ&gt;B÷&#25;i“ah&#15;pö5,zÃ¼ÇdLmÃÂ/0‡\¶!QÜÊOø Æ¦ßäd²7¼Î[&#21;c#Sÿ…¬xÇ¿´ZoßÖÅ¡ß;sâÙyÀ'&#23;1·¾²ÉÔ&#31;&#17;×ƒº^`2&#127;…Ië3&#15;&#22; kM™ïÃÒð&#129;ƒßXÎ€Z¬íÏ´¢æc&#129;rÍúdèÑ)»
+</AttrValue>
+</Attribute>
+<Attribute DataType="2002">
+<AttrName>summary</AttrName>
+<AttrValue>Inloggning Alfresco</AttrValue>
+</Attribute>
+<Attribute DataType="2002">
+<AttrName>status.sym</AttrName>
+<AttrValue>Åtgärdad</AttrValue>
+</Attribute>
+<Attribute DataType="2002">
+<AttrName>ref_num</AttrName>
+<AttrValue>i1335498</AttrValue>
+</Attribute>
+<Attribute DataType="2002">
+<AttrName>web_url</AttrName>
+<AttrValue>http://na62791</AttrValue>
+</Attribute>
+<Attribute DataType="2005">
+<AttrName>type</AttrName>
+<AttrValue>I</AttrValue>
+</Attribute>
+</Attributes>
+</UDSObject>
+<UDSObject>
+<Handle>cr:1660547</Handle>
+<Attributes>
+<Attribute DataType="2002">
+<AttrName>description</AttrName>
+<AttrValue>
+När man går in via Internet Eplorer får man bara upp följande tecken: &#31;‹&#8;&#3;&#3;
+
+Och går man in via Chrome, så blir det som att man har valt att spara ner webbsidan på sin dator.
+</AttrValue>
+</Attribute>
+<Attribute DataType="2002">
+<AttrName>summary</AttrName>
+<AttrValue>Konstiga tecken i webbläsaren när man loggar in på Alfresco.</AttrValue>
+</Attribute>
+<Attribute DataType="2002">
+<AttrName>status.sym</AttrName>
+<AttrValue>Åtgärdad</AttrValue>
+</Attribute>
+<Attribute DataType="2002">
+<AttrName>ref_num</AttrName>
+<AttrValue>i1333253</AttrValue>
+</Attribute>
+<Attribute DataType="2002">
+<AttrName>web_url</AttrName>
+<AttrValue>http://nav660547</AttrValue>
+</Attribute>
+<Attribute DataType="2005">
+<AttrName>type</AttrName>
+<AttrValue>I</AttrValue>
+</Attribute>
+</Attributes>
+</UDSObject>
+</UDSObjectList>

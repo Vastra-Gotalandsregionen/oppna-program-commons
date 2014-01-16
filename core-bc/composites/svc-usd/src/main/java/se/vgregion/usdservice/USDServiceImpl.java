@@ -366,7 +366,7 @@ public class USDServiceImpl implements USDService {
         String groups = "";
         try {
             // Parse the XML to get a DOM to query
-            Document doc = parseXml(new ByteArrayInputStream(xml.getBytes()));
+            Document doc = parseXml(xml);
 
             // Extract USDObject's
             String xPath = "/UDSObjectList/UDSObject";
@@ -386,11 +386,11 @@ public class USDServiceImpl implements USDService {
         }
     }
 
-    protected List<Issue> parseIssues(String xml, String fallbackType, String associated) throws RuntimeException {
+    protected static List<Issue> parseIssues(String xml, String fallbackType, String associated) throws RuntimeException {
         List<Issue> issueList = new ArrayList<Issue>();
         try {
             // Parse the XML to get a DOM to query
-            Document doc = parseXml(new ByteArrayInputStream(xml.getBytes()));
+            Document doc = parseXml(xml);
 
             // Extract USDObject's
             String xPath = "/UDSObjectList/UDSObject";
@@ -424,7 +424,7 @@ public class USDServiceImpl implements USDService {
         }
     }
 
-    private Issue resolveIssue(String refNum, int i, String fallbackType, String associated, Document doc)
+    private static Issue resolveIssue(String refNum, int i, String fallbackType, String associated, Document doc)
             throws XPathExpressionException {
         Issue issue = new Issue();
         issue.setRefNum(refNum);
@@ -458,7 +458,7 @@ public class USDServiceImpl implements USDService {
         return issue;
     }
 
-    private String extractAttribute(int cnt, String attrName, QName attrType, Document source)
+    private static String extractAttribute(int cnt, String attrName, QName attrType, Document source)
             throws XPathExpressionException {
         String exprTemplate = "/UDSObjectList/UDSObject[%s]/Attributes/Attribute[AttrName='%s']/AttrValue";
         String xPath = String.format(exprTemplate, cnt, attrName);
@@ -532,7 +532,7 @@ public class USDServiceImpl implements USDService {
     }
 
     protected String extractHandle(String xml) throws Exception {
-        Document doc = parseXml(new ByteArrayInputStream(xml.getBytes()));
+        Document doc = parseXml(xml);
 
         NodeList handles = doc.getElementsByTagName("Handle");
         if (handles.getLength() > 0) {
@@ -550,14 +550,17 @@ public class USDServiceImpl implements USDService {
      * @throws SAXException
      * @throws IOException
      */
-    private Document parseXml(InputStream xml) throws ParserConfigurationException, SAXException, IOException {
+    private static Document parseXml(String xml) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbfactory = DocumentBuilderFactory.newInstance();
         dbfactory.setNamespaceAware(true);
         dbfactory.setXIncludeAware(true);
 
         DocumentBuilder parser = dbfactory.newDocumentBuilder();
 
-        return parser.parse(xml);
+        // To avoid illegal xml character references
+        xml = xml.replace("&", "&amp;");
+        ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes("UTF-8"));
+        return parser.parse(bais);
     }
 
     /**
@@ -574,7 +577,7 @@ public class USDServiceImpl implements USDService {
      * @return the evaluated result.
      * @throws XPathExpressionException
      */
-    private <T> T evaluate(String xPath, Document source, QName qName) throws XPathExpressionException {
+    private static <T> T evaluate(String xPath, Document source, QName qName) throws XPathExpressionException {
         XPathFactory factory = XPathFactory.newInstance();
         XPath processor = factory.newXPath();
         return (T) processor.evaluate(xPath, source, qName);
