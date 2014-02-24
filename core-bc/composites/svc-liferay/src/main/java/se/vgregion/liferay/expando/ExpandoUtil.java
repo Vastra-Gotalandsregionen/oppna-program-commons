@@ -159,13 +159,21 @@ public class ExpandoUtil {
 
         try {
             expandoColumnService.getColumn(expandoTable.getTableId(), columnName);
+      /*Removed for Liferay 6.2
+
         } catch (PortalException e) {
             if (e instanceof com.liferay.portlet.expando.NoSuchColumnException) {
                 // If column don't exists we try to create it.
                 createExpandoColumn(companyId, expandoTable.getTableId(), columnName, expandoType);
-            }
+            }*/
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create ExpandoColumn [" + columnName + "]", e);
+            // Moved to here for LR 6.2
+            if (e instanceof com.liferay.portlet.expando.NoSuchColumnException) {
+                // If column don't exists we try to create it.
+                createExpandoColumn(companyId, expandoTable.getTableId(), columnName, expandoType);
+            }else {
+                throw new RuntimeException("Failed to create ExpandoColumn [" + columnName + "]", e);
+            }
         }
     }
 

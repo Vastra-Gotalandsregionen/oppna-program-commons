@@ -13,7 +13,7 @@
   <name>${project.artifactId}</name>
 
   <properties>
-    <liferay.version>6.0.6</liferay.version>
+    <liferay.version>6.2.10-GA1</liferay.version>
   </properties>
 
   <dependencies>

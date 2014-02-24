@@ -1,19 +1,15 @@
 package se.vgregion.liferay.organization;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import se.vgregion.liferay.LiferayAutomation;
-
-import com.liferay.portal.model.ListTypeConstants;
 import com.liferay.portal.model.Organization;
 import com.liferay.portal.model.OrganizationConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.OrganizationLocalService;
 import com.liferay.portal.service.UserLocalService;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.vgregion.liferay.LiferayAutomation;
 
 /**
  * Created by IntelliJ IDEA. Created: 2011-11-29 15:32
@@ -157,11 +153,13 @@ public class OrganizationHelperImpl implements OrganizationHelper {
 
             User systemUser = liferayAutomation.lookupSysadmin(companyId);
 
+            boolean site = true;
+
             Long parentId = (parent != null) ? parent.getOrganizationId() : 0L;
             String description = liferayAutomation.autoCreateDescription();
             organization = organizationLocalService.addOrganization(systemUser.getUserId(), parentId,
-                    organizationName, OrganizationConstants.TYPE_REGULAR_ORGANIZATION, true, 0, 0,
-                    ListTypeConstants.ORGANIZATION_STATUS_DEFAULT, description, null);
+                    organizationName, OrganizationConstants.TYPE_REGULAR_ORGANIZATION, 0, 0, 0,
+                    "", site , null);
 
             return organization;
         } catch (Exception e) {
