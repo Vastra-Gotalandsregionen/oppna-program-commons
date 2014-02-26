@@ -1,5 +1,8 @@
 package se.vgregion.messagebus;
 
+import com.liferay.portal.kernel.dao.orm.*;
+import com.liferay.portal.kernel.executor.PortalExecutorManager;
+import com.liferay.portal.kernel.executor.PortalExecutorManagerUtil;
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.MessageBus;
 import com.liferay.portal.kernel.messaging.MessageBusException;
@@ -9,6 +12,7 @@ import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
@@ -25,7 +29,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.*;
 
 import static org.junit.Assert.*;
 
@@ -120,6 +127,11 @@ public class CamelRestComponentTest {
             }
 
             @Override
+            public String generate(byte[] bytes) {
+                return UUID.nameUUIDFromBytes(bytes).toString();
+            }
+
+            @Override
             public String toJsSafeUuid(String s) {
                 throw new UnsupportedOperationException();
             }
@@ -146,6 +158,11 @@ public class CamelRestComponentTest {
             public String generate() {
                 Random random = new Random();
                 return random.nextInt() + "";
+            }
+
+            @Override
+            public String generate(byte[] bytes) {
+                return UUID.nameUUIDFromBytes(bytes).toString();
             }
 
             @Override
@@ -182,6 +199,11 @@ public class CamelRestComponentTest {
             }
 
             @Override
+            public String generate(byte[] bytes) {
+                return UUID.nameUUIDFromBytes(bytes).toString();
+            }
+
+            @Override
             public String toJsSafeUuid(String s) {
                 throw new UnsupportedOperationException();
             }
@@ -189,5 +211,144 @@ public class CamelRestComponentTest {
         sender.setMessageBus(messageBus);
         Object result = sender.send(messagebusUnresponsiveDestination, message, 15000);
         assertTrue(result instanceof Exception);
+    }
+
+    @BeforeClass
+    public static void init() {
+        new PortalExecutorManagerUtil().setPortalExecutorManager(new PortalExecutorManager() {
+            @Override
+            public <T> Future<T> execute(String name, Callable<T> callable) {
+                return null;
+            }
+
+            @Override
+            public <T> T execute(String name, Callable<T> callable, long timeout, TimeUnit timeUnit) throws ExecutionException, InterruptedException, TimeoutException {
+                return null;
+            }
+
+            @Override
+            public com.liferay.portal.kernel.concurrent.ThreadPoolExecutor getPortalExecutor(String name) {
+                return null;
+            }
+
+            @Override
+            public com.liferay.portal.kernel.concurrent.ThreadPoolExecutor getPortalExecutor(String name, boolean createIfAbsent) {
+                return null;
+            }
+
+            @Override
+            public com.liferay.portal.kernel.concurrent.ThreadPoolExecutor registerPortalExecutor(String name, com.liferay.portal.kernel.concurrent.ThreadPoolExecutor threadPoolExecutor) {
+                return null;
+            }
+
+            @Override
+            public void shutdown() {
+
+            }
+
+            @Override
+            public void shutdown(boolean interrupt) {
+
+            }
+
+            @Override
+            public void shutdown(String name) {
+
+            }
+
+            @Override
+            public void shutdown(String name, boolean interrupt) {
+
+            }
+        });
+
+        new EntityCacheUtil().setEntityCache(new EntityCache() {
+            @Override
+            public void clearCache() {
+
+            }
+
+            @Override
+            public void clearCache(String className) {
+
+            }
+
+            @Override
+            public void clearLocalCache() {
+
+            }
+
+            @Override
+            public Serializable getResult(boolean entityCacheEnabled, Class<?> clazz, Serializable primaryKey) {
+                return null;
+            }
+
+            @Override
+            public void invalidate() {
+
+            }
+
+            @Override
+            public Serializable loadResult(boolean entityCacheEnabled, Class<?> clazz, Serializable primaryKey, SessionFactory sessionFactory) {
+                return null;
+            }
+
+            @Override
+            public void putResult(boolean entityCacheEnabled, Class<?> clazz, Serializable primaryKey, Serializable result) {
+
+            }
+
+            @Override
+            public void removeCache(String className) {
+
+            }
+
+            @Override
+            public void removeResult(boolean entityCacheEnabled, Class<?> clazz, Serializable primaryKey) {
+
+            }
+        });
+
+        new FinderCacheUtil().setFinderCache(new FinderCache() {
+            @Override
+            public void clearCache() {
+
+            }
+
+            @Override
+            public void clearCache(String className) {
+
+            }
+
+            @Override
+            public void clearLocalCache() {
+
+            }
+
+            @Override
+            public Object getResult(FinderPath finderPath, Object[] args, SessionFactory sessionFactory) {
+                return null;
+            }
+
+            @Override
+            public void invalidate() {
+
+            }
+
+            @Override
+            public void putResult(FinderPath finderPath, Object[] args, Object result) {
+
+            }
+
+            @Override
+            public void removeCache(String className) {
+
+            }
+
+            @Override
+            public void removeResult(FinderPath finderPath, Object[] args) {
+
+            }
+        });
     }
 }

@@ -32,7 +32,8 @@
 	
 	<!-- Configurator -->
 	
-	<bean id="messagingConfigurator.core" class="com.liferay.portal.kernel.messaging.config.DefaultMessagingConfigurator" init-method="init" destroy-method="destroy">
+	<bean id="messagingConfigurator.core" class="com.liferay.portal.kernel.messaging.config.DefaultMessagingConfigurator"
+        init-method="afterPropertiesSet" destroy-method="destroy">
 		<property name="destinations">
 			<list>
 				<ref bean="destination.message_bus_default_response" />

@@ -1,12 +1,14 @@
 package se.vgregion.messagebus;
 
+import com.liferay.portal.kernel.dao.orm.*;
+import com.liferay.portal.kernel.executor.PortalExecutorManager;
+import com.liferay.portal.kernel.executor.PortalExecutorManagerUtil;
 import com.liferay.portal.kernel.messaging.DestinationNames;
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.MessageBus;
 import com.liferay.portal.kernel.messaging.MessageListener;
-import org.apache.activemq.ActiveMQConnection;
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.log4j.Logger;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +17,16 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit38.AbstractJUnit38SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import se.vgregion.messagebus.util.SimpleMessageListener;
 
 import javax.jms.*;
+import javax.jms.Session;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -149,5 +153,146 @@ public class CamelJMSComponentTest {
     private MessageBus messageBus;
     @Autowired
     private JmsTemplate jmsTemplate;
+
+
+    @BeforeClass
+    public static void init() {
+        new PortalExecutorManagerUtil().setPortalExecutorManager(new PortalExecutorManager() {
+            @Override
+            public <T> Future<T> execute(String name, Callable<T> callable) {
+                return null;
+            }
+
+            @Override
+            public <T> T execute(String name, Callable<T> callable, long timeout, TimeUnit timeUnit) throws ExecutionException, InterruptedException, TimeoutException {
+                return null;
+            }
+
+            @Override
+            public com.liferay.portal.kernel.concurrent.ThreadPoolExecutor getPortalExecutor(String name) {
+                return null;
+            }
+
+            @Override
+            public com.liferay.portal.kernel.concurrent.ThreadPoolExecutor getPortalExecutor(String name, boolean createIfAbsent) {
+                return null;
+            }
+
+            @Override
+            public com.liferay.portal.kernel.concurrent.ThreadPoolExecutor registerPortalExecutor(String name, com.liferay.portal.kernel.concurrent.ThreadPoolExecutor threadPoolExecutor) {
+                return null;
+            }
+
+            @Override
+            public void shutdown() {
+
+            }
+
+            @Override
+            public void shutdown(boolean interrupt) {
+
+            }
+
+            @Override
+            public void shutdown(String name) {
+
+            }
+
+            @Override
+            public void shutdown(String name, boolean interrupt) {
+
+            }
+        });
+
+        new EntityCacheUtil().setEntityCache(new EntityCache() {
+            @Override
+            public void clearCache() {
+
+            }
+
+            @Override
+            public void clearCache(String className) {
+
+            }
+
+            @Override
+            public void clearLocalCache() {
+
+            }
+
+            @Override
+            public Serializable getResult(boolean entityCacheEnabled, Class<?> clazz, Serializable primaryKey) {
+                return null;
+            }
+
+            @Override
+            public void invalidate() {
+
+            }
+
+            @Override
+            public Serializable loadResult(boolean entityCacheEnabled, Class<?> clazz, Serializable primaryKey, SessionFactory sessionFactory) {
+                return null;
+            }
+
+            @Override
+            public void putResult(boolean entityCacheEnabled, Class<?> clazz, Serializable primaryKey, Serializable result) {
+
+            }
+
+            @Override
+            public void removeCache(String className) {
+
+            }
+
+            @Override
+            public void removeResult(boolean entityCacheEnabled, Class<?> clazz, Serializable primaryKey) {
+
+            }
+        });
+
+        new FinderCacheUtil().setFinderCache(new FinderCache() {
+            @Override
+            public void clearCache() {
+
+            }
+
+            @Override
+            public void clearCache(String className) {
+
+            }
+
+            @Override
+            public void clearLocalCache() {
+
+            }
+
+            @Override
+            public Object getResult(FinderPath finderPath, Object[] args, SessionFactory sessionFactory) {
+                return null;
+            }
+
+            @Override
+            public void invalidate() {
+
+            }
+
+            @Override
+            public void putResult(FinderPath finderPath, Object[] args, Object result) {
+
+            }
+
+            @Override
+            public void removeCache(String className) {
+
+            }
+
+            @Override
+            public void removeResult(FinderPath finderPath, Object[] args) {
+
+            }
+        });
+    }
+
 
 }

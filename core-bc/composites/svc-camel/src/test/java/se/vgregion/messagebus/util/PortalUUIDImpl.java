@@ -36,9 +36,15 @@ public class PortalUUIDImpl implements PortalUUID {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public String generate() {
 		return UUID.randomUUID().toString();
 	}
+
+    @Override
+    public String generate(byte[] bytes) {
+        return UUID.nameUUIDFromBytes(bytes).toString();
+    }
 
     @Override
     public String toJsSafeUuid(String s) {
