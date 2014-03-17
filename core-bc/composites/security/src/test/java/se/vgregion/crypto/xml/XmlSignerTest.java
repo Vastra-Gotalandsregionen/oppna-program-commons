@@ -24,13 +24,6 @@ public class XmlSignerTest {
 
         XmlSigner signer = new XmlSigner();
 
-        /*File file = new File("C:\\java\\workspace\\secrets\\certifikat\\portalen.vgregion.se.p12");
-        FileInputStream fis = new FileInputStream(file);
-
-        KeyStore ks = KeyStore.getInstance("PKCS12");
-        ks.load(fis, "asdf".toCharArray());
-        KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry)  ks.getEntry("portalen.vgregion.se", new KeyStore.PasswordProtection("asdf".toCharArray()));*/
-
         // Load the KeyStore and get the signing key and certificate.
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(this.getClass().getClassLoader().getResourceAsStream("teststore.jks"), "changeit".toCharArray());
@@ -45,11 +38,6 @@ public class XmlSignerTest {
 
         X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance("X509")
                 .generateCertificate(this.getClass().getClassLoader().getResourceAsStream("testcert.pem"));
-
-//        X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance("X509")
-//                .generateCertificate(new FileInputStream("C:\\Users\\patber.KNOWIT\\Documents\\secure\\" +
-//                        "portalen.vgregion.se-cert-pkcs10\\portalen.vgregion.se_cert.pem"));
-
 
         boolean verify1 = signer.verify(signedXml1, certificate);
 
