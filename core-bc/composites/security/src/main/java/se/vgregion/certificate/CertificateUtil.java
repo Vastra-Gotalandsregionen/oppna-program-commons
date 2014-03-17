@@ -96,10 +96,9 @@ public class CertificateUtil {
         } else if (crlURL.startsWith("ldap://")) {
             LOGGER.warn("Certificate revocation URL has ldap protocol which is not supported. Cannot verify CRL.");
 //            return downloadCRLFromLDAP(crlURL); todo implement this
+            throw new CertificateException("Can not download CRL from certificate distribution point: " + crlURL);
         } else {
-            throw new CertificateException(
-                    "Can not download CRL from certificate "
-                            + "distribution point: " + crlURL);
+            throw new CertificateException("Can not download CRL from certificate distribution point: " + crlURL);
         }
     }
 
