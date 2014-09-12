@@ -2,7 +2,7 @@ package se.vgregion.crypto.xml;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import se.vgregion.certificate.CertificateUtil;
+import se.vgregion.certificate.PkixUtil;
 
 import javax.xml.crypto.dsig.*;
 import javax.xml.crypto.dsig.dom.DOMSignContext;
@@ -105,7 +105,7 @@ public class XmlSigner {
             }
 
             // Verify it hasn't been revoked
-            CertificateUtil.verifyCertificateCRLs(trustedCertificate);
+            PkixUtil.validateCertificate(trustedCertificate);
 
             // Create a DOMValidateContext and specify document context.
             PublicKey publicKey = trustedCertificate.getPublicKey();
