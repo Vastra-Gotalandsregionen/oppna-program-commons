@@ -8,143 +8,27 @@ import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.asn1.x509.X509Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.security.provider.certpath.PKIXCertPathValidator;
-import sun.security.provider.certpath.X509CertPath;
 
 import javax.naming.NamingException;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.ServerSocket;
 import java.net.URL;
-import java.security.*;
 import java.security.cert.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class PkixUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PkixUtil.class);
 
-    public static KeyStore.PrivateKeyEntry getPrivateKeyEntry(InputStream keystoreInput, String storeType, String alias,
-                                                  String password) {
-        try {
-
-            KeyStore keyStore = KeyStore.getInstance(storeType);
-            keyStore.load(keystoreInput, password.toCharArray());
-            KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry
-                    (alias, new KeyStore.PasswordProtection(password.toCharArray()));
-            return privateKeyEntry;
-
-        } catch (KeyStoreException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (CertificateException e) {
-            throw new RuntimeException(e);
-        } catch (UnrecoverableEntryException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static void validateCertificate(X509Certificate trustedCert) throws CertificateException {
-        /*try {
-            validateCertificate2(cert);
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InvalidAlgorithmParameterException e) {
-            e.printStackTrace();
-        } catch (CertPathValidatorException e) {
-            e.printStackTrace();
-        }*/
         trustedCert.checkValidity();
 
         verifyCertificateCRLs(trustedCert);
-    }
-
-    public static void validateCertificate4(X509Certificate cert) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, InvalidAlgorithmParameterException, CertPathValidatorException, KeyManagementException {
-
-        SSLContext sslContext = SSLContext.getInstance("SSL");
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("X.509");
-        KeyStore keyStore = KeyStore.getInstance("JKS");
-        keyStore.setCertificateEntry("anAlias", cert);
-        trustManagerFactory.init(keyStore);
-
-        sslContext.init(null, trustManagerFactory.getTrustManagers(), null);
-        ServerSocket serverSocket = sslContext.getServerSocketFactory().createServerSocket(8800);
-
-        serverSocket.accept();
-
-        cert.checkValidity();
-
-        CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-        List<X509Certificate> certificates = new ArrayList<X509Certificate>();
-        certificates.add(cert);
-        CertPath certPath = certificateFactory.generateCertPath(certificates);
-
-        FileInputStream keystoreStream = new FileInputStream("C:\\java\\workspace\\secrets\\certifikat\\pdl.portalen-test.vgregion.se_trust.jks");
-        KeyStore anchors = KeyStore.getInstance(KeyStore.getDefaultType());
-        anchors.load(keystoreStream, "asdf".toCharArray());
-//        TrustAnchor trustAnchor = new TrustAnchor(cert, null);
-
-        PKIXParameters params = new PKIXParameters(anchors);
-        params.setRevocationEnabled(true);
-        CertPathValidator cpv = CertPathValidator.getInstance(CertPathValidator.getDefaultType());
-        PKIXCertPathValidatorResult pkixCertPathValidatorResult = (PKIXCertPathValidatorResult) cpv.validate(certPath, params);
-
-    }
-    public static void validateCertificate3(X509Certificate cert) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, InvalidAlgorithmParameterException, CertPathValidatorException {
-
-        cert.checkValidity();
-
-        CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-        List<X509Certificate> certificates = new ArrayList<X509Certificate>();
-        certificates.add(cert);
-        CertPath certPath = certificateFactory.generateCertPath(certificates);
-
-        FileInputStream keystoreStream = new FileInputStream("C:\\java\\workspace\\secrets\\certifikat\\pdl.portalen-test.vgregion.se_trust.jks");
-        KeyStore anchors = KeyStore.getInstance(KeyStore.getDefaultType());
-        anchors.load(keystoreStream, "asdf".toCharArray());
-//        TrustAnchor trustAnchor = new TrustAnchor(cert, null);
-
-        PKIXParameters params = new PKIXParameters(anchors);
-        params.setRevocationEnabled(true);
-        CertPathValidator cpv = CertPathValidator.getInstance(CertPathValidator.getDefaultType());
-        PKIXCertPathValidatorResult pkixCertPathValidatorResult = (PKIXCertPathValidatorResult) cpv.validate(certPath, params);
-
-    }
-
-    public static void validateCertificate2(X509Certificate cert) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, InvalidAlgorithmParameterException, CertPathValidatorException {
-//        KeyStore keyStore = KeyStore.getInstance("JKS");
-        FileInputStream keystoreStream = new FileInputStream("C:\\java\\workspace\\secrets\\rp-certifikat\\pdl.portalen-test.vgregion.se_trust.jks");
-//        InputStream keystoreStream = CertificateUtil.class.getClassLoader().getResourceAsStream("teststore.jks");
-
-        InputStream trustStoreInput = keystoreStream;
-        char[] password = "asdf".toCharArray();
-        List<X509Certificate> chain = Arrays.asList(cert);
-
-        KeyStore anchors = KeyStore.getInstance(KeyStore.getDefaultType());
-        anchors.load(trustStoreInput, password);
-        X509CertSelector target = new X509CertSelector();
-        target.setCertificate(chain.get(0));
-        PKIXBuilderParameters params = new PKIXBuilderParameters(anchors, target);
-
-        PKIXCertPathValidator validator = new PKIXCertPathValidator();
-        CertPathValidatorResult certPathValidatorResult = validator.engineValidate(new X509CertPath(Arrays.asList(
-                anchors.getCertificate("SITHS_ROOT_CA_V1_PP"),
-                anchors.getCertificate("siths_type_3_ca_v1pp"),
-                cert)), params);
-
     }
 
     public static void verifyCertificateCRLs(X509Certificate cert) throws CertificateException {
@@ -206,6 +90,30 @@ public class PkixUtil {
             }
         }
         return crlUrls;
+    }
+
+    public static X509Certificate base64ToCertificate(String base64EncodedCertificate) {
+        String prefix = "-----BEGIN CERTIFICATE-----";
+        String suffix = "-----END CERTIFICATE-----";
+        String lineSeparator = System.getProperty("line.separator");
+
+        if (!base64EncodedCertificate.startsWith(prefix)) {
+            base64EncodedCertificate = prefix + lineSeparator + base64EncodedCertificate
+                    + lineSeparator + suffix;
+        }
+
+        CertificateFactory cf;
+        try {
+            cf = CertificateFactory.getInstance("X.509");
+            Certificate certificate = cf.generateCertificate(new ByteArrayInputStream(base64EncodedCertificate.getBytes("UTF-8")));
+
+            return (X509Certificate) certificate;
+        } catch (CertificateException e) {
+            throw new RuntimeException(e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     /**
