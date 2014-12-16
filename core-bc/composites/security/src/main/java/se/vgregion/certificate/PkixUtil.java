@@ -16,6 +16,10 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableEntryException;
 import java.security.cert.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +28,29 @@ import java.util.List;
 public class PkixUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PkixUtil.class);
+
+    public static KeyStore.PrivateKeyEntry getPrivateKeyEntry(InputStream keystoreInput, String storeType, String alias,
+                                                              String password) {
+        try {
+
+            KeyStore keyStore = KeyStore.getInstance(storeType);
+            keyStore.load(keystoreInput, password.toCharArray());
+            KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry
+                    (alias, new KeyStore.PasswordProtection(password.toCharArray()));
+            return privateKeyEntry;
+
+        } catch (KeyStoreException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (CertificateException e) {
+            throw new RuntimeException(e);
+        } catch (UnrecoverableEntryException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static void validateCertificate(X509Certificate trustedCert) throws CertificateException {
         trustedCert.checkValidity();

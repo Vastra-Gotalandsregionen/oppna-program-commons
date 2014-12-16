@@ -34,4 +34,8 @@
     </plugins>
   </build>
 
+  <properties>
+      <liferay.version>6.2.10.9</liferay.version>
+  </properties>
+
 </project>
