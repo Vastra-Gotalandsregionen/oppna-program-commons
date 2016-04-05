@@ -241,6 +241,9 @@ public class UserGroupHelperImpl implements UserGroupHelper {
             Boolean internalAccess = userExpandoHelper.get("isInternalAccess", user);
             Boolean externalSithsAccess = userExpandoHelper.get("isExternalSithsAccess", user);
 
+            internalAccess = internalAccess != null ? internalAccess : false;
+            externalSithsAccess = externalSithsAccess != null ? externalSithsAccess : false;
+
             int cnt = userGroupLocalService.getUserGroupsCount();
             List<UserGroup> allUserGroups = userGroupLocalService.getUserGroups(0, cnt);
             List<UserGroup> allExternallySithsOnlyGroups = externallySithsOnlyGroups(allUserGroups);
