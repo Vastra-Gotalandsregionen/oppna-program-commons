@@ -157,8 +157,10 @@ public class OrganizationHelperImpl implements OrganizationHelper {
 
             Long parentId = (parent != null) ? parent.getOrganizationId() : 0L;
             String description = liferayAutomation.autoCreateDescription();
+
+            // 12017 refers to listtypeid = full-member/com.liferay.portal.model.Organization.status
             organization = organizationLocalService.addOrganization(systemUser.getUserId(), parentId,
-                    organizationName, OrganizationConstants.TYPE_REGULAR_ORGANIZATION, 0, 0, 0,
+                    organizationName, OrganizationConstants.TYPE_REGULAR_ORGANIZATION, 0, 0, 12017,
                     "", site , null);
 
             return organization;
