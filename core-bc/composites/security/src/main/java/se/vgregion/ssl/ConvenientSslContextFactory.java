@@ -22,6 +22,8 @@ public class ConvenientSslContextFactory {
     private String trustStorePassword;
     private String keyStore;
     private String keyStorePassword;
+    private String trustStoreType;
+    private String keyStoreType;
 
     /**
      * Constructor.
@@ -41,6 +43,22 @@ public class ConvenientSslContextFactory {
         this.trustStorePassword = trustStorePassword;
         this.keyStore = keyStore;
         this.keyStorePassword = keyStorePassword;
+
+        // For backwards compatibility
+        this.trustStoreType = "jks";
+        this.keyStoreType = "jks";
+    }
+
+    public ConvenientSslContextFactory(String trustStore, String trustStorePassword, String trustStoreType, String keyStore,
+                                       String keyStorePassword, String keyStoreType) {
+        this.trustStore = trustStore;
+        this.trustStorePassword = trustStorePassword;
+        this.keyStore = keyStore;
+        this.keyStorePassword = keyStorePassword;
+
+        // For backwards compatibility
+        this.trustStoreType = trustStoreType;
+        this.keyStoreType = keyStoreType;
     }
 
     public SSLContext createSslContext() throws Exception {
@@ -64,7 +82,7 @@ public class ConvenientSslContextFactory {
 
         InputStream tsStream = null;
         try {
-            KeyStore trustedCertStore = KeyStore.getInstance("jks");
+            KeyStore trustedCertStore = KeyStore.getInstance(trustStoreType);
             tsStream = getClass().getClassLoader().getResourceAsStream(trustStore);
 
             if (tsStream == null) {
@@ -107,7 +125,7 @@ public class ConvenientSslContextFactory {
         try {
             KeyManagerFactory kmf =
                     KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            KeyStore ks = KeyStore.getInstance("jks");
+            KeyStore ks = KeyStore.getInstance(keyStoreType);
             KeyManager[] keystoreManagers = null;
 
             byte[] sslCert = loadClientCredential(keyStore);
