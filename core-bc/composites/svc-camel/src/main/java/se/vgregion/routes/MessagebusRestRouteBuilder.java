@@ -52,6 +52,7 @@ public class MessagebusRestRouteBuilder extends SpringRouteBuilder {
         this(messageBusDestination, restDestination, "POST", "*/*");
     }
 
+
     @Override
     public void configure() throws Exception {
 

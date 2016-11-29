@@ -26,6 +26,8 @@ import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
 /**
+ * This class have been deprecated. Use the {@link JndiFinderService} instead. It does not require Spring in order to
+ * work. Causing less problems with versions of said framework.
  * Capablity to search in a ldap server on any field(s) and getting it back. The name of the fields that is used in
  * the search and that are present on the resulting beans are based the bean used for searching. What you search with
  * you will also get back, packaging the result in beans inside a list.
@@ -71,6 +73,7 @@ import java.util.regex.Pattern;
  * </beans>
  * </code>
  */
+@Deprecated() // Please use the se.vgregion.ldapservice.search.JndiFinderService instead.
 public class LdapFinderService {
 
     private LdapTemplate ldapTemplate;

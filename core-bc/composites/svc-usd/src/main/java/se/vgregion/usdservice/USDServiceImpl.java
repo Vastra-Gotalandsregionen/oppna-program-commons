@@ -1,31 +1,32 @@
 /**
  * Copyright 2010 Västra Götalandsregionen
- *
- *   This library is free software; you can redistribute it and/or modify
- *   it under the terms of version 2.1 of the GNU Lesser General Public
- *   License as published by the Free Software Foundation.
- *
- *   This library is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU Lesser General Public License for more details.
- *
- *   You should have received a copy of the GNU Lesser General Public
- *   License along with this library; if not, write to the
- *   Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- *   Boston, MA 02111-1307  USA
- *
+ * <p>
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of version 2.1 of the GNU Lesser General Public
+ * License as published by the Free Software Foundation.
+ * <p>
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307  USA
  */
 
 package se.vgregion.usdservice;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.rmi.RemoteException;
-import java.util.*;
+import com.ca.www.UnicenterServicePlus.ServiceDesk.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.util.StringUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import se.vgregion.usdservice.domain.Issue;
+import se.vgregion.util.Attachment;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -35,18 +36,16 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.ws.Holder;
-import javax.xml.xpath.*;
-
-import com.ca.www.UnicenterServicePlus.ServiceDesk.*;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-
-import org.xml.sax.SAXException;
-import se.vgregion.usdservice.domain.Issue;
-import se.vgregion.util.Attachment;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.rmi.RemoteException;
+import java.util.*;
 
 /**
  * @author David Rosell - Redpill-Linpro
@@ -190,7 +189,7 @@ public class USDServiceImpl implements USDService {
                 throw new RuntimeException("Error parsing handle to USD incident from xml response...\n" + result, e);
             }
 
-            if (!StringUtils.isBlank(handle)) {
+            if (!StringUtils.isEmpty(handle)) {
                 for (Attachment attachment : attachments) {
                     int i = 0;
                     try {
@@ -407,7 +406,7 @@ public class USDServiceImpl implements USDService {
                 }
 
                 // A Issue has to have refNum to be valid
-                if (StringUtils.isBlank(refNum)) {
+                if (StringUtils.isEmpty(refNum)) {
                     continue;
                 }
 
@@ -448,7 +447,7 @@ public class USDServiceImpl implements USDService {
 
         // Get type
         String type = extractAttribute(i, "type", XPathConstants.STRING, doc);
-        if (StringUtils.isBlank(type)) {
+        if (StringUtils.isEmpty(type)) {
             type = fallbackType;
         }
         issue.setType(type);
@@ -507,7 +506,7 @@ public class USDServiceImpl implements USDService {
      * USD-WS lookup.
      */
     private void createAttachment(int sid, String repHandle, String objectHandle, String description,
-            Attachment attachment) throws Exception {
+                                  Attachment attachment) throws Exception {
 
         DataHandler dhandler = createDataHandler(attachment);
 

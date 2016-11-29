@@ -28,6 +28,7 @@ import java.security.GeneralSecurityException;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -35,6 +36,7 @@ import org.junit.Test;
  * 
  * @author <a href="mailto:david.rosell@redpill-linpro.com">David Rosell</a>
  */
+@Ignore
 public class CryptoUtilImplTest {
     CryptoUtilImpl cryptoUtil = new CryptoUtilImpl();
     File testKeyFile;

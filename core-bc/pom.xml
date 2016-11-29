@@ -21,6 +21,9 @@
     <module>composites/svc-liferay</module>
     <module>composites/webcomp-sitemap</module>
     <module>composites/types</module>
-    <module>composites/svc-camel</module>
+    <!--
+      <module>composites/svc-camel</module>
+      TODO: Consider weather this composite is used and if to remove it.
+    -->
   </modules>
 </project>

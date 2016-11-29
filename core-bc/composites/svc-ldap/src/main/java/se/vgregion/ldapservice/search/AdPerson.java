@@ -9,6 +9,15 @@ package se.vgregion.ldapservice.search;
  */
 public class AdPerson extends AbstractPerson {
 
+    public AdPerson() {
+        super();
+    }
+
+    public AdPerson(String cn) {
+        this();
+        setCn(cn);
+    }
+
     @ExplicitLdapName("userPrincipalName")
     private String userPrincipalName;
 
@@ -252,6 +261,8 @@ public class AdPerson extends AbstractPerson {
     @ExplicitLdapName("msRTCSIP-UserEnabled")
     private String msRTCSIPUserEnabled;
 
+    private String hsaIdentity;
+    @ExplicitLdapName("hsaIdentity")
 
     public String getUserPrincipalName() {
         return userPrincipalName;
@@ -899,5 +910,13 @@ public class AdPerson extends AbstractPerson {
 
     public void setMsRTCSIPUserEnabled(String msRTCSIPUserEnabled) {
         this.msRTCSIPUserEnabled = msRTCSIPUserEnabled;
+    }
+
+    public String getHsaIdentity() {
+        return hsaIdentity;
+    }
+
+    public void setHsaIdentity(String hsaIdentity) {
+        this.hsaIdentity = hsaIdentity;
     }
 }

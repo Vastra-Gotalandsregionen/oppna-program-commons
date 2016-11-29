@@ -183,7 +183,7 @@ public class AsyncCachingLdapServiceWrapper implements LdapService {
                     for (Object key : keys) {
                         final Element element1 = cache.get(key);
                         if (element1 == null || element1.getObjectValue() == null
-                                || ((LdapUser)element1.getValue()).getDn() == null) {
+                                || ((LdapUser) element1.getValue()).getDn() == null) {
                             cache.remove(key);
                         }
                     }
