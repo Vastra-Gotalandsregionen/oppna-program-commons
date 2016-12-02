@@ -80,6 +80,10 @@ public class PkixUtil {
      * Extracts all CRL distribution point URLs from the "CRL Distribution Point"
      * extension in a X.509 certificate. If CRL distribution point extension is
      * unavailable, returns an empty list.
+     * @param cert to use.
+     * @return a list fo text-values.
+     * @throws CertificateParsingException if there are any wrong with the certificate.
+     * @throws IOException if there are a read problem with the certificate.
      */
     public static List<String> getCrlDistributionPoints(
             X509Certificate cert) throws CertificateParsingException, IOException {
