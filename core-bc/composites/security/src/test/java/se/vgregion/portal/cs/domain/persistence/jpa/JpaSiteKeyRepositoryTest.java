@@ -49,7 +49,7 @@ public class JpaSiteKeyRepositoryTest extends AbstractTransactionalJUnit4SpringC
 
         repo.flush();
 
-        String result = simpleJdbcTemplate.queryForObject(
+        String result = jdbcTemplate.queryForObject(
                 "select title from vgr_site_key where site_key = 'test-key'",
                 String.class);
         assertEquals("Test key updated", result);
@@ -68,7 +68,7 @@ public class JpaSiteKeyRepositoryTest extends AbstractTransactionalJUnit4SpringC
         repo.save(siteKey);
         repo.flush();
 
-        String result = simpleJdbcTemplate.queryForObject(
+        String result = jdbcTemplate.queryForObject(
                 "select title from vgr_site_key where site_key = 'new-site-key'",
                 String.class);
         assertEquals("Test key created", result);

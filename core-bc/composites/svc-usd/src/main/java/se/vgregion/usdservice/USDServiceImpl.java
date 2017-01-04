@@ -18,9 +18,11 @@
 
 package se.vgregion.usdservice;
 
-import com.ca.www.UnicenterServicePlus.ServiceDesk.*;
+import com.ca.www.UnicenterServicePlus.ServiceDesk.ArrayOfString;
+import com.ca.www.UnicenterServicePlus.ServiceDesk.USDWebServiceSoap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -45,7 +47,13 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * @author David Rosell - Redpill-Linpro
@@ -594,15 +602,11 @@ public class USDServiceImpl implements USDService {
         if (ws == null) {
             QName qName = new QName("http://www.ca.com/UnicenterServicePlus/ServiceDesk", "USD_WebService");
 
-            USDWebService localUsdWs = null;
-            try {
-                localUsdWs = new USDWebService(endPoint, qName);
-            } catch (Exception ex) {
-                String endPointMessage = (endPoint != null) ? endPoint.toString() : "EndPoint not configured";
-                log.error("Failed when trying to connect to USDWebService [" + endPointMessage + "]");
-            }
-
-            ws = new USDWebService(endPoint, qName).getUSDWebServiceSoap();
+            // This initialization method uses the conduit configuration if such configuration exists.
+            JaxWsProxyFactoryBean proxyFactoryBean = new JaxWsProxyFactoryBean();
+            proxyFactoryBean.setServiceClass(USDWebServiceSoap.class);
+            proxyFactoryBean.setAddress(endPoint.toString());
+            ws = (USDWebServiceSoap) proxyFactoryBean.create();
         }
         return ws;
     }
