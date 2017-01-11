@@ -12,6 +12,11 @@
   <version>3.24-SNAPSHOT</version>
   <name>${project.artifactId}</name>
 
+  <scm>
+    <developerConnection>scm:git:https://github.com/Vastra-Gotalandsregionen/oppna-program-commons.git</developerConnection>
+    <url>https://github.com/Vastra-Gotalandsregionen/oppna-program-commons.git</url>
+  </scm>
+
   <modules>
     <module>core-bc</module>
   </modules>
