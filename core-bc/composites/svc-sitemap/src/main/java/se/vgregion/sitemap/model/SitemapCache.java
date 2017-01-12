@@ -34,8 +34,6 @@ public class SitemapCache {
     /**
      * Retrieves the specified type of entries or all entries if no entry type is provided.
      * 
-     * @param entryType
-     *            The type of entries to retrieve from the cache.
      * @return the specified type of entries or all entries if no entry type was provided.
      */
     public List<SitemapEntry> getEntries() {

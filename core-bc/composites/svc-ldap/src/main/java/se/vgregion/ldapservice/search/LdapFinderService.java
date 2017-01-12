@@ -31,47 +31,6 @@ import java.util.regex.Pattern;
  * Capablity to search in a ldap server on any field(s) and getting it back. The name of the fields that is used in
  * the search and that are present on the resulting beans are based the bean used for searching. What you search with
  * you will also get back, packaging the result in beans inside a list.
- * <p/>
- * Example of initilizating:
- * <p/>
- * <code>
- * <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- * xmlns:context="http://www.springframework.org/schema/context"
- * xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
- * http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
- * <p/>
- * <p/>
- * <context:property-placeholder
- * location="file:${user.home}/.[your-app-config-dir]/application.properties"
- * ignore-resource-not-found="true" ignore-unresolvable="true" />
- * <p/>
- * <bean id="vgr.org.contextSource" class="org.springframework.ldap.pool.factory.PoolingContextSource">
- * <property name="contextSource" ref="vgr.org.contextSourceTarget" />
- * <property name="dirContextValidator" ref="vgr.org.dirContextValidator" />
- * <property name="testOnBorrow" value="true" />
- * <property name="testWhileIdle" value="true" />
- * </bean>
- * <p/>
- * <bean id="vgr.org.dirContextValidator" class="org.springframework.ldap.pool.validation.DefaultDirContextValidator" />
- * <p/>
- * <bean id="vgr.org.contextSourceTarget" class="org.springframework.ldap.core.support.LdapContextSource">
- * <property name="url" value="${ldap.org.authentication.java.naming.provider.url}" />
- * <property name="userDn" value="${ldap.org.synchronization.java.naming.security.principal}" />
- * <property name="password" value="${ldap.org.synchronization.java.naming.security.credentials}" />
- * <property name="base" value="${ldap.org.synchronization.userSearchBase}" />
- * <property name="pooled" value="false" />
- * </bean>
- * <p/>
- * <bean id="vgr.org.ldapTemplate" class="org.springframework.ldap.core.LdapTemplate">
- * <property name="contextSource" ref="vgr.org.contextSource" />
- * </bean>
- * <p/>
- * <bean id="ldapService" class="se.vgregion.ldapservice.search.LdapFinderService">
- * <property name="ldapTemplate" ref="vgr.org.ldapTemplate" />
- * </bean>
- * <p/>
- * </beans>
- * </code>
  */
 @Deprecated() // Please use the se.vgregion.ldapservice.search.JndiFinderService instead.
 public class LdapFinderService {
@@ -95,6 +54,7 @@ public class LdapFinderService {
     /**
      * Se se.vgregion.ldapservice.search.LdapFinderService#find(T) to understand this method. Except that it wraps
      * the return in a future object.
+     *
      * @param sample holds properties that (could) match fields in the db by the operator '=' or 'like' (in conjunction
      *               with having a '*' character in a String value).
      * @param <T>    type of the param and type of the answers inside the resulting list.
@@ -212,6 +172,7 @@ public class LdapFinderService {
 
     /**
      * Getter for ldapTemplate.
+     *
      * @return instance of mentioned var.
      */
     public LdapTemplate getLdapTemplate() {
@@ -220,6 +181,7 @@ public class LdapFinderService {
 
     /**
      * Setter for ldapTemplate.
+     *
      * @param ldapTemplate the new value.
      */
     public void setLdapTemplate(LdapTemplate ldapTemplate) {

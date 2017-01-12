@@ -67,10 +67,6 @@ public class HTTPUtils {
         }
     }
 
-    /**
-     * @throws IOException
-     * @throws ClientProtocolException
-     */
     public static HttpResponse basicAuthRequest(String url, String username, String password,
             DefaultHttpClient client) throws HttpUtilsException {
         HttpGet get = new HttpGet(url);
@@ -98,14 +94,12 @@ public class HTTPUtils {
         return response;
     }
 
-    /** */
     public static HttpResponse makeRequest(String url, String token, DefaultHttpClient client) throws Exception {
         HttpGet get = new HttpGet(url);
         get.addHeader("X-TrackerToken", token);
         return client.execute(get);
     }
 
-    /** */
     public static HttpResponse makePostXML(String url, String token, DefaultHttpClient client, String xml)
             throws Exception {
         HttpPost post = new HttpPost(url);
@@ -119,14 +113,6 @@ public class HTTPUtils {
         return client.execute(post);
     }
 
-    /** */
-    /**
-     * @param url
-     * @param token
-     * @param httpclient
-     * @return
-     * @throws Exception
-     */
     public static HttpResponse makePostAttachments(String url, String token, DefaultHttpClient httpclient,
             Attachment attachment) throws Exception {
 
@@ -156,7 +142,6 @@ public class HTTPUtils {
         }
     }
 
-    /** */
     static class PreemptiveAuth implements HttpRequestInterceptor {
         public void process(final HttpRequest request, final HttpContext context) throws HttpException,
                 IOException {

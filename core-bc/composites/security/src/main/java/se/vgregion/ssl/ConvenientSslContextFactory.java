@@ -75,7 +75,6 @@ public class ConvenientSslContextFactory {
      * Get {@link javax.net.ssl.TrustManager} array.
      *
      * @return Array of {@link javax.net.ssl.TrustManager}s.
-     * @throws Exception Exception
      */
     public TrustManager[] getTrustManagers() {
         TrustManager[] trustStoreManagers;
@@ -118,7 +117,6 @@ public class ConvenientSslContextFactory {
      * Get {@link javax.net.ssl.KeyManager} array.
      *
      * @return Array of {@link javax.net.ssl.KeyManager}s.
-     * @throws Exception Exception
      */
     public KeyManager[] getKeyManagers() {
         ByteArrayInputStream bin = null;

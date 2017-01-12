@@ -12,7 +12,7 @@ import java.io.StringWriter;
 
 /**
  * Utility class for marshalling and unmarshalling with JAXB.
- * <p/>
+ *
  * @author David Rosell
  * @author Patrik Bergström
  */
@@ -25,6 +25,7 @@ public class JaxbUtil {
      * Constructor.
      *
      * @param contextNamespace the package name where the JAXB classes are located
+     * @throws JAXBException
      */
     public JaxbUtil(String contextNamespace) throws JAXBException {
         this.jaxbContext = JAXBContext.newInstance(contextNamespace);
@@ -34,6 +35,7 @@ public class JaxbUtil {
      * Constructor.
      *
      * @param classes the classes which are to be marshalled/unmarshalled
+     * @throws JAXBException
      */
     public JaxbUtil(Class... classes) throws JAXBException {
         this.jaxbContext = JAXBContext.newInstance(classes);

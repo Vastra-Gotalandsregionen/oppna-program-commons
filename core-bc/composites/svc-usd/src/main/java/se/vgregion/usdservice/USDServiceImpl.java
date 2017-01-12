@@ -218,7 +218,7 @@ public class USDServiceImpl implements USDService {
 
     /**
      * BOPSID is a temporary single signon id.
-     * <p/>
+     * <p>
      * This has to be used rather quickly before it is invalidated.
      *
      * @param userId, the login name of the user to be signed in.

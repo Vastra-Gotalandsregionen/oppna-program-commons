@@ -31,14 +31,6 @@ public abstract class DefaultSitemapCacheLoader implements CacheLoader<SitemapCa
     private final SitemapEntryLoader sitemapEntryLoader;
     private final String applicationBaseURL;
 
-    /**
-     * Constructs a new {@link DefaultSitemapCacheLoader}.
-     * 
-     * @param webbisCacheService
-     *            The {@link WebbisCacheServiceImpl} implementation to use to fetch units.
-     * @param applicationBaseURL
-     *            The external URL to the application.
-     */
     public DefaultSitemapCacheLoader(final SitemapEntryLoader sitemapEntryLoader, String applicationBaseURL) {
         this.sitemapEntryLoader = sitemapEntryLoader;
         this.applicationBaseURL = applicationBaseURL;
