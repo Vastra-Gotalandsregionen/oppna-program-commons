@@ -8,13 +8,13 @@
   <groupId>se.vgregion.commons-util</groupId>
   <artifactId>commons-util-system</artifactId>
   <packaging>pom</packaging>
-  <version>3.24</version>
+  <version>3.25-SNAPSHOT</version>
   <name>${project.artifactId}</name>
 
   <scm>
     <developerConnection>scm:git:https://github.com/Vastra-Gotalandsregionen/oppna-program-commons.git</developerConnection>
     <url>https://github.com/Vastra-Gotalandsregionen/oppna-program-commons.git</url>
-    <tag>commons-util-system-3.24</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <modules>
