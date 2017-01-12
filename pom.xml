@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>se.vgregion.common</groupId>
@@ -9,12 +8,13 @@
   <groupId>se.vgregion.commons-util</groupId>
   <artifactId>commons-util-system</artifactId>
   <packaging>pom</packaging>
-  <version>3.24-SNAPSHOT</version>
+  <version>3.24</version>
   <name>${project.artifactId}</name>
 
   <scm>
     <developerConnection>scm:git:https://github.com/Vastra-Gotalandsregionen/oppna-program-commons.git</developerConnection>
     <url>https://github.com/Vastra-Gotalandsregionen/oppna-program-commons.git</url>
+    <tag>commons-util-system-3.24</tag>
   </scm>
 
   <modules>
